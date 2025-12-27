@@ -3,54 +3,121 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hybrid Raffle & Auction Ultra-Premium</title>
+<title>Hybrid Raffle & Auction - Arcade Premium</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.10.0/dist/web3.min.js"></script>
 <style>
-  body { margin:0; font-family: 'Arial', sans-serif; background:linear-gradient(135deg,#ff9a9e,#fad0c4); color:#fff;}
-  .container{max-width:1400px;margin:0 auto;padding:20px;}
-  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
-  #walletButton{background:#ffcc00;color:#000;padding:10px 20px;border-radius:10px;border:none;cursor:pointer;font-weight:bold;transition:0.3s;}
-  #walletButton:hover{transform:scale(1.05);}
-  .card{background:rgba(0,0,0,0.25);border-radius:15px;padding:20px;margin-bottom:20px;box-shadow:0 0 20px rgba(0,0,0,0.5);transition:0.3s;}
-  .card:hover{transform:translateY(-5px);box-shadow:0 0 30px rgba(0,0,0,0.7);}
-  .card h2{display:flex;align-items:center;font-size:1.5rem;margin-bottom:10px;}
-  .card h2 .material-icons{margin-right:10px;color:#ffeb3b;}
-  .btn{background:#ff5722;border:none;padding:10px 15px;border-radius:8px;cursor:pointer;margin:5px;color:#fff;font-weight:bold;transition:0.3s;}
-  .btn:hover{background:#ff784e;transform:scale(1.05);}
-  ul{list-style:none;padding-left:0;}
-  li{margin:5px 0;display:flex;justify-content:space-between;}
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;margin-bottom:20px;}
-  .stat{background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;text-align:center;transition:0.3s;}
-  .stat:hover{transform:scale(1.05);}
-  .countdown{font-size:1.3rem;font-weight:bold;color:#ffeb3b;margin-top:10px;}
-  input[type=number]{padding:5px;border-radius:5px;border:none;width:80px;margin-right:5px;}
-  canvas{background:rgba(0,0,0,0.2);border-radius:15px;padding:10px;margin-bottom:20px;}
+body {
+    margin:0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg,#ff9a9e,#fad0c4);
+    color:#fff;
+    overflow-x:hidden;
+}
+.container {
+    max-width:1400px;
+    margin:0 auto;
+    padding:20px;
+}
+header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+#walletButton {
+    background: #ffcc00;
+    color: #000;
+    padding: 10px 25px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s;
+    display:flex;
+    align-items:center;
+}
+#walletButton:hover { transform: scale(1.05); }
+.card {
+    background: rgba(0,0,0,0.25);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.6);
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+}
+.card:hover { transform: translateY(-5px); box-shadow:0 0 35px rgba(0,0,0,0.8);}
+.card::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+    animation: rotate 6s linear infinite;
+}
+@keyframes rotate { from { transform: rotate(0deg);} to{ transform: rotate(360deg);}}
+.card h2 { display:flex; align-items:center; font-size:1.7rem; margin-bottom:15px; }
+.card h2 .material-icons { margin-right:10px; color:#ffeb3b; font-size:2rem; }
+.btn {
+    background: #ff5722;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    margin:5px;
+    color: #fff;
+    font-weight:bold;
+    font-size:1rem;
+    transition: all 0.3s;
+}
+.btn:hover { background:#ff784e; transform: scale(1.1); }
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px; margin-bottom:20px;}
+.stat {
+    background: rgba(0,0,0,0.35);
+    padding:15px;
+    border-radius:15px;
+    text-align:center;
+    transition:0.3s;
+}
+.stat:hover{ transform: scale(1.05); }
+.countdown { font-size:1.4rem; font-weight:bold; color:#ffeb3b; margin-top:10px; }
+input[type=number]{padding:5px;border-radius:8px;border:none;width:90px;margin-right:5px;font-weight:bold;}
+ul{list-style:none;padding-left:0;}
+li{margin:5px 0; display:flex; justify-content:space-between;}
+canvas{background: rgba(0,0,0,0.25); border-radius:20px; padding:15px; margin-bottom:20px;}
+.glow{animation: glow 1.5s infinite alternate;}
+@keyframes glow { from { box-shadow:0 0 10px #ffeb3b;} to {box-shadow:0 0 25px #ffeb3b;}}
 </style>
 </head>
 <body>
 <div class="container">
 <header>
-<h1>🎲 Hybrid Raffle & Auction</h1>
+<h1>🎰 Hybrid Raffle & Auction - Arcade Premium</h1>
 <button id="walletButton"><span class="material-icons">account_balance_wallet</span> Conectar Wallet</button>
 </header>
 
 <!-- Estadísticas Globales -->
 <div class="stats">
-  <div class="stat" id="statBNBTotal">BNB Total: 0</div>
-  <div class="stat" id="statBNBRifas">BNB Rifas: 0</div>
-  <div class="stat" id="statBNBSubastas">BNB Subastas: 0</div>
-  <div class="stat" id="statTickets">Tickets Totales: 0</div>
-  <div class="stat" id="statUsuarios">Usuarios: 0</div>
-  <div class="stat" id="statStaked">BNB Staked: 0</div>
+  <div class="stat glow" id="statBNBTotal">BNB Total: 0</div>
+  <div class="stat glow" id="statBNBRifas">BNB Rifas: 0</div>
+  <div class="stat glow" id="statBNBSubastas">BNB Subastas: 0</div>
+  <div class="stat glow" id="statTickets">Tickets Totales: 0</div>
+  <div class="stat glow" id="statUsuarios">Usuarios: 0</div>
+  <div class="stat glow" id="statStaked">BNB Staked: 0</div>
 </div>
 
 <!-- Charts -->
 <canvas id="chartTickets"></canvas>
 <canvas id="chartBNB"></canvas>
 
-<!-- Rifas y Subasta -->
-<div class="card" id="raffleHourlyCard">
+<!-- Rifas Horaria y Diaria -->
+<div class="card glow" id="raffleHourlyCard">
 <h2><span class="material-icons">timer</span> Rifa Horaria</h2>
 <p>Premio: <span id="raffleHourlyPrize">0 BNB</span></p>
 <ul id="raffleHourlyParticipants"></ul>
@@ -63,7 +130,7 @@
 </div>
 </div>
 
-<div class="card" id="raffleDailyCard">
+<div class="card glow" id="raffleDailyCard">
 <h2><span class="material-icons">today</span> Rifa Diaria</h2>
 <p>Premio: <span id="raffleDailyPrize">0 BNB</span></p>
 <ul id="raffleDailyParticipants"></ul>
@@ -76,7 +143,8 @@
 </div>
 </div>
 
-<div class="card" id="auctionCard">
+<!-- Subasta -->
+<div class="card glow" id="auctionCard">
 <h2><span class="material-icons">gavel</span> Subasta</h2>
 <p>Premio: <span id="auctionPrize">0 BNB</span></p>
 <p>Puja Actual: <span id="auctionBid">0 BNB</span></p>
@@ -85,7 +153,8 @@
 <button class="btn" onclick="placeBid()">Pujar +0.001 BNB</button>
 </div>
 
-<div class="card" id="stakingCard">
+<!-- Staking -->
+<div class="card glow" id="stakingCard">
 <h2><span class="material-icons">savings</span> Staking</h2>
 <p>BNB Stakeado: <span id="stakedBNB">0</span></p>
 <p>Tickets Generados: <span id="stakingTickets">0</span></p>
@@ -93,9 +162,6 @@
 <button class="btn" onclick="stakeBNB()">Stake</button>
 </div>
 
-</div>
-
-<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.10.0/dist/web3.min.js"></script>
 <script>
 let web3, contract, account;
 const contractAddress = "0x1A7555635e049631744AD31Ca7b55CD439F3D7B9";
@@ -115,10 +181,10 @@ async function connectWallet(){
 }
 document.getElementById('walletButton').onclick = connectWallet;
 
-// Actualizar datos cada segundo
+// Actualizar todo cada segundo
 async function updateAll(){
   if(!contract) return;
-  await updateStats(); await updateRaffles(); await updateAuction(); updateCharts();
+  await updateStats(); await updateRaffles(); await updateAuction(); updateCharts(); updateCountdowns();
   setInterval(()=>{ updateStats(); updateRaffles(); updateAuction(); updateCharts(); updateCountdowns(); },1000);
 }
 
@@ -159,8 +225,8 @@ async function updateAuction(){
 }
 
 // Funciones comunes
-function updateList(id,array){ const ul=document.getElementById(id); ul.innerHTML=''; array.forEach(addr=>{const li=document.createElement('li'); li.innerText=addr; ul.appendChild(li);}); }
-async function useTicketsRaffle(daily,amount){ try{ await contract.methods.useTickets(amount,daily).send({from:account}); updateAll(); } catch(e){console.error(e); alert('Error al usar tickets'); }}
+function updateList(id,array){ const ul=document.getElementById(id); ul.innerHTML=''; array.forEach(addr=>{ const li=document.createElement('li'); li.innerText=addr; ul.appendChild(li); }); }
+async function useTicketsRaffle(daily,amount){ try{ await contract.methods.useTickets(amount,daily).send({from:account}); updateAll(); } catch(e){ console.error(e); alert('Error al usar tickets'); }}
 async function placeBid(){ try{ const a=await contract.methods.auction().call(); const bidAmount = a.currentBid==0 ? web3.utils.toWei('0.001','ether') : (BigInt(a.currentBid)+BigInt(web3.utils.toWei('0.001','ether'))); await contract.methods.bid().send({from:account,value:bidAmount}); updateAll(); } catch(e){console.error(e); alert('Error al pujar'); }}
 async function stakeBNB(){ const val=document.getElementById('stakeAmount').value; if(!val||parseFloat(val)<0.1){alert('Stake mínimo 0.1 BNB'); return;} try{ await contract.methods.stake().send({from:account,value:web3.utils.toWei(val,'ether')}); updateAll(); } catch(e){console.error(e); alert('Error al stakear'); }}
 
@@ -175,7 +241,7 @@ async function updateCharts(){
   const totalStaked = await contract.methods.totalBNBStaked().call();
   if(!chartTickets){
     const ctx = document.getElementById('chartTickets').getContext('2d');
-    chartTickets=new Chart(ctx,{type:'bar',data:{labels:['Tickets','Staked'],datasets:[{label:'Cantidad',data:[totalTickets,parseFloat(web3.utils.fromWei(totalStaked,'ether'))],backgroundColor:['#ffeb3b','#ff5722']}]},options:{responsive:true}});
+    chartTickets=new Chart(ctx,{type:'bar',data:{labels:['Tickets','Staked'],datasets:[{label:'Cantidad',data:[totalTickets,parseFloat(web3.utils.fromWei(totalStaked,'ether'))],backgroundColor:['#ffeb3b','#ff5722']}]},options:{responsive:true,plugins:{legend:{display:false}}}});
   } else { chartTickets.data.datasets[0].data=[totalTickets,parseFloat(web3.utils.fromWei(totalStaked,'ether'))]; chartTickets.update(); }
 
   const totalRifas = await contract.methods.totalBNBRepartidoRifas().call();
