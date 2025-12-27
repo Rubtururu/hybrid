@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Hybrid Raffle & Auction Pro Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.9.0/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+    background: #0f0f1a;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+header {
+    background: #1e1e2f;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.7);
+}
+.container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+.card {
+    background: #1e1e2f;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+}
+.card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.7);
+}
+button {
+    background: #4b7bec;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+}
+button:hover {
+    background: #3867d6;
+}
+input[type="number"] {
+    padding: 0.5rem;
+    border-radius: 0.4rem;
+    border: 1px solid #555;
+    width: 80px;
+    margin-right: 0.5rem;
+    background: #2a2a3d;
+    color: white;
+}
+h2 { margin-top:0; font-size:1.3rem; color:#fff;}
+.stats { display:flex; flex-direction:column; gap:0.5rem; margin-top:1rem; font-size:0.9rem;}
+.stats span { font-weight:bold; color:#aaa;}
+.countdown { font-weight:bold; font-size:1.2rem; color:#4b7bec; margin-top:0.5rem; }
+ul { list-style:none; padding-left:0; max-height:100px; overflow-y:auto; }
+li { padding:0.2rem 0; }
+.confetti {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+}
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+.history-table th, .history-table td {
+    border: 1px solid #333;
+    padding: 0.4rem 0.8rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+.history-table th {
+    background: #333;
+}
+</style>
+</head>
+<body>
+<header>Hybrid Raffle & Auction Pro Dashboard</header>
+
+<div class="container">
+    <!-- Rifas -->
+    <div class="card">
+        <h2>Rifas</h2>
+        <p>Comprar tickets:</p>
+        <input type="number" id="ticketsAmount" value="1" min="1">
+        <button onclick="buyTickets()">Comprar</button>
+
+        <div class="stats">
+            <span>Balance contrato: <span id="contractBalance">0</span> BNB</span>
+            <span>Rmin (reserva mínima): <span id="reserveMin">0</span> BNB</span>
+            <span>Prize pool activo: <span id="activePrizePool">0</span> BNB</span>
+            <span>Rifa countdown: <span class="countdown" id="raffleCountdown">00:00:00</span></span>
+        </div>
+
+        <canvas id="raffleChart" height="150"></canvas>
+        <p>Últimos ganadores:</p>
+        <ul id="raffleWinners"></ul>
+    </div>
+
+    <!-- Subastas -->
+    <div class="card">
+        <h2>Subastas</h2>
+        <p>Pujar:</p>
+        <input type="number" id="bidAmount" value="1" min="0.1" step="0.1">
+        <button onclick="placeBid()">Pujar</button>
+
+        <div class="stats">
+            <span>Prize pool subasta: <span id="auctionPrizePool">0</span> BNB</span>
+            <span>Current bid: <span id="currentBid">0</span> BNB</span>
+            <span>Subasta countdown: <span class="countdown" id="auctionCountdown">00:00:00</span></span>
+        </div>
+
+        <canvas id="auctionChart" height="150"></canvas>
+        <p>Top 10 últimos bidders:</p>
+        <ul id="topBidders"></ul>
+    </div>
+
+    <!-- Staking -->
+    <div class="card">
+        <h2>Staking</h2>
+        <p>Stakear BNB:</p>
+        <input type="number" id="stakeAmount" value="1" min="0.1" step="0.1">
+        <button onclick="stakeTokens()">Stakear</button>
+
+        <p>Retirar stake:</p>
+        <input type="number" id="withdrawAmount" value="1" min="0.1" step="0.1">
+        <button onclick="withdrawStake()">Retirar</button>
+
+        <div class="stats">
+            <span>Mi stake: <span id="myStake">0</span> BNB</span>
+            <span>Mis tickets: <span id="myTickets">0</span></span>
+        </div>
+    </div>
+
+    <!-- Crear eventos -->
+    <div class="card">
+        <h2>Crear Eventos</h2>
+        <button onclick="createRaffle(true)">Crear rifa diaria</button>
+        <button onclick="createRaffle(false)">Crear rifa horaria</button>
+        <button onclick="createAuction()">Crear subasta</button>
+
+        <h2>Historial de Eventos</h2>
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Prize Pool</th>
+                    <th>Ganadores</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody id="eventHistory"></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="confettiContainer" class="confetti"></div>
+
+<script>
+let web3, contract;
+const contractAddress = "TU_DIRECCION_DE_CONTRATO";
+const contractABI = [/* ABI de Remix */];
+
+let raffleChart, auctionChart;
+let confettiParticles = [];
+
+// ---------- Inicialización ----------
+async function init() {
+    if(window.ethereum){
+        web3 = new Web3(window.ethereum);
+        await ethereum.request({ method: "eth_requestAccounts" });
+        contract = new web3.eth.Contract(contractABI, contractAddress);
+        initCharts();
+        updateStats();
+        setInterval(updateStats, 5000); // refresco stats
+    } else { alert("Instala Metamask para usar esta DApp"); }
+}
+
+// ---------- Gráficos ----------
+function initCharts(){
+    const ctxR = document.getElementById('raffleChart').getContext('2d');
+    raffleChart = new Chart(ctxR, {
+        type: 'doughnut',
+        data: { labels: ['Prize Pool', 'Rmin'], datasets: [{ data:[0,0], backgroundColor:['#4b7bec','#ff4757'] }]},
+        options: { responsive:true, plugins:{ legend:{position:'bottom'} } }
+    });
+    const ctxA = document.getElementById('auctionChart').getContext('2d');
+    auctionChart = new Chart(ctxA, {
+        type: 'doughnut',
+        data: { labels: ['Prize Pool', 'Contract'], datasets: [{ data:[0,0], backgroundColor:['#ffa502','#1e90ff'] }]},
+        options: { responsive:true, plugins:{ legend:{position:'bottom'} } }
+    });
+}
+
+// ---------- Interacciones ----------
+async function buyTickets() {
+    const amount = document.getElementById("ticketsAmount").value;
+    const accounts = await web3.eth.getAccounts();
+    const price = await contract.methods.calcularPrecioTickets(amount).call();
+    await contract.methods.buyTickets(amount).send({from: accounts[0], value: price});
+    updateStats();
+}
+
+async function createRaffle(daily) {
+    const accounts = await web3.eth.getAccounts();
+    await contract.methods.crearRifa(daily, 100).send({from: accounts[0]});
+    updateStats();
+}
+
+async function createAuction() {
+    const accounts = await web3.eth.getAccounts();
+    const prizeMin = web3.utils.toWei("1","ether");
+    await contract.methods.crearSubasta(prizeMin).send({from: accounts[0]});
+    updateStats();
+}
+
+async function placeBid() {
+    const amount = document.getElementById("bidAmount").value;
+    const accounts = await web3.eth.getAccounts();
+    const bidWei = web3.utils.toWei(amount,"ether");
+    await contract.methods.pujar(0).send({from: accounts[0], value: bidWei});
+    updateStats();
+    launchConfetti();
+}
+
+async function stakeTokens() {
+    const amount = document.getElementById("stakeAmount").value;
+    const accounts = await web3.eth.getAccounts();
+    const value = web3.utils.toWei(amount,"ether");
+    await contract.methods.stakeTokens().send({from: accounts[0], value: value});
+    updateStats();
+}
+
+async function withdrawStake() {
+    const amount = document.getElementById("withdrawAmount").value;
+    const accounts = await web3.eth.getAccounts();
+    const value = web3.utils.toWei(amount,"ether");
+    await contract.methods.retirarStake(value).send({from: accounts[0]});
+    updateStats();
+}
+
+// ---------- Actualización stats ----------
+async function updateStats(){
+    const accounts = await web3.eth.getAccounts();
+    const balance = await web3.eth.getBalance(contractAddress);
+    document.getElementById("contractBalance").innerText = web3.utils.fromWei(balance, "ether");
+
+    const rmin = await contract.methods.Rmin().call();
+    document.getElementById("reserveMin").innerText = web3.utils.fromWei(rmin, "ether");
+
+    // Rifas
+    try{
+        const raffle = await contract.methods.raffles(0).call();
+        document.getElementById("activePrizePool").innerText = web3.utils.fromWei(raffle.prizeActual, "ether");
+        raffleChart.data.datasets[0].data = [raffle.prizeActual, rmin];
+        raffleChart.update();
+
+        const winnersList = document.getElementById("raffleWinners");
+        winnersList.innerHTML = "";
+        raffle.winners.forEach(w => { const li = document.createElement("li"); li.innerText = w; winnersList.appendChild(li); });
+
+        updateCountdown("raffleCountdown", raffle.endTime);
+    }catch(e){}
+
+    // Subastas
+    try{
+        const auction = await contract.methods.auctions(0).call();
+        document.getElementById("auctionPrizePool").innerText = web3.utils.fromWei(auction.prizeActual, "ether");
+        document.getElementById("currentBid").innerText = web3.utils.fromWei(auction.currentBid, "ether");
+        auctionChart.data.datasets[0].data = [auction.prizeActual, balance-auction.prizeActual];
+        auctionChart.update();
+
+        const biddersList = document.getElementById("topBidders");
+        biddersList.innerHTML = "";
+        auction.lastBidders.forEach(b => { const li=document.createElement("li"); li.innerText=b; biddersList.appendChild(li); });
+
+        updateCountdown("auctionCountdown", auction.endTime);
+    }catch(e){}
+
+    // Staking
+    const myStake = await contract.methods.staked(accounts[0]).call();
+    document.getElementById("myStake").innerText = web3.utils.fromWei(myStake, "ether");
+
+    const myTickets = await contract.methods.tickets(accounts[0]).call();
+    document.getElementById("myTickets").innerText = myTickets;
+
+    // Historial simple
+    try{
+        const historyEl = document.getElementById("eventHistory");
+        historyEl.innerHTML="";
+        for(let i=0;i<Math.min(5,await contract.methods.raffles.length().call());i++){
+            const r = await contract.methods.raffles(i).call();
+            const row = `<tr><td>Rifa</td><td>${web3.utils.fromWei(r.prizeActual)}</td><td>${r.winners.join(', ')}</td><td>${new Date(r.endTime*1000).toLocaleString()}</td></tr>`;
+            historyEl.innerHTML += row;
+        }
+    }catch(e){}
+}
+
+// ---------- Countdown ----------
+function updateCountdown(elementId, endTime){
+    const countdownEl = document.getElementById(elementId);
+    const now = Math.floor(Date.now()/1000);
+    let diff = endTime - now;
+    if(diff<0) diff=0;
+    const h = String(Math.floor(diff/3600)).padStart(2,'0');
+    const m = String(Math.floor((diff%3600)/60)).padStart(2,'0');
+    const s = String(diff%60).padStart(2,'0');
+    countdownEl.innerText = `${h}:${m}:${s}`;
+    requestAnimationFrame(()=>updateCountdown(elementId,endTime));
+}
+
+// ---------- Confetti ----------
+function launchConfetti(){
+    const container = document.getElementById("confettiContainer");
+    for(let i=0;i<30;i++){
+        const conf = document.createElement("div");
+        conf.style.position="absolute";
+        conf.style.width="8px";
+        conf.style.height="8px";
+        conf.style.backgroundColor=`hsl(${Math.random()*360},100%,50%)`;
+        conf.style.left=`${Math.random()*100}%`;
+        conf.style.top=`0%`;
+        conf.style.opacity=1;
+        conf.style.borderRadius="50%";
+        container.appendChild(conf);
+        animateConfetti(conf);
+    }
+}
+
+function animateConfetti(conf){
+    let top = 0;
+    const speed = 2 + Math.random()*3;
+    const rotate = Math.random()*360;
+    const interval = setInterval(()=>{
+        top += speed;
+        conf.style.top = top + "%";
+        conf.style.transform = `rotate(${rotate}deg)`;
+        conf.style.opacity -= 0.02;
+        if(top>100){ conf.remove(); clearInterval(interval); }
+    },16);
+}
+
+window.onload = init;
+</script>
+</body>
+</html>
