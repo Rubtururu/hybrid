@@ -3,84 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hybrid Raffle & Auction BSC</title>
+<title>Hybrid Raffle & Auction BSC - Premium</title>
 <style>
-    body {
-        font-family: 'Arial', sans-serif;
-        background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-        color: #fff;
-        margin: 0;
-        padding: 0;
-    }
-    header {
-        text-align: center;
-        padding: 20px;
-        background: rgba(0,0,0,0.4);
-        font-size: 2em;
-        font-weight: bold;
-        letter-spacing: 2px;
-    }
-    .container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        padding: 20px;
-        gap: 20px;
-    }
-    .card {
-        background: rgba(255,255,255,0.05);
-        padding: 20px;
-        border-radius: 20px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.5);
-        width: 300px;
-        transition: transform 0.2s ease;
-    }
-    .card:hover { transform: scale(1.05); }
-    button {
-        background: gold;
-        color: #000;
-        font-weight: bold;
-        padding: 10px 20px;
-        border-radius: 10px;
-        border: none;
-        cursor: pointer;
-        margin-top: 10px;
-        width: 100%;
-        transition: all 0.2s ease;
-    }
-    button:hover { background: #ffdb58; }
-    .progress-bar {
-        width: 100%;
-        background: rgba(255,255,255,0.2);
-        border-radius: 10px;
-        margin-top: 10px;
-        height: 20px;
-        overflow: hidden;
-    }
-    .progress {
-        height: 100%;
-        width: 0%;
-        background: linear-gradient(90deg, #ffd700,#ffa500);
-        border-radius: 10px;
-        transition: width 1s linear;
-    }
-    .stats {
-        margin-top: 10px;
-        font-size: 0.9em;
-    }
-    .winner-highlight {
-        color: #00ff00;
-        font-weight: bold;
-        animation: blink 1s infinite;
-    }
-    @keyframes blink {
-        0%, 100% {opacity: 1;}
-        50% {opacity: 0;}
-    }
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color: #fff;
+    margin:0;
+    padding:0;
+}
+header {
+    text-align:center;
+    padding:20px;
+    font-size:2em;
+    font-weight:bold;
+    background: rgba(0,0,0,0.4);
+}
+button {
+    background: gold;
+    color:#000;
+    font-weight:bold;
+    padding:10px 20px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    margin-top:10px;
+    width:100%;
+    transition:all 0.2s ease;
+}
+button:hover { background:#ffdb58; }
+.container { display:flex; flex-wrap:wrap; justify-content:center; padding:20px; gap:20px; }
+.card {
+    background: rgba(255,255,255,0.05);
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 0 15px rgba(0,0,0,0.5);
+    width:320px;
+    transition: transform 0.2s ease;
+    position:relative;
+}
+.card:hover { transform: scale(1.05); }
+.progress-bar {
+    width:100%;
+    background: rgba(255,255,255,0.2);
+    border-radius:10px;
+    margin-top:10px;
+    height:20px;
+    overflow:hidden;
+}
+.progress {
+    height:100%;
+    width:0%;
+    background: linear-gradient(90deg,#ffd700,#ffa500);
+    border-radius:10px;
+    transition: width 1s linear;
+}
+.stats { margin-top:10px; font-size:0.9em; }
+.winner-highlight { color:#00ff00; font-weight:bold; animation: blink 1s infinite; }
+@keyframes blink { 0%,100% {opacity:1;} 50% {opacity:0;} }
+#connectBtn { width:auto; margin:10px auto; display:block; }
+.confetti {
+    position:fixed;
+    width:10px;
+    height:10px;
+    background: gold;
+    top:-10px;
+    border-radius:50%;
+    animation: fall 3s linear infinite;
+}
+@keyframes fall {
+    0%{transform: translateY(0) rotate(0deg);}
+    100%{transform: translateY(100vh) rotate(360deg);}
+}
 </style>
 </head>
 <body>
-<header>Hybrid Raffle & Auction BSC</header>
+<header>Hybrid Raffle & Auction BSC - Premium</header>
+<button id="connectBtn">Conectar a Metamask</button>
 <div class="container">
     <!-- Rifa horaria -->
     <div class="card" id="raffle-hourly">
@@ -89,13 +88,12 @@
         <div>Tiempo restante: <span id="raffle-hourly-timer">--:--:--</span></div>
         <div class="progress-bar"><div class="progress" id="raffle-hourly-progress"></div></div>
         <div class="stats">
-            Tickets comprados: <span id="raffle-hourly-tickets">0</span><br>
+            Tickets: <span id="raffle-hourly-tickets">0</span><br>
             Participantes: <span id="raffle-hourly-participants">0</span>
         </div>
-        <button onclick="buyRaffleTickets(1)">Comprar 1 Ticket (0.001 BNB)</button>
-        <button onclick="buyRaffleTickets(5)">Comprar 5 Tickets (0.004 BNB)</button>
-        <button onclick="buyRaffleTickets(10)">Comprar 10 Tickets (0.007 BNB)</button>
-        <button onclick="claimRaffleWinnings()">Retirar Ganancias</button>
+        <button onclick="buyRaffleTickets(1)">1 Ticket (0.001 BNB)</button>
+        <button onclick="buyRaffleTickets(5)">5 Tickets (0.004 BNB)</button>
+        <button onclick="buyRaffleTickets(10)">10 Tickets (0.007 BNB)</button>
     </div>
 
     <!-- Rifa diaria -->
@@ -105,13 +103,12 @@
         <div>Tiempo restante: <span id="raffle-daily-timer">--:--:--</span></div>
         <div class="progress-bar"><div class="progress" id="raffle-daily-progress"></div></div>
         <div class="stats">
-            Tickets comprados: <span id="raffle-daily-tickets">0</span><br>
+            Tickets: <span id="raffle-daily-tickets">0</span><br>
             Participantes: <span id="raffle-daily-participants">0</span>
         </div>
-        <button onclick="buyRaffleTickets(1,true)">Comprar 1 Ticket (0.001 BNB)</button>
-        <button onclick="buyRaffleTickets(5,true)">Comprar 5 Tickets (0.004 BNB)</button>
-        <button onclick="buyRaffleTickets(10,true)">Comprar 10 Tickets (0.007 BNB)</button>
-        <button onclick="claimRaffleWinnings()">Retirar Ganancias</button>
+        <button onclick="buyRaffleTickets(1,true)">1 Ticket</button>
+        <button onclick="buyRaffleTickets(5,true)">5 Tickets</button>
+        <button onclick="buyRaffleTickets(10,true)">10 Tickets</button>
     </div>
 
     <!-- Subasta -->
@@ -124,78 +121,96 @@
         <div class="stats">
             Últimos 10 participantes: <span id="auction-last-bidders">0</span>
         </div>
-        <button onclick="bidAuction()">Pujar (Incremento 10%)</button>
-        <button onclick="claimAuctionWinnings()">Retirar Ganancias</button>
+        <button onclick="bidAuction()">Pujar (10% incremento)</button>
+    </div>
+
+    <!-- Top ganadores -->
+    <div class="card" id="top-winners">
+        <h3>Top 10 Ganadores</h3>
+        <ol id="top-winners-list"></ol>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/web3@1.9.11/dist/web3.min.js"></script>
 <script>
-// Conectar Metamask
+// ---------------- Variables ----------------
 let web3;
 let contract;
+let userAccount;
 const CONTRACT_ADDRESS = "0x7407D7E91f2e341457Bf1C791F0a37fB144aeddc";
 const ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"auctions","outputs":[{"internalType":"uint128","name":"prizeGuaranteed","type":"uint128"},{"internalType":"uint128","name":"prizeCurrent","type":"uint128"},{"internalType":"uint128","name":"currentBid","type":"uint128"},{"internalType":"uint64","name":"endTime","type":"uint64"},{"internalType":"bool","name":"active","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"auctionsCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"balance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"bid","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint8","name":"numTickets","type":"uint8"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"closeAuction","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"closeRaffle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feeOwnerPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getAuction","outputs":[{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint64","name":"","type":"uint64"},{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getRaffle","outputs":[{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint64","name":"","type":"uint64"},{"internalType":"uint8","name":"","type":"uint8"},{"internalType":"bool","name":"","type":"bool"},{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pendingWithdrawals","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"raffles","outputs":[{"internalType":"uint128","name":"prizeGuaranteed","type":"uint128"},{"internalType":"uint128","name":"prizeCurrent","type":"uint128"},{"internalType":"uint64","name":"endTime","type":"uint64"},{"internalType":"uint8","name":"winnersCount","type":"uint8"},{"internalType":"bool","name":"isDaily","type":"bool"},{"internalType":"bool","name":"closed","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rafflesCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"reserveMinPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"stakeTokens","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"staked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"tickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawStake","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
-async function init() {
-    if(window.ethereum) {
+// ---------------- Conexión Metamask ----------------
+document.getElementById("connectBtn").onclick = async () => {
+    if(window.ethereum){
         web3 = new Web3(window.ethereum);
-        await ethereum.enable();
+        await ethereum.request({ method: 'eth_requestAccounts' });
+        const accounts = await web3.eth.getAccounts();
+        userAccount = accounts[0];
         contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+        alert("Metamask conectado: "+userAccount);
         updateUI();
-        setInterval(updateUI, 5000);
+        setInterval(updateUI,5000);
     } else {
-        alert("Instala Metamask para interactuar.");
+        alert("Instala Metamask");
     }
-}
+};
 
-// ------------------ Funciones de UI ------------------
+// ---------------- UI Update ----------------
 async function updateUI(){
+    if(!contract) return;
     try{
-        // Rifa horaria (última rifa isDaily=false)
         const rafflesCount = await contract.methods.rafflesCount().call();
+        const auctionsCount = await contract.methods.auctionsCount().call();
+
+        // Rifas horaria
         for(let i=rafflesCount-1;i>=0;i--){
             const r = await contract.methods.getRaffle(i).call();
-            if(!r[4]) { // isDaily=false
-                document.getElementById("raffle-hourly-pool").innerText = web3.utils.fromWei(r[1].toString(),"ether");
+            if(!r[4]){
+                document.getElementById("raffle-hourly-pool").innerText = web3.utils.fromWei(r[1],"ether");
                 document.getElementById("raffle-hourly-tickets").innerText = r[5].length;
                 document.getElementById("raffle-hourly-participants").innerText = r[5].length;
                 const remaining = r[2]-Math.floor(Date.now()/1000);
                 document.getElementById("raffle-hourly-timer").innerText = formatTime(remaining);
-                const total = r[1];
-                const percent = Math.min(100, (total/r[0])*100);
-                document.getElementById("raffle-hourly-progress").style.width = percent+"%";
+                document.getElementById("raffle-hourly-progress").style.width = Math.min(100,r[1]/r[0]*100)+"%";
                 break;
             }
         }
 
-        // Rifa diaria
+        // Rifas diaria
         for(let i=rafflesCount-1;i>=0;i--){
             const r = await contract.methods.getRaffle(i).call();
-            if(r[4]) { // isDaily=true
-                document.getElementById("raffle-daily-pool").innerText = web3.utils.fromWei(r[1].toString(),"ether");
+            if(r[4]){
+                document.getElementById("raffle-daily-pool").innerText = web3.utils.fromWei(r[1],"ether");
                 document.getElementById("raffle-daily-tickets").innerText = r[5].length;
                 document.getElementById("raffle-daily-participants").innerText = r[5].length;
                 const remaining = r[2]-Math.floor(Date.now()/1000);
                 document.getElementById("raffle-daily-timer").innerText = formatTime(remaining);
-                const total = r[1];
-                const percent = Math.min(100, (total/r[0])*100);
-                document.getElementById("raffle-daily-progress").style.width = percent+"%";
+                document.getElementById("raffle-daily-progress").style.width = Math.min(100,r[1]/r[0]*100)+"%";
                 break;
             }
         }
 
         // Subasta
-        const auctionsCount = await contract.methods.auctionsCount().call();
         if(auctionsCount>0){
             const a = await contract.methods.getAuction(auctionsCount-1).call();
-            document.getElementById("auction-pool").innerText = web3.utils.fromWei(a[1].toString(),"ether");
-            document.getElementById("auction-current-bid").innerText = web3.utils.fromWei(a[2].toString(),"ether");
+            document.getElementById("auction-pool").innerText = web3.utils.fromWei(a[1],"ether");
+            document.getElementById("auction-current-bid").innerText = web3.utils.fromWei(a[2],"ether");
             const remaining = a[3]-Math.floor(Date.now()/1000);
             document.getElementById("auction-timer").innerText = formatTime(remaining);
-            document.getElementById("auction-progress").style.width = Math.min(100,(a[2]/a[1]*100))+"%";
+            document.getElementById("auction-progress").style.width = Math.min(100,a[2]/a[1]*100)+"%";
             document.getElementById("auction-last-bidders").innerText = a[4].map(b=>b.substr(0,6)).join(", ");
         }
+
+        // Top 10 ganadores simulados (puedes conectarlo con eventos del contrato)
+        const topList = document.getElementById("top-winners-list");
+        topList.innerHTML="";
+        for(let i=0;i<10;i++){
+            const li = document.createElement("li");
+            li.innerText = "Ganador "+(i+1);
+            topList.appendChild(li);
+        }
+
     }catch(e){console.error(e);}
 }
 
@@ -206,43 +221,27 @@ function formatTime(seconds){
     const s=seconds%60;
     return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
-function pad(n){ return n<10?"0"+n:n; }
+function pad(n){return n<10?"0"+n:n;}
 
-// ------------------ Interacción ------------------
+// ---------------- Funciones Interacción ----------------
 async function buyRaffleTickets(n,isDaily=false){
-    try{
-        const accounts = await web3.eth.getAccounts();
-        let price;
-        if(n==1) price=web3.utils.toWei("0.001","ether");
-        else if(n==5) price=web3.utils.toWei("0.004","ether");
-        else price=web3.utils.toWei("0.007","ether");
-        await contract.methods.buyTickets(n).send({from:accounts[0],value:price});
-        updateUI();
-    }catch(e){console.error(e);}
+    if(!contract) return;
+    const accounts = await web3.eth.getAccounts();
+    let price;
+    if(n==1) price=web3.utils.toWei("0.001","ether");
+    else if(n==5) price=web3.utils.toWei("0.004","ether");
+    else price=web3.utils.toWei("0.007","ether");
+    await contract.methods.buyTickets(n).send({from:accounts[0],value:price});
+    updateUI();
 }
 
 async function bidAuction(){
-    try{
-        const accounts = await web3.eth.getAccounts();
-        await contract.methods.bid().send({from:accounts[0],value:web3.utils.toWei("0.001","ether")});
-        updateUI();
-    }catch(e){console.error(e);}
+    if(!contract) return;
+    const accounts = await web3.eth.getAccounts();
+    await contract.methods.bid().send({from:accounts[0],value:web3.utils.toWei("0.001","ether")});
+    updateUI();
 }
 
-async function claimRaffleWinnings(){
-    try{
-        const accounts = await web3.eth.getAccounts();
-        await contract.methods.withdraw().send({from:accounts[0]});
-        updateUI();
-    }catch(e){console.error(e);}
-}
-
-async function claimAuctionWinnings(){
-    await claimRaffleWinnings();
-}
-
-// Inicializar
-init();
 </script>
 </body>
 </html>
