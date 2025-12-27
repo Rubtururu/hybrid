@@ -52,7 +52,6 @@ li.top3 { color:#cd7f32; font-weight:bold; text-shadow:0 0 5px #cd7f32; }
         <div class="progress-bar"><div class="progress-fill" id="raffleProgress"></div></div>
         <p>Últimos ganadores:</p>
         <ul id="raffleWinners"></ul>
-        <canvas id="raffleChart" height="150"></canvas>
     </div>
 
     <!-- Subastas -->
@@ -69,7 +68,6 @@ li.top3 { color:#cd7f32; font-weight:bold; text-shadow:0 0 5px #cd7f32; }
         <div class="progress-bar"><div class="progress-fill" id="auctionProgress"></div></div>
         <p>Top 10 últimos bidders:</p>
         <ul id="topBidders"></ul>
-        <canvas id="auctionChart" height="150"></canvas>
     </div>
 
     <!-- Staking -->
@@ -93,19 +91,6 @@ li.top3 { color:#cd7f32; font-weight:bold; text-shadow:0 0 5px #cd7f32; }
         <button onclick="createRaffle(true)">Crear rifa diaria</button>
         <button onclick="createRaffle(false)">Crear rifa horaria</button>
         <button onclick="createAuction()">Crear subasta</button>
-
-        <h2>Historial de Eventos</h2>
-        <table class="history-table">
-            <thead>
-                <tr>
-                    <th>Tipo</th>
-                    <th>Prize Pool</th>
-                    <th>Ganadores/Bidders</th>
-                    <th>Fecha</th>
-                </tr>
-            </thead>
-            <tbody id="eventHistory"></tbody>
-        </table>
     </div>
 </div>
 
@@ -117,43 +102,31 @@ li.top3 { color:#cd7f32; font-weight:bold; text-shadow:0 0 5px #cd7f32; }
 let web3, contract;
 const contractAddress = "0x5f63d2C0656AC296c77E9d373114008d338e1f6e";
 const contractABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"Rmin","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"auctions","outputs":[{"internalType":"uint128","name":"prizeGarantizado","type":"uint128"},{"internalType":"uint128","name":"prizeActual","type":"uint128"},{"internalType":"uint128","name":"currentBid","type":"uint128"},{"internalType":"uint64","name":"endTime","type":"uint64"},{"internalType":"bool","name":"active","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"balance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"numTickets","type":"uint256"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"cerrarRifa","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"cerrarSubasta","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"creador","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bool","name":"diaria","type":"bool"},{"internalType":"uint256","name":"ticketsEsperados","type":"uint256"}],"name":"crearRifa","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"prizeMin","type":"uint256"}],"name":"crearSubasta","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feeCreador","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeTesoro","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"pujar","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"raffles","outputs":[{"internalType":"uint128","name":"prizeGarantizado","type":"uint128"},{"internalType":"uint128","name":"prizeActual","type":"uint128"},{"internalType":"uint64","name":"endTime","type":"uint64"},{"internalType":"uint8","name":"winnersCount","type":"uint8"},{"internalType":"bool","name":"isDaily","type":"bool"},{"internalType":"bool","name":"closed","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"retirarStake","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"stakeTokens","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"staked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"tickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
-let raffleChart, auctionChart;
 
 async function init() {
     if(window.ethereum){
         web3 = new Web3(window.ethereum);
         await ethereum.request({ method: "eth_requestAccounts" });
         contract = new web3.eth.Contract(contractABI, contractAddress);
-        initCharts();
-        await updateStats();
+        updateStats();
         setInterval(updateStats, 5000);
-        subscribeEvents();
     } else { alert("Instala MetaMask para usar la DApp"); }
 }
 
-// ----------------- Charts -----------------
-function initCharts(){
-    const ctxR = document.getElementById('raffleChart').getContext('2d');
-    raffleChart = new Chart(ctxR, { type:'doughnut', data:{ labels:['Prize Pool','Rmin'], datasets:[{data:[0,0], backgroundColor:['#ffd700','#ff4757']}]}, options:{ responsive:true, plugins:{ legend:{position:'bottom'} } } });
-    const ctxA = document.getElementById('auctionChart').getContext('2d');
-    auctionChart = new Chart(ctxA, { type:'doughnut', data:{ labels:['Prize Pool','Contrato'], datasets:[{data:[0,0], backgroundColor:['#00d2ff','#1e90ff']}]}, options:{ responsive:true, plugins:{ legend:{position:'bottom'} } } });
-}
-
-// ----------------- Funciones Interacción -----------------
-async function buyTickets() {
-    try {
-        const amount = document.getElementById("ticketsAmount").value;
+// ----------------- Funciones -----------------
+async function buyTickets(){
+    try{
+        const numTickets = parseInt(document.getElementById("ticketsAmount").value);
         const accounts = await web3.eth.getAccounts();
-        const price = await contract.methods.calcularPrecioTickets(amount).call();
-        await contract.methods.buyTickets(amount).send({from: accounts[0], value: price.toString()});
+        const price = await contract.methods.calcularPrecioTickets(numTickets).call();
+        await contract.methods.buyTickets(numTickets).send({from: accounts[0], value: price});
         updateStats();
-        launchConfetti();
-        showNotification("¡Tickets comprados!");
-    } catch(e){ console.error(e); alert("Error comprando tickets"); }
+        showNotification("Tickets comprados!");
+    } catch(e){ console.error(e); alert("Error en la compra de tickets"); }
 }
 
-async function createRaffle(daily) {
-    try {
+async function createRaffle(daily){
+    try{
         const accounts = await web3.eth.getAccounts();
         await contract.methods.crearRifa(daily, 100).send({from: accounts[0]});
         updateStats();
@@ -161,8 +134,8 @@ async function createRaffle(daily) {
     } catch(e){ console.error(e); alert("Error creando rifa"); }
 }
 
-async function createAuction() {
-    try {
+async function createAuction(){
+    try{
         const accounts = await web3.eth.getAccounts();
         const prizeMin = web3.utils.toWei("1","ether");
         await contract.methods.crearSubasta(prizeMin).send({from: accounts[0]});
@@ -171,38 +144,37 @@ async function createAuction() {
     } catch(e){ console.error(e); alert("Error creando subasta"); }
 }
 
-async function placeBid() {
-    try {
-        const amount = document.getElementById("bidAmount").value;
+async function placeBid(){
+    try{
+        const bidEth = document.getElementById("bidAmount").value;
+        const bidWei = web3.utils.toWei(bidEth,"ether");
         const accounts = await web3.eth.getAccounts();
-        const bidWei = web3.utils.toWei(amount,"ether");
-        const count = await contract.methods.auctionsCount().call();
-        await contract.methods.pujar(count-1).send({from: accounts[0], value: bidWei});
+        const auctionCount = await contract.methods.auctionsCount().call();
+        await contract.methods.pujar(auctionCount-1).send({from: accounts[0], value: bidWei});
         updateStats();
-        launchConfetti();
-        showNotification("¡Puja realizada!");
+        showNotification("Puja realizada!");
     } catch(e){ console.error(e); alert("Error en la puja"); }
 }
 
-async function stakeTokens() {
-    try {
-        const amount = document.getElementById("stakeAmount").value;
+async function stakeTokens(){
+    try{
+        const stakeEth = document.getElementById("stakeAmount").value;
+        const stakeWei = web3.utils.toWei(stakeEth,"ether");
         const accounts = await web3.eth.getAccounts();
-        const value = web3.utils.toWei(amount,"ether");
-        await contract.methods.stakeTokens().send({from: accounts[0], value: value});
+        await contract.methods.stakeTokens().send({from: accounts[0], value: stakeWei});
         updateStats();
-        showNotification("Tokens stakeados");
+        showNotification("Stake realizado!");
     } catch(e){ console.error(e); alert("Error stakeando"); }
 }
 
-async function withdrawStake() {
-    try {
-        const amount = document.getElementById("withdrawAmount").value;
+async function withdrawStake(){
+    try{
+        const withdrawEth = document.getElementById("withdrawAmount").value;
+        const withdrawWei = web3.utils.toWei(withdrawEth,"ether");
         const accounts = await web3.eth.getAccounts();
-        const value = web3.utils.toWei(amount,"ether");
-        await contract.methods.retirarStake(value).send({from: accounts[0]});
+        await contract.methods.retirarStake(withdrawWei).send({from: accounts[0]});
         updateStats();
-        showNotification("Stake retirado");
+        showNotification("Stake retirado!");
     } catch(e){ console.error(e); alert("Error retirando stake"); }
 }
 
@@ -211,59 +183,38 @@ async function updateStats(){
     try{
         const accounts = await web3.eth.getAccounts();
         const balance = await web3.eth.getBalance(contractAddress);
-        document.getElementById("contractBalance").innerText = web3.utils.fromWei(balance, "ether");
+        document.getElementById("contractBalance").innerText = web3.utils.fromWei(balance,"ether");
 
         const rmin = await contract.methods.Rmin().call();
-        document.getElementById("reserveMin").innerText = web3.utils.fromWei(rmin, "ether");
+        document.getElementById("reserveMin").innerText = web3.utils.fromWei(rmin,"ether");
 
-        const raffleCount = await contract.methods.rafflesCount().call();
+        const raffleCount = await contract.methods.raffles.length ? await contract.methods.raffles.length.call() : 0;
         if(raffleCount>0){
             const r = await contract.methods.raffles(raffleCount-1).call();
-            const winners = await contract.methods.getRaffleWinners(raffleCount-1).call();
-            const prizeActual = web3.utils.fromWei(r.prizeActual,"ether");
-            document.getElementById("activePrizePool").innerText = prizeActual;
-            const progress = Math.min(prizeActual / (prizeActual + web3.utils.fromWei(rmin,"ether")) * 100, 100);
-            document.getElementById("raffleProgress").style.width = progress+"%";
-
-            raffleChart.data.datasets[0].data = [r.prizeActual, rmin];
-            raffleChart.update();
-
+            document.getElementById("activePrizePool").innerText = web3.utils.fromWei(r.prizeActual,"ether");
+            const winners = r.winners;
             const winnersList = document.getElementById("raffleWinners");
-            winnersList.innerHTML = "";
-            winners.forEach((w,i) => {
-                const li = document.createElement("li");
-                li.innerText = w;
-                if(i===0) li.classList.add("top1");
-                else if(i===1) li.classList.add("top2");
-                else if(i===2) li.classList.add("top3");
+            winnersList.innerHTML="";
+            winners.forEach((w,i)=>{
+                const li = document.createElement("li"); li.innerText=w;
+                if(i===0) li.classList.add("top1"); else if(i===1) li.classList.add("top2"); else if(i===2) li.classList.add("top3");
                 winnersList.appendChild(li);
             });
-            updateCountdown("raffleCountdown", r.endTime);
         }
 
-        const auctionCount = await contract.methods.auctionsCount().call();
+        const auctionCount = await contract.methods.auctions.length ? await contract.methods.auctions.length.call() : 0;
         if(auctionCount>0){
             const a = await contract.methods.auctions(auctionCount-1).call();
-            const bidders = await contract.methods.getAuctionBidders(auctionCount-1).call();
             document.getElementById("auctionPrizePool").innerText = web3.utils.fromWei(a.prizeActual,"ether");
             document.getElementById("currentBid").innerText = web3.utils.fromWei(a.currentBid,"ether");
-            const progress = Math.min(web3.utils.fromWei(a.prizeActual,"ether") / (web3.utils.fromWei(balance,"ether")+1) * 100, 100);
-            document.getElementById("auctionProgress").style.width = progress+"%";
-
-            auctionChart.data.datasets[0].data = [a.prizeActual, balance-a.prizeActual];
-            auctionChart.update();
-
+            const bidders = a.lastBidders;
             const biddersList = document.getElementById("topBidders");
-            biddersList.innerHTML = "";
-            bidders.forEach((b,i) => {
-                const li=document.createElement("li");
-                li.innerText=b;
-                if(i===0) li.classList.add("top1");
-                else if(i===1) li.classList.add("top2");
-                else if(i===2) li.classList.add("top3");
+            biddersList.innerHTML="";
+            bidders.forEach((b,i)=>{
+                const li=document.createElement("li"); li.innerText=b;
+                if(i===0) li.classList.add("top1"); else if(i===1) li.classList.add("top2"); else if(i===2) li.classList.add("top3");
                 biddersList.appendChild(li);
             });
-            updateCountdown("auctionCountdown", a.endTime);
         }
 
         const myStake = await contract.methods.staked(accounts[0]).call();
@@ -271,94 +222,21 @@ async function updateStats(){
         const myTickets = await contract.methods.tickets(accounts[0]).call();
         document.getElementById("myTickets").innerText = myTickets;
 
-        const historyEl = document.getElementById("eventHistory");
-        historyEl.innerHTML="";
-        const historyLimit = Math.min(5, raffleCount);
-        for(let i=0;i<historyLimit;i++){
-            const r = await contract.methods.raffles(i).call();
-            const winners = await contract.methods.getRaffleWinners(i).call();
-            const row = `<tr><td>Rifa</td><td>${web3.utils.fromWei(r.prizeActual)}</td><td>${winners.join(', ')}</td><td>${new Date(r.endTime*1000).toLocaleString()}</td></tr>`;
-            historyEl.innerHTML += row;
-        }
-
     } catch(e){ console.error(e); }
 }
 
-// ----------------- Countdown -----------------
-function updateCountdown(elementId, endTime){
-    const countdownEl = document.getElementById(elementId);
-    const now = Math.floor(Date.now()/1000);
-    let diff = endTime - now;
-    if(diff<0) diff=0;
-    const h = String(Math.floor(diff/3600)).padStart(2,'0');
-    const m = String(Math.floor((diff%3600)/60)).padStart(2,'0');
-    const s = String(diff%60).padStart(2,'0');
-    countdownEl.innerText = `${h}:${m}:${s}`;
-    requestAnimationFrame(()=>updateCountdown(elementId,endTime));
-}
-
 // ----------------- Confetti -----------------
-function launchConfetti(){
-    const container = document.getElementById("confettiContainer");
-    for(let i=0;i<50;i++){
-        const conf = document.createElement("div");
-        conf.style.position="absolute";
-        conf.style.width="8px";
-        conf.style.height="8px";
-        conf.style.backgroundColor=`hsl(${Math.random()*360},100%,50%)`;
-        conf.style.left=`${Math.random()*100}%`;
-        conf.style.top=`0%`;
-        conf.style.opacity=1;
-        conf.style.borderRadius="50%";
-        container.appendChild(conf);
-        animateConfetti(conf);
-    }
-}
-
-function animateConfetti(conf){
-    let top = 0;
-    const speed = 2 + Math.random()*3;
-    const rotate = Math.random()*360;
-        const interval = setInterval(()=>{
-        top += speed;
-        conf.style.top = top + "%";
-        conf.style.transform = `rotate(${rotate}deg)`;
-        conf.style.opacity -= 0.02;
-        if(top>100){ conf.remove(); clearInterval(interval); }
-    },16);
-}
+function launchConfetti(){ /* Puedes añadir animación de confetti aquí */ }
 
 // ----------------- Notificaciones -----------------
 function showNotification(msg){
     const el = document.getElementById("notification");
     el.innerText = msg;
-    el.style.opacity = 1;
-    el.style.transform = "translateY(0)";
-    setTimeout(()=>{
-        el.style.opacity = 0;
-        el.style.transform = "translateY(-20px)";
-    },3000);
+    el.style.opacity = 1; el.style.transform="translateY(0)";
+    setTimeout(()=>{ el.style.opacity=0; el.style.transform="translateY(-20px)"; },3000);
 }
 
-// ----------------- Suscripción a eventos en tiempo real -----------------
-function subscribeEvents(){
-    contract.events.allEvents({fromBlock: 'latest'}, (error, event) => {
-        if(error){ console.error(error); return; }
-        console.log("Evento detectado:", event.event);
-        // Actualiza stats automáticamente
-        updateStats();
-        // Si es rifa o subasta, lanzamos confetti y notificación
-        if(event.event.includes("Raffle") || event.event.includes("Auction")){
-            launchConfetti();
-            showNotification("¡Nuevo evento actualizado!");
-        }
-    });
-}
-
-// ----------------- Inicialización -----------------
 window.onload = init;
 </script>
 </body>
 </html>
-
-   
