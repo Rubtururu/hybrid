@@ -51,6 +51,11 @@ h2{margin-top:0}
 <section class="grid">
 <div class="card">
 <h2>🎟️ Rifa Horaria</h2>
+<div class="row">
+<button onclick="buyTickets(1)">Comprar 1 Ticket</button>
+<button onclick="buyTickets(5)">Comprar 5 Tickets</button>
+<button onclick="buyTickets(10)">Comprar 10 Tickets</button>
+</div>
 <div>Pool: <span id="hourlyPool">-</span> BNB</div>
 <div>Finaliza en: <span id="hourlyTimer" class="countdown">-</span></div>
 <input id="hourlyTickets" type="number" placeholder="Tickets" />
@@ -60,6 +65,11 @@ h2{margin-top:0}
 
 <div class="card">
 <h2>🎟️ Rifa Diaria</h2>
+<div class="row">
+<button onclick="buyTickets(1)">Comprar 1 Ticket</button>
+<button onclick="buyTickets(5)">Comprar 5 Tickets</button>
+<button onclick="buyTickets(10)">Comprar 10 Tickets</button>
+</div>
 <div>Pool: <span id="dailyPool">-</span> BNB</div>
 <div>Finaliza en: <span id="dailyTimer" class="countdown">-</span></div>
 <input id="dailyTickets" type="number" placeholder="Tickets" />
@@ -103,8 +113,15 @@ async function connect(){
 }
 
 async function bid(){
- const inc = await contract.methods.AUCTION_INCREMENT().call();
- await contract.methods.bid().send({from:account,value:inc});
+  const a = await contract.methods.auction().call();
+  const inc = await contract.methods.AUCTION_INCREMENT().call();
+  const nextBid = web3.utils.toBN(a.currentBid).add(web3.utils.toBN(inc));
+  await contract.methods.bid().send({ from: account, value: nextBid });
+}
+
+async async function buyTickets(amount){
+  const price = web3.utils.toWei((0.001 * amount).toString());
+  await contract.methods.enterRaffle(amount,false).send({ from: account, value: price });
 }
 
 async function enterRaffle(daily){
@@ -131,7 +148,8 @@ async function loadAuction(){
   try{
    const b=await contract.methods.topBidders(i).call();
    if(b.user==='0x0000000000000000000000000000000000000000')break;
-   const prize=(a.prizePool*rewards[i]/100).toFixed(4);
+   const poolBNB = web3.utils.fromWei(a.prizePool);
+   const prize = (poolBNB * rewards[i] / 100).toFixed(4);
    topBidders.innerHTML+=`<div class='row rank${i+1} fade'>#${i+1} ${b.user.slice(0,6)}...<span>${web3.utils.fromWei(b.amount)} BNB · <span class='badge'>${prize} BNB</span></span></div>`;
   }catch{}
  }
