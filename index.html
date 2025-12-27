@@ -2,21 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>SmartStakingBNB PRO</title>
+<title>SmartStakingBNB PRO Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 body{margin:0;font-family:Inter,Arial;background:#0b0f14;color:#e5e7eb}
 header{padding:20px;background:#111827;display:flex;justify-content:space-between;align-items:center}
-button{background:#2563eb;border:none;color:white;padding:10px 16px;border-radius:8px;cursor:pointer}
+button{background:#2563eb;border:none;color:white;padding:10px 16px;border-radius:10px;cursor:pointer;margin-top:6px}
+button.secondary{background:#374151}
 button:disabled{opacity:.5}
 section{padding:20px}
-.card{background:#111827;border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 0 20px rgba(0,0,0,.4)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.card{background:#111827;border-radius:18px;padding:20px;margin-bottom:20px;box-shadow:0 0 20px rgba(0,0,0,.45)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
 h2{margin-top:0}
-.list{max-height:220px;overflow:auto}
-.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1f2937}
+.list{max-height:260px;overflow:auto}
+.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1f2937;font-size:14px}
 .rank1{color:#facc15}.rank2{color:#d1d5db}.rank3{color:#c084fc}
+.badge{background:#1f2937;border-radius:8px;padding:2px 8px;font-size:12px}
 .countdown{font-weight:bold}
+.fade{animation:fade .6s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 <body>
@@ -30,27 +35,22 @@ h2{margin-top:0}
 
 <section class="grid">
 <div class="card">
-<h2>Subasta Activa</h2>
-<div>Pool: <span id="auctionPool">-</span> BNB</div>
-<div>Puja actual: <span id="auctionBid">-</span> BNB</div>
+<h2>🔥 Subasta Activa</h2>
+<div>Pool: <b><span id="auctionPool">-</span> BNB</b></div>
+<div>Puja actual: <b><span id="auctionBid">-</span> BNB</b></div>
 <div>Finaliza en: <span id="auctionTimer" class="countdown">-</span></div>
 <button onclick="bid()">Pujar +0.001 BNB</button>
 </div>
 
 <div class="card">
-<h2>Top 10 Pujadores</h2>
+<h2>🏆 Top 10 Pujadores</h2>
 <div id="topBidders" class="list"></div>
-</div>
-
-<div class="card">
-<h2>Última Subasta</h2>
-<div id="lastAuction" class="list"></div>
 </div>
 </section>
 
 <section class="grid">
 <div class="card">
-<h2>Rifa Horaria</h2>
+<h2>🎟️ Rifa Horaria</h2>
 <div>Pool: <span id="hourlyPool">-</span> BNB</div>
 <div>Finaliza en: <span id="hourlyTimer" class="countdown">-</span></div>
 <input id="hourlyTickets" type="number" placeholder="Tickets" />
@@ -59,7 +59,7 @@ h2{margin-top:0}
 </div>
 
 <div class="card">
-<h2>Rifa Diaria</h2>
+<h2>🎟️ Rifa Diaria</h2>
 <div>Pool: <span id="dailyPool">-</span> BNB</div>
 <div>Finaliza en: <span id="dailyTimer" class="countdown">-</span></div>
 <input id="dailyTickets" type="number" placeholder="Tickets" />
@@ -70,25 +70,20 @@ h2{margin-top:0}
 
 <section class="grid">
 <div class="card">
-<h2>Ganadores Rifas</h2>
-<div id="raffleWinners" class="list"></div>
+<h2>👤 Mi Perfil</h2>
+<div>Premios totales: <b><span id="myRewards">-</span> BNB</b></div>
+<div>Subastas ganadas: <span id="myAuctions">-</span></div>
+<div>Rifas ganadas: <span id="myRaffles">-</span></div>
+<button class="secondary" onclick="withdrawUserRewards()">Withdraw (Owner)</button>
 </div>
 
 <div class="card">
-<h2>Estadísticas Globales</h2>
+<h2>📊 Estadísticas Globales</h2>
 <div>Total pujas: <span id="totalBids">-</span></div>
 <div>Total subastas: <span id="totalAuctions">-</span></div>
 <div>Total rifas: <span id="totalRaffles">-</span></div>
 <div>Total BNB repartido: <span id="totalBNB">-</span></div>
-</div>
-</section>
-
-<section class="grid">
-<div class="card">
-<h2>Mi Perfil</h2>
-<div>Premios totales: <span id="myRewards">-</span> BNB</div>
-<div>Subastas ganadas: <span id="myAuctions">-</span></div>
-<div>Rifas ganadas: <span id="myRaffles">-</span></div>
+<canvas id="statsChart" height="120"></canvas>
 </div>
 </section>
 
@@ -101,16 +96,15 @@ async function connect(){
  if(!window.ethereum) return alert('Instala Metamask');
  web3 = new Web3(window.ethereum);
  await ethereum.request({method:'eth_requestAccounts'});
- const accs = await web3.eth.getAccounts();
- account = accs[0];
- document.getElementById('wallet').innerText = account;
+ account = (await web3.eth.getAccounts())[0];
+ wallet.innerText = account;
  contract = new web3.eth.Contract(ABI, CONTRACT);
- loadAll();
- listenEvents();
+ loadAll(); listenEvents();
 }
 
 async function bid(){
- await contract.methods.bid().send({from:account,value:web3.utils.toWei('0.001')});
+ const inc = await contract.methods.AUCTION_INCREMENT().call();
+ await contract.methods.bid().send({from:account,value:inc});
 }
 
 async function enterRaffle(daily){
@@ -118,8 +112,12 @@ async function enterRaffle(daily){
  await contract.methods.enterRaffle(t,daily).send({from:account,value:web3.utils.toWei((0.001*t).toString())});
 }
 
+async function withdrawUserRewards(){
+ await contract.methods.withdrawUserRewards().send({from:account});
+}
+
 async function loadAll(){
- loadAuction();loadStats();loadProfile();loadRaffles();
+ loadAuction();loadRaffles();loadProfile();loadStats();
 }
 
 async function loadAuction(){
@@ -128,10 +126,13 @@ async function loadAuction(){
  auctionBid.innerText = web3.utils.fromWei(a.currentBid);
  timer(a.endTime, auctionTimer);
  topBidders.innerHTML='';
+ const rewards=[25,18,13,10,8,6,5,4,3,2];
  for(let i=0;i<10;i++){
-  try{const b=await contract.methods.topBidders(i).call();
+  try{
+   const b=await contract.methods.topBidders(i).call();
    if(b.user==='0x0000000000000000000000000000000000000000')break;
-   topBidders.innerHTML+=`<div class='row rank${i+1}'>#${i+1} ${b.user.slice(0,6)}... ${web3.utils.fromWei(b.amount)} BNB</div>`;
+   const prize=(a.prizePool*rewards[i]/100).toFixed(4);
+   topBidders.innerHTML+=`<div class='row rank${i+1} fade'>#${i+1} ${b.user.slice(0,6)}...<span>${web3.utils.fromWei(b.amount)} BNB · <span class='badge'>${prize} BNB</span></span></div>`;
   }catch{}
  }
 }
@@ -146,10 +147,12 @@ async function loadRaffles(){
 }
 
 async function loadStats(){
- totalBids.innerText=await contract.methods.totalBids().call();
- totalAuctions.innerText=await contract.methods.totalAuctions().call();
- totalRaffles.innerText=await contract.methods.totalRaffles().call();
- totalBNB.innerText=web3.utils.fromWei(await contract.methods.totalBNBRepartido().call());
+ const bids=await contract.methods.totalBids().call();
+ const auctions=await contract.methods.totalAuctions().call();
+ const raffles=await contract.methods.totalRaffles().call();
+ const bnb=web3.utils.fromWei(await contract.methods.totalBNBRepartido().call());
+ totalBids.innerText=bids; totalAuctions.innerText=auctions; totalRaffles.innerText=raffles; totalBNB.innerText=bnb;
+ new Chart(statsChart,{type:'bar',data:{labels:['Bids','Auctions','Raffles'],datasets:[{data:[bids,auctions,raffles]}]}});
 }
 
 async function loadProfile(){
