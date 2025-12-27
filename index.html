@@ -1,218 +1,277 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hybrid Raffle & Auction BSC</title>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.9.12/dist/web3.min.js"></script>
 <style>
-    /* ---------------- Global ---------------- */
-    body { font-family: 'Poppins', sans-serif; background: linear-gradient(to right, #1e3c72, #2a5298); color: #fff; margin:0; padding:0;}
-    h1,h2,h3 { margin: 0; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    button { cursor:pointer; border:none; border-radius:12px; padding:10px 20px; font-weight:bold; transition:all 0.2s; }
-    button:hover { transform: scale(1.05); }
-
-    /* ---------------- Header ---------------- */
-    header { display:flex; justify-content: space-between; align-items:center; padding:20px; background: rgba(0,0,0,0.3); border-radius: 0 0 20px 20px; margin-bottom:20px; }
-    .wallet-btn { background: #ff9800; color:#000; }
-
-    /* ---------------- Sections ---------------- */
-    .card { background: rgba(255,255,255,0.1); padding:20px; border-radius:20px; margin-bottom:20px; box-shadow: 0 8px 20px rgba(0,0,0,0.3);}
-    .card h2 { margin-bottom:10px; }
-    .section { display:flex; flex-wrap: wrap; gap:20px; }
-
-    /* ---------------- Prize & Countdown ---------------- */
-    .prize { font-size:1.2em; font-weight:bold; margin:10px 0; }
-    .countdown { font-size:1.1em; color:#ffeb3b; margin-bottom:10px; }
-
-    /* ---------------- Inputs ---------------- */
-    input[type=number] { padding:8px; border-radius:8px; border:none; width:60px; margin-right:10px; }
-
-    /* ---------------- Tables ---------------- */
-    table { width:100%; border-collapse: collapse; margin-top:10px;}
-    th,td { padding:8px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); }
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    margin:0; padding:0;
+}
+header {
+    text-align:center;
+    padding:25px;
+    background: rgba(0,0,0,0.6);
+    font-size:2em;
+    font-weight:bold;
+    letter-spacing:1px;
+    text-shadow: 1px 1px 5px #000;
+}
+.container {
+    max-width:1300px;
+    margin:20px auto;
+    padding:20px;
+    background: rgba(0,0,0,0.5);
+    border-radius:15px;
+}
+.section {
+    margin-bottom:50px;
+}
+h2 {
+    border-bottom:2px solid #fff;
+    padding-bottom:5px;
+    margin-bottom:15px;
+}
+.button {
+    background: #ff6f61;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    color:#fff;
+    cursor:pointer;
+    margin:5px;
+    transition:0.3s;
+    font-weight:bold;
+}
+.button:hover { background: #ff3b2f; transform: scale(1.05);}
+input[type=number] {
+    padding:6px;
+    width:100px;
+    border-radius:5px;
+    border:none;
+    margin-right:10px;
+}
+.card {
+    background: rgba(255,255,255,0.05);
+    padding:20px;
+    border-radius:15px;
+    margin:10px 0;
+    transition:0.3s;
+}
+.card:hover { background: rgba(255,255,255,0.1); }
+.flex { display:flex; flex-wrap:wrap; }
+.flex > div { flex:1; min-width:250px; margin:5px; }
+.stat {
+    background: rgba(255,255,255,0.1);
+    padding:15px;
+    border-radius:12px;
+    text-align:center;
+    margin:5px;
+    font-weight:bold;
+}
+.progress-bar {
+    background: rgba(255,255,255,0.2);
+    border-radius:8px;
+    overflow:hidden;
+    margin-top:10px;
+    height:20px;
+}
+.progress-bar-inner {
+    background: #ff6f61;
+    height:100%;
+    width:0%;
+    transition:width 0.5s ease;
+}
+.countdown {
+    font-weight:bold;
+    color:#ffd700;
+    font-size:1.2em;
+    margin-top:5px;
+}
 </style>
 </head>
 <body>
+<header>Hybrid Raffle & Auction BSC</header>
 <div class="container">
-
-    <header>
-        <h1>Hybrid Raffle & Auction BSC</h1>
-        <button class="wallet-btn" id="connectWallet">Conectar Wallet</button>
-    </header>
-
-    <!-- ---------------- Rifas ---------------- -->
-    <div class="card">
-        <h2>Rifa Horaria</h2>
-        <div class="prize">Prize Pool: <span id="hourlyPrize">0</span> BNB</div>
-        <div class="countdown">Tiempo restante: <span id="hourlyCountdown">00:00:00</span></div>
-        <input type="number" id="hourlyTickets" value="1" min="1">
-        <button id="buyHourly">Comprar Tickets</button>
-        <h3>Participantes:</h3>
-        <ul id="hourlyParticipants"></ul>
+    <div class="section" id="wallet-section">
+        <h2>Wallet</h2>
+        <p id="wallet-address">No conectado</p>
+        <button class="button" onclick="connectWallet()">Conectar Wallet</button>
     </div>
 
-    <div class="card">
-        <h2>Rifa Diaria</h2>
-        <div class="prize">Prize Pool: <span id="dailyPrize">0</span> BNB</div>
-        <div class="countdown">Tiempo restante: <span id="dailyCountdown">00:00:00</span></div>
-        <input type="number" id="dailyTickets" value="1" min="1">
-        <button id="buyDaily">Comprar Tickets</button>
-        <h3>Participantes:</h3>
-        <ul id="dailyParticipants"></ul>
+    <div class="section" id="stats-section">
+        <h2>Mis Estadísticas</h2>
+        <div class="flex">
+            <div class="stat">Tickets: <span id="my-tickets">0</span></div>
+            <div class="stat">Staked: <span id="my-staked">0</span> BNB</div>
+            <div class="stat">Pendiente Retiro: <span id="my-pending">0</span> BNB</div>
+        </div>
+        <button class="button" onclick="withdraw()">Retirar Ganancias</button>
     </div>
 
-    <!-- ---------------- Subasta ---------------- -->
-    <div class="card">
+    <div class="section" id="raffles-section">
+        <h2>Rifas Activas</h2>
+        <div id="raffles-list"></div>
+    </div>
+
+    <div class="section" id="auction-section">
         <h2>Subasta Activa</h2>
-        <div class="prize">Prize Pool: <span id="auctionPrize">0</span> BNB</div>
-        <div class="countdown">Tiempo restante: <span id="auctionCountdown">00:00:00</span></div>
-        <input type="number" id="bidAmount" value="1" min="0.01" step="0.01">
-        <button id="placeBid">Pujar</button>
-        <h3>Últimos 10 pujadores:</h3>
-        <ul id="lastBidders"></ul>
+        <div id="auction-info"></div>
+        <button class="button" onclick="bid()">Pujar</button>
+        <div class="progress-bar">
+            <div id="auction-progress" class="progress-bar-inner"></div>
+        </div>
     </div>
 
-    <!-- ---------------- Staking ---------------- -->
-    <div class="card">
+    <div class="section" id="staking-section">
         <h2>Staking</h2>
-        <div>Tu Stake: <span id="userStake">0</span> BNB</div>
-        <input type="number" id="stakeAmount" value="0.1" min="0.01" step="0.01">
-        <button id="stakeBtn">Stake</button>
-        <button id="withdrawBtn">Retirar</button>
+        <input type="number" id="stake-amount" placeholder="BNB" step="0.001">
+        <button class="button" onclick="stake()">Stake</button>
+        <button class="button" onclick="withdrawStake()">Retirar Stake</button>
     </div>
-
-    <!-- ---------------- Estadísticas ---------------- -->
-    <div class="card">
-        <h2>Estadísticas</h2>
-        <p>Balance del contrato: <span id="contractBalance">0</span> BNB</p>
-        <p>Total tickets comprados: <span id="totalTickets">0</span></p>
-    </div>
-
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
 <script>
 let web3;
+let account;
+const contractAddress = "0x7407D7E91f2e341457Bf1C791F0a37fB144aeddc";
+const abi = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"auctions","outputs":[{"internalType":"uint128","name":"prizeGuaranteed","type":"uint128"},{"internalType":"uint128","name":"prizeCurrent","type":"uint128"},{"internalType":"uint128","name":"currentBid","type":"uint128"},{"internalType":"uint64","name":"endTime","type":"uint64"},{"internalType":"bool","name":"active","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"auctionsCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"balance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"bid","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint8","name":"numTickets","type":"uint8"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"closeAuction","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"closeRaffle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feeOwnerPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getAuction","outputs":[{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint64","name":"","type":"uint64"},{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getRaffle","outputs":[{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint64","name":"","type":"uint64"},{"internalType":"uint8","name":"","type":"uint8"},{"internalType":"bool","name":"","type":"bool"},{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"pendingWithdrawals","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"raffles","outputs":[{"internalType":"uint128","name":"prizeGuaranteed","type":"uint128"},{"internalType":"uint128","name":"prizeCurrent","type":"uint128"},{"internalType":"uint64","name":"endTime","type":"uint64"},{"internalType":"uint8","name":"winnersCount","type":"uint8"},{"internalType":"bool","name":"isDaily","type":"bool"},{"internalType":"bool","name":"closed","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rafflesCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"reserveMinPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"stakeTokens","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"staked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"tickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawStake","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 let contract;
-let accounts = [];
+let rafInterval, aucInterval;
 
-const contractAddress = "0xC2DACb77E617cacfC8d6640274693c57f38e07bf";
-const abi = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"auctions","outputs":[{"internalType":"uint128","name":"prizeGuaranteed","type":"uint128"},{"internalType":"uint128","name":"prizeCurrent","type":"uint128"},{"internalType":"uint128","name":"currentBid","type":"uint128"},{"internalType":"uint64","name":"endTime","type":"uint64"},{"internalType":"bool","name":"active","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"auctionsCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"balance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"bid","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"numTickets","type":"uint256"}],"name":"buyTickets","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"closeAuction","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"closeRaffle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feeOwnerPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getAuction","outputs":[{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint64","name":"","type":"uint64"},{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getRaffle","outputs":[{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint128","name":"","type":"uint128"},{"internalType":"uint64","name":"","type":"uint64"},{"internalType":"uint8","name":"","type":"uint8"},{"internalType":"bool","name":"","type":"bool"},{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"nonce","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"raffles","outputs":[{"internalType":"uint128","name":"prizeGuaranteed","type":"uint128"},{"internalType":"uint128","name":"prizeCurrent","type":"uint128"},{"internalType":"uint64","name":"endTime","type":"uint64"},{"internalType":"uint8","name":"winnersCount","type":"uint8"},{"internalType":"bool","name":"isDaily","type":"bool"},{"internalType":"bool","name":"closed","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rafflesCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"reserveMinPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"stakeTokens","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"staked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"tickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawStake","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-
-// -------- Conectar Wallet --------
-document.getElementById("connectWallet").onclick = async () => {
+// ----------------- Conectar Wallet -----------------
+async function connectWallet(){
     if(window.ethereum){
-        await window.ethereum.request({ method: "eth_requestAccounts" });
         web3 = new Web3(window.ethereum);
-        accounts = await web3.eth.getAccounts();
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const accounts = await web3.eth.getAccounts();
+        account = accounts[0];
+        document.getElementById("wallet-address").innerText = account;
         contract = new web3.eth.Contract(abi, contractAddress);
-        alert("Wallet conectada: " + accounts[0]);
-        loadAllData();
-    } else alert("Instala MetaMask o TrustWallet!");
-};
-
-// -------- Funciones --------
-async function loadAllData(){
-    loadRaffle(true);   // diaria
-    loadRaffle(false);  // horaria
-    loadAuction();
-    loadStats();
+        updateStats();
+        updateRaffles();
+        updateAuction();
+        rafInterval = setInterval(updateRaffles,5000);
+        aucInterval = setInterval(updateAuction,2000);
+    } else alert("Instala Metamask");
 }
 
-async function loadRaffle(isDaily){
-    let count = await contract.methods.rafflesCount().call();
-    for(let i=count-1;i>=0;i--){
-        let r = await contract.methods.getRaffle(i).call();
-        if(r[4] == isDaily && !r[7]){
-            const prize = web3.utils.fromWei(r[1].toString(), "ether");
-            const endTime = parseInt(r[2]);
-            const participants = r[5];
-            if(isDaily){
-                document.getElementById("dailyPrize").innerText = prize;
-                document.getElementById("dailyParticipants").innerHTML = participants.map(a => "<li>"+a+"</li>").join("");
-                startCountdown(endTime,"dailyCountdown");
-            } else {
-                document.getElementById("hourlyPrize").innerText = prize;
-                document.getElementById("hourlyParticipants").innerHTML = participants.map(a => "<li>"+a+"</li>").join("");
-                startCountdown(endTime,"hourlyCountdown");
-            }
-            break;
-        }
+// ----------------- Rifas -----------------
+async function updateRaffles(){
+    const rafflesCount = await contract.methods.rafflesCount().call();
+    const container = document.getElementById("raffles-list");
+    container.innerHTML="";
+    for(let i=0;i<rafflesCount;i++){
+        const r = await contract.methods.getRaffle(i).call();
+        const endTime = new Date(r[2]*1000);
+        const now = Date.now();
+        const remaining = Math.max(0,endTime-now);
+        const minutes = Math.floor((remaining/1000/60)%60);
+        const seconds = Math.floor((remaining/1000)%60);
+        const card = document.createElement("div");
+        card.className="card";
+        card.innerHTML = `<b>${r[4] ? "Diaria" : "Horaria"}</b><br>
+                          Prize Pool: ${web3.utils.fromWei(r[1])} BNB<br>
+                          Ganadores: ${r[6].length}/${r[3]}<br>
+                          <span class="countdown">Fin en: ${minutes}m ${seconds}s</span>`;
+        const btn1 = document.createElement("button");
+        btn1.className="button";
+        btn1.innerText="1 Ticket (0.001 BNB)";
+        btn1.onclick=()=>buyTickets(1);
+        const btn5 = document.createElement("button");
+        btn5.className="button";
+        btn5.innerText="5 Tickets (0.004 BNB)";
+        btn5.onclick=()=>buyTickets(5);
+        const btn10 = document.createElement("button");
+        btn10.className="button";
+        btn10.innerText="10 Tickets (0.007 BNB)";
+        btn10.onclick=()=>buyTickets(10);
+        card.appendChild(btn1);
+        card.appendChild(btn5);
+        card.appendChild(btn10);
+        container.appendChild(card);
     }
 }
 
-async function loadAuction(){
-    let count = await contract.methods.auctionsCount().call();
+async function buyTickets(num){
+    let value;
+    if(num==1) value = web3.utils.toWei("0.001","ether");
+    else if(num==5) value = web3.utils.toWei("0.004","ether");
+    else value = web3.utils.toWei("0.007","ether");
+    await contract.methods.buyTickets(num).send({from:account,value:value});
+    updateStats();
+    updateRaffles();
+}
+
+// ----------------- Subasta -----------------
+async function updateAuction(){
+    const count = await contract.methods.auctionsCount().call();
     if(count==0) return;
-    let a = await contract.methods.getAuction(count-1).call();
-    if(a[5]){ // activa
-        const prize = web3.utils.fromWei(a[1].toString(),"ether");
-        const endTime = parseInt(a[3]);
-        const bidders = a[4];
-        document.getElementById("auctionPrize").innerText = prize;
-        document.getElementById("lastBidders").innerHTML = bidders.map(b=>"<li>"+b+"</li>").join("");
-        startCountdown(endTime,"auctionCountdown");
-    }
+    const a = await contract.methods.getAuction(count-1).call();
+    const endTime = new Date(a[3]*1000);
+    const now = Date.now();
+    const remaining = Math.max(0,endTime-now);
+    const minutes = Math.floor((remaining/1000/60)%60);
+    const seconds = Math.floor((remaining/1000)%60);
+    const container = document.getElementById("auction-info");
+    container.innerHTML = `<b>Prize Pool:</b> ${web3.utils.fromWei(a[1])} BNB<br>
+                           <b>Current Bid:</b> ${web3.utils.fromWei(a[2])} BNB<br>
+                           <b>Fin en:</b> ${minutes}m ${seconds}s<br>
+                           <b>Top Pujadores:</b> ${a[4].join(", ")}`;
+
+    // actualizar barra de progreso
+    const progress = document.getElementById("auction-progress");
+    const duration = 60*60*1000; // max duration
+    progress.style.width = `${Math.min(100, (1 - remaining/duration)*100)}%`;
 }
 
-async function loadStats(){
-    let bal = await web3.eth.getBalance(contractAddress);
-    document.getElementById("contractBalance").innerText = web3.utils.fromWei(bal.toString(),"ether");
-    // Total tickets
-    // opcional: sumar manualmente si quieres
+async function bid(){
+    const aCount = await contract.methods.auctionsCount().call();
+    if(aCount==0) return alert("No hay subasta");
+    const a = await contract.methods.getAuction(aCount-1).call();
+    const lastBid = web3.utils.fromWei(a[2],"ether");
+    let value = parseFloat(lastBid)==0?0.001:lastBid*1.1;
+    value = value.toFixed(6);
+    await contract.methods.bid().send({from:account,value:web3.utils.toWei(value.toString(),"ether")});
+    updateStats();
+    updateAuction();
 }
 
-// -------- Countdown --------
-function startCountdown(endTime,elemId){
-    function update(){
-        const now = Math.floor(Date.now()/1000);
-        let diff = endTime - now;
-        if(diff<0) diff=0;
-        const h = Math.floor(diff/3600);
-        const m = Math.floor((diff%3600)/60);
-        const s = diff%60;
-        document.getElementById(elemId).innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        if(diff>0) requestAnimationFrame(update);
-    }
-    update();
+// ----------------- Staking -----------------
+async function stake(){
+    const val = document.getElementById("stake-amount").value;
+    if(!val || parseFloat(val)<=0) return alert("Ingresa cantidad valida");
+    await contract.methods.stakeTokens().send({from:account,value:web3.utils.toWei(val,"ether")});
+    updateStats();
 }
 
-// -------- Comprar Tickets --------
-document.getElementById("buyHourly").onclick = async () => { await buyTickets(false); }
-document.getElementById("buyDaily").onclick = async () => { await buyTickets(true); }
-
-async function buyTickets(isDaily){
-    let num = isDaily ? parseInt(document.getElementById("dailyTickets").value) : parseInt(document.getElementById("hourlyTickets").value);
-    let priceWei;
-    if(num==1) priceWei = web3.utils.toWei("1","ether");
-    else if(num==5) priceWei = web3.utils.toWei("4","ether");
-    else if(num>=10) priceWei = web3.utils.toWei("7","ether");
-    else priceWei = web3.utils.toWei(num.toString(),"ether");
-    await contract.methods.buyTickets(num).send({from:accounts[0], value:priceWei});
-    loadAllData();
+async function withdrawStake(){
+    const val = document.getElementById("stake-amount").value;
+    if(!val || parseFloat(val)<=0) return alert("Ingresa cantidad valida");
+    await contract.methods.withdrawStake(web3.utils.toWei(val,"ether")).send({from:account});
+    updateStats();
 }
 
-// -------- Pujar --------
-document.getElementById("placeBid").onclick = async () => {
-    let val = parseFloat(document.getElementById("bidAmount").value);
-    let valueWei = web3.utils.toWei(val.toString(),"ether");
-    await contract.methods.bid().send({from:accounts[0], value:valueWei});
-    loadAllData();
+// ----------------- Retiro -----------------
+async function withdraw(){
+    await contract.methods.withdraw().send({from:account});
+    updateStats();
 }
 
-// -------- Stake / Withdraw --------
-document.getElementById("stakeBtn").onclick = async ()=>{
-    let val = parseFloat(document.getElementById("stakeAmount").value);
-    await contract.methods.stakeTokens().send({from:accounts[0], value:web3.utils.toWei(val.toString(),"ether")});
-    loadAllData();
+// ----------------- Estadísticas -----------------
+async function updateStats(){
+    if(!account) return;
+    const ticketsCount = await contract.methods.tickets(account).call();
+    const stakedAmt = await contract.methods.staked(account).call();
+    const pending = await contract.methods.pendingWithdrawals(account).call();
+    document.getElementById("my-tickets").innerText=ticketsCount;
+    document.getElementById("my-staked").innerText=web3.utils.fromWei(stakedAmt);
+    document.getElementById("my-pending").innerText=web3.utils.fromWei(pending);
 }
-document.getElementById("withdrawBtn").onclick = async ()=>{
-    let val = parseFloat(document.getElementById("stakeAmount").value);
-    await contract.methods.withdrawStake(web3.utils.toWei(val.toString(),"ether")).send({from:accounts[0]});
-    loadAllData();
-}
-
 </script>
 </body>
 </html>
