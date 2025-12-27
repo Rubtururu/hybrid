@@ -2,32 +2,35 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Hybrid Raffle & Auction Dashboard</title>
+<title>Hybrid Raffle & Auction Premium</title>
 <script src="https://cdn.jsdelivr.net/npm/web3@1.9.0/dist/web3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-body { font-family:'Inter',sans-serif; background:#0f0f1a; color:#fff; margin:0; padding:0; }
-header { background:#1e1e2f; padding:1rem; text-align:center; font-size:1.8rem; font-weight:bold; box-shadow:0 2px 8px rgba(0,0,0,0.7);}
+/* --- Estilos globales --- */
+body { font-family:'Inter',sans-serif; background:#0a0a15; color:#fff; margin:0; padding:0;}
+header { background:#1b1b2f; padding:1rem; text-align:center; font-size:2rem; font-weight:bold; box-shadow:0 2px 12px rgba(0,0,0,0.8);}
 .container { max-width:1400px; margin:2rem auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(350px,1fr)); gap:2rem; }
-.card { background:#1e1e2f; border-radius:1rem; padding:1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.5); position:relative; transition: transform 0.3s, box-shadow 0.3s; }
-.card:hover { transform:translateY(-7px); box-shadow:0 6px 25px rgba(0,0,0,0.7); }
-button { background:#4b7bec; color:white; border:none; padding:0.7rem 1.2rem; border-radius:0.5rem; cursor:pointer; transition:0.2s; margin-top:0.5rem; }
-button:hover { background:#3867d6; }
+.card { background:#1e1e2f; border-radius:1rem; padding:1.5rem; box-shadow:0 6px 25px rgba(0,0,0,0.6); position:relative; transition: transform 0.3s, box-shadow 0.3s; }
+.card:hover { transform:translateY(-7px); box-shadow:0 8px 30px rgba(0,0,0,0.8); }
+button { background:linear-gradient(135deg,#4b7bec,#3867d6); color:white; border:none; padding:0.7rem 1.2rem; border-radius:0.5rem; cursor:pointer; transition:0.2s; margin-top:0.5rem; font-weight:bold; }
+button:hover { background:linear-gradient(135deg,#3867d6,#4b7bec);}
 input[type="number"] { padding:0.5rem; border-radius:0.4rem; border:1px solid #555; width:80px; margin-right:0.5rem; background:#2a2a3d; color:white; }
-h2 { margin-top:0; font-size:1.3rem; color:#fff;}
+h2 { margin-top:0; font-size:1.4rem; color:#fff; text-align:center; text-shadow:0 0 5px #4b7bec; }
 .stats { display:flex; flex-direction:column; gap:0.5rem; margin-top:1rem; font-size:0.9rem;}
-.stats span { font-weight:bold; color:#aaa;}
-.countdown { font-weight:bold; font-size:1.2rem; color:#4b7bec; margin-top:0.5rem; }
-ul { list-style:none; padding-left:0; max-height:100px; overflow-y:auto; }
+.stats span { font-weight:bold; color:#aaa; }
+.countdown { font-weight:bold; font-size:1.2rem; color:#ffd700; margin-top:0.5rem; }
+ul { list-style:none; padding-left:0; max-height:120px; overflow-y:auto; }
 li { padding:0.2rem 0; }
 .confetti { position:absolute; width:100%; height:100%; pointer-events:none; top:0; left:0; }
-.history-table { width:100%; border-collapse: collapse; margin-top:1rem; }
-.history-table th, .history-table td { border:1px solid #333; padding:0.4rem 0.8rem; text-align:center; font-size:0.9rem; }
+.progress-bar { background:#2a2a3d; border-radius:0.5rem; height:15px; width:100%; margin-top:0.5rem; overflow:hidden; }
+.progress-fill { background:#4b7bec; height:100%; width:0%; transition:width 0.5s; border-radius:0.5rem;}
+.history-table { width:100%; border-collapse: collapse; margin-top:1rem; font-size:0.85rem; }
+.history-table th, .history-table td { border:1px solid #333; padding:0.4rem 0.8rem; text-align:center; }
 .history-table th { background:#333; }
 </style>
 </head>
 <body>
-<header>Hybrid Raffle & Auction Dashboard</header>
+<header>Hybrid Raffle & Auction Premium</header>
 
 <div class="container">
     <!-- Rifas -->
@@ -38,13 +41,14 @@ li { padding:0.2rem 0; }
         <button onclick="buyTickets()">Comprar</button>
         <div class="stats">
             <span>Balance contrato: <span id="contractBalance">0</span> BNB</span>
-            <span>Rmin: <span id="reserveMin">0</span> BNB</span>
+            <span>Reserva mínima: <span id="reserveMin">0</span> BNB</span>
             <span>Prize pool activo: <span id="activePrizePool">0</span> BNB</span>
             <span>Rifa countdown: <span class="countdown" id="raffleCountdown">00:00:00</span></span>
         </div>
-        <canvas id="raffleChart" height="150"></canvas>
+        <div class="progress-bar"><div class="progress-fill" id="raffleProgress"></div></div>
         <p>Últimos ganadores:</p>
         <ul id="raffleWinners"></ul>
+        <canvas id="raffleChart" height="150"></canvas>
     </div>
 
     <!-- Subastas -->
@@ -58,9 +62,10 @@ li { padding:0.2rem 0; }
             <span>Current bid: <span id="currentBid">0</span> BNB</span>
             <span>Subasta countdown: <span class="countdown" id="auctionCountdown">00:00:00</span></span>
         </div>
-        <canvas id="auctionChart" height="150"></canvas>
+        <div class="progress-bar"><div class="progress-fill" id="auctionProgress"></div></div>
         <p>Top 10 últimos bidders:</p>
         <ul id="topBidders"></ul>
+        <canvas id="auctionChart" height="150"></canvas>
     </div>
 
     <!-- Staking -->
@@ -91,7 +96,7 @@ li { padding:0.2rem 0; }
                 <tr>
                     <th>Tipo</th>
                     <th>Prize Pool</th>
-                    <th>Ganadores</th>
+                    <th>Ganadores/Bidders</th>
                     <th>Fecha</th>
                 </tr>
             </thead>
@@ -115,120 +120,150 @@ async function init() {
         await ethereum.request({ method: "eth_requestAccounts" });
         contract = new web3.eth.Contract(contractABI, contractAddress);
         initCharts();
-        updateStats();
+        await updateStats();
         setInterval(updateStats, 5000);
     } else { alert("Instala MetaMask para usar la DApp"); }
 }
 
 function initCharts(){
     const ctxR = document.getElementById('raffleChart').getContext('2d');
-    raffleChart = new Chart(ctxR, { type:'doughnut', data:{ labels:['Prize Pool','Rmin'], datasets:[{data:[0,0], backgroundColor:['#4b7bec','#ff4757']}]}, options:{ responsive:true, plugins:{ legend:{position:'bottom'} } } });
+    raffleChart = new Chart(ctxR, { type:'doughnut', data:{ labels:['Prize Pool','Rmin'], datasets:[{data:[0,0], backgroundColor:['#ffd700','#ff4757']}]}, options:{ responsive:true, plugins:{ legend:{position:'bottom'} } } });
     const ctxA = document.getElementById('auctionChart').getContext('2d');
-    auctionChart = new Chart(ctxA, { type:'doughnut', data:{ labels:['Prize Pool','Contract'], datasets:[{data:[0,0], backgroundColor:['#ffa502','#1e90ff']}]}, options:{ responsive:true, plugins:{ legend:{position:'bottom'} } } });
+    auctionChart = new Chart(ctxA, { type:'doughnut', data:{ labels:['Prize Pool','Contrato'], datasets:[{data:[0,0], backgroundColor:['#00d2ff','#1e90ff']}]}, options:{ responsive:true, plugins:{ legend:{position:'bottom'} } } });
 }
 
-// ---------- Interacciones ----------
+// ---------- Funciones ----------
 async function buyTickets() {
-    const amount = document.getElementById("ticketsAmount").value;
-    const accounts = await web3.eth.getAccounts();
-    const price = await contract.methods.calcularPrecioTickets(amount).call();
-    await contract.methods.buyTickets(amount).send({from: accounts[0], value: price.toString()});
-    updateStats();
+    try {
+        const amount = document.getElementById("ticketsAmount").value;
+        const accounts = await web3.eth.getAccounts();
+        const price = await contract.methods.calcularPrecioTickets(amount).call();
+        await contract.methods.buyTickets(amount).send({from: accounts[0], value: price.toString()});
+        await updateStats();
+        launchConfetti();
+    } catch(e){ console.error(e); alert("Error comprando tickets"); }
 }
 
 async function createRaffle(daily) {
-    const accounts = await web3.eth.getAccounts();
-    await contract.methods.crearRifa(daily, 100).send({from: accounts[0]});
-    updateStats();
+    try {
+        const accounts = await web3.eth.getAccounts();
+        await contract.methods.crearRifa(daily, 100).send({from: accounts[0]});
+        await updateStats();
+    } catch(e){ console.error(e); alert("Error creando rifa"); }
 }
 
 async function createAuction() {
-    const accounts = await web3.eth.getAccounts();
-    const prizeMin = web3.utils.toWei("1","ether");
-    await contract.methods.crearSubasta(prizeMin).send({from: accounts[0]});
-    updateStats();
+    try {
+        const accounts = await web3.eth.getAccounts();
+        const prizeMin = web3.utils.toWei("1","ether");
+        await contract.methods.crearSubasta(prizeMin).send({from: accounts[0]});
+        await updateStats();
+    } catch(e){ console.error(e); alert("Error creando subasta"); }
 }
 
 async function placeBid() {
-    const amount = document.getElementById("bidAmount").value;
-    const accounts = await web3.eth.getAccounts();
-    const bidWei = web3.utils.toWei(amount,"ether");
-    await contract.methods.pujar(0).send({from: accounts[0], value: bidWei});
-    updateStats();
-    launchConfetti();
+    try {
+        const amount = document.getElementById("bidAmount").value;
+        const accounts = await web3.eth.getAccounts();
+        const bidWei = web3.utils.toWei(amount,"ether");
+        const count = await contract.methods.auctionsCount().call();
+        await contract.methods.pujar(count-1).send({from: accounts[0], value: bidWei});
+        await updateStats();
+        launchConfetti();
+    } catch(e){ console.error(e); alert("Error en la puja"); }
 }
 
 async function stakeTokens() {
-    const amount = document.getElementById("stakeAmount").value;
-    const accounts = await web3.eth.getAccounts();
-    const value = web3.utils.toWei(amount,"ether");
-    await contract.methods.stakeTokens().send({from: accounts[0], value: value});
-    updateStats();
+    try {
+        const amount = document.getElementById("stakeAmount").value;
+        const accounts = await web3.eth.getAccounts();
+        const value = web3.utils.toWei(amount,"ether");
+        await contract.methods.stakeTokens().send({from: accounts[0], value: value});
+        await updateStats();
+    } catch(e){ console.error(e); alert("Error stakeando"); }
 }
 
 async function withdrawStake() {
-    const amount = document.getElementById("withdrawAmount").value;
-    const accounts = await web3.eth.getAccounts();
-    const value = web3.utils.toWei(amount,"ether");
-    await contract.methods.retirarStake(value).send({from: accounts[0]});
-    updateStats();
+    try {
+        const amount = document.getElementById("withdrawAmount").value;
+        const accounts = await web3.eth.getAccounts();
+        const value = web3.utils.toWei(amount,"ether");
+        await contract.methods.retirarStake(value).send({from: accounts[0]});
+        await updateStats();
+    } catch(e){ console.error(e); alert("Error retirando stake"); }
 }
 
 // ---------- Actualización stats ----------
 async function updateStats(){
-    const accounts = await web3.eth.getAccounts();
-    const balance = await web3.eth.getBalance(contractAddress);
-    document.getElementById("contractBalance").innerText = web3.utils.fromWei(balance, "ether");
-
-    const rmin = await contract.methods.Rmin().call();
-    document.getElementById("reserveMin").innerText = web3.utils.fromWei(rmin, "ether");
-
-    // Rifas
     try{
-        const raffle = await contract.methods.raffles(0).call();
-        document.getElementById("activePrizePool").innerText = web3.utils.fromWei(raffle.prizeActual, "ether");
-        raffleChart.data.datasets[0].data = [raffle.prizeActual, rmin];
-        raffleChart.update();
+        const accounts = await web3.eth.getAccounts();
+        const balance = await web3.eth.getBalance(contractAddress);
+        document.getElementById("contractBalance").innerText = web3.utils.fromWei(balance, "ether");
 
-        const winnersList = document.getElementById("raffleWinners");
-        winnersList.innerHTML = "";
-        raffle.winners.forEach(w => { const li = document.createElement("li"); li.innerText = w; winnersList.appendChild(li); });
+        const rmin = await contract.methods.Rmin().call();
+        document.getElementById("reserveMin").innerText = web3.utils.fromWei(rmin, "ether");
 
-        updateCountdown("raffleCountdown", raffle.endTime);
-    }catch(e){}
+        // Rifas
+        const raffleCount = await contract.methods.rafflesCount().call();
+        if(raffleCount>0){
+            const r = await contract.methods.raffles(raffleCount-1).call();
+            const winners = await contract.methods.getRaffleWinners(raffleCount-1).call();
+            const prizeActual = web3.utils.fromWei(r.prizeActual,"ether");
+            document.getElementById("activePrizePool").innerText = prizeActual;
 
-    // Subastas
-    try{
-        const auction = await contract.methods.auctions(0).call();
-        document.getElementById("auctionPrizePool").innerText = web3.utils.fromWei(auction.prizeActual, "ether");
-        document.getElementById("currentBid").innerText = web3.utils.fromWei(auction.currentBid, "ether");
-        auctionChart.data.datasets[0].data = [auction.prizeActual, balance-auction.prizeActual];
-        auctionChart.update();
+            const progress = Math.min(prizeActual / (prizeActual + web3.utils.fromWei(rmin,"ether")) * 100, 100);
+            document.getElementById("raffleProgress").style.width = progress+"%";
 
-        const biddersList = document.getElementById("topBidders");
-        biddersList.innerHTML = "";
-        auction.lastBidders.forEach(b => { const li=document.createElement("li"); li.innerText=b; biddersList.appendChild(li); });
+            raffleChart.data.datasets[0].data = [r.prizeActual, rmin];
+            raffleChart.update();
 
-        updateCountdown("auctionCountdown", auction.endTime);
-    }catch(e){}
+            const winnersList = document.getElementById("raffleWinners");
+            winnersList.innerHTML = "";
+            winners.forEach(w => { const li = document.createElement("li"); li.innerText = w; winnersList.appendChild(li); });
 
-    // Staking
-    const myStake = await contract.methods.staked(accounts[0]).call();
-    document.getElementById("myStake").innerText = web3.utils.fromWei(myStake, "ether");
+            updateCountdown("raffleCountdown", r.endTime);
+        }
 
-    const myTickets = await contract.methods.tickets(accounts[0]).call();
-    document.getElementById("myTickets").innerText = myTickets;
+        // Subastas
+        const auctionCount = await contract.methods.auctionsCount().call();
+        if(auctionCount>0){
+            const a = await contract.methods.auctions(auctionCount-1).call();
+            const bidders = await contract.methods.getAuctionBidders(auctionCount-1).call();
+            document.getElementById("auctionPrizePool").innerText = web3.utils.fromWei(a.prizeActual,"ether");
+            document.getElementById("currentBid").innerText = web3.utils.fromWei(a.currentBid,"ether");
 
-    // Historial simple
-    try{
+            const progress = Math.min(web3.utils.fromWei(a.prizeActual,"ether") / (web3.utils.fromWei(a.prizeActual,"ether")+web3.utils.fromWei(balance,"ether"))*100, 100);
+            document.getElementById("auctionProgress").style.width = progress+"%";
+
+            auctionChart.data.datasets[0].data = [a.prizeActual, balance-a.prizeActual];
+            auctionChart.update();
+
+            const biddersList = document.getElementById("topBidders");
+            biddersList.innerHTML = "";
+            bidders.forEach(b => { const li=document.createElement("li"); li.innerText=b; biddersList.appendChild(li); });
+
+            updateCountdown("auctionCountdown", a.endTime);
+        }
+
+        // Staking
+        const myStake = await contract.methods.staked(accounts[0]).call();
+        document.getElementById("myStake").innerText = web3.utils.fromWei(myStake, "ether");
+
+        const myTickets = await contract.methods.tickets(accounts[0]).call();
+        document.getElementById("myTickets").innerText = myTickets;
+
+        // Historial
         const historyEl = document.getElementById("eventHistory");
         historyEl.innerHTML="";
-        for(let i=0;i<Math.min(5,await contract.methods.raffles.length().call());i++){
+        const historyLimit = Math.min(5, raffleCount);
+        for(let i=0;i<historyLimit;i++){
             const r = await contract.methods.raffles(i).call();
-            const row = `<tr><td>Rifa</td><td>${web3.utils.fromWei(r.prizeActual)}</td><td>${r.winners.join(', ')}</td><td>${new Date(r.endTime*1000).toLocaleString()}</td></tr>`;
+            const winners = await contract.methods.getRaffleWinners(i).call();
+            const row = `<tr><td>Rifa</td><td>${web3.utils.fromWei(r.prizeActual)}</td><td>${winners.join(', ')}</td><td>${new Date(r.endTime*1000).toLocaleString()}</td></tr>`;
             historyEl.innerHTML += row;
         }
-    }catch(e){}
+
+    } catch(e){ console.error(e); }
 }
 
 // Countdown
@@ -247,7 +282,7 @@ function updateCountdown(elementId, endTime){
 // Confetti
 function launchConfetti(){
     const container = document.getElementById("confettiContainer");
-    for(let i=0;i<30;i++){
+    for(let i=0;i<40;i++){
         const conf = document.createElement("div");
         conf.style.position="absolute";
         conf.style.width="8px";
