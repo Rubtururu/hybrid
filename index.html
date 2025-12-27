@@ -52,13 +52,14 @@ h2{margin-top:0}
 <div class="card">
 <h2>🎟️ Rifa Horaria</h2>
 <div>Pool: <span id="hourlyPool">-</span> BNB</div>
+<div>Tickets vendidos: <span id="hourlyTicketsCount">-</span></div>
 <div>Finaliza en: <span id="hourlyTimer" class="countdown">-</span></div>
 <input id="hourlyTickets" type="number" placeholder="Tickets" />
-<button onclick="enterRaffle(false)">Entrar</button>
+<button onclick="enterRaffle(false)">Entrar Horaria</button>
 <div class="row">
-<button onclick="buyTickets(1)">Comprar 1 Ticket</button>
-<button onclick="buyTickets(5)">Comprar 5 Tickets</button>
-<button onclick="buyTickets(10)">Comprar 10 Tickets</button>
+<button onclick="buyTickets(1,false)">Comprar 1 Ticket</button>
+<button onclick="buyTickets(5,false)">Comprar 5 Tickets</button>
+<button onclick="buyTickets(10,false)">Comprar 10 Tickets</button>
 </div>
 <div class="list" id="hourlyPlayers"></div>
 </div>
@@ -66,13 +67,14 @@ h2{margin-top:0}
 <div class="card">
 <h2>🎟️ Rifa Diaria</h2>
 <div>Pool: <span id="dailyPool">-</span> BNB</div>
+<div>Tickets vendidos: <span id="dailyTicketsCount">-</span></div>
 <div>Finaliza en: <span id="dailyTimer" class="countdown">-</span></div>
 <input id="dailyTickets" type="number" placeholder="Tickets" />
-<button onclick="enterRaffle(true)">Entrar</button>
+<button onclick="enterRaffle(true)">Entrar Diaria</button>
 <div class="row">
-<button onclick="buyTickets(1)">Comprar 1 Ticket</button>
-<button onclick="buyTickets(5)">Comprar 5 Tickets</button>
-<button onclick="buyTickets(10)">Comprar 10 Tickets</button>
+<button onclick="buyTickets(1,true)">Comprar 1 Ticket</button>
+<button onclick="buyTickets(5,true)">Comprar 5 Tickets</button>
+<button onclick="buyTickets(10,true)">Comprar 10 Tickets</button>
 </div>
 <div class="list" id="dailyPlayers"></div>
 </div>
@@ -80,13 +82,24 @@ h2{margin-top:0}
 
 <section class="grid">
 <div class="card">
+<h2>💎 Staking</h2>
+<input type="number" id="stakeAmount" placeholder="BNB a stakear" />
+<button onclick="stakeBNB()">Stake</button>
+<button onclick="withdrawStake()">Retirar Stake</button>
+<div>Staked: <span id="myStaked">0</span> BNB</div>
+<div>Último claim: <span id="lastStake">-</span></div>
+</div>
+
+<div class="card">
 <h2>👤 Mi Perfil</h2>
 <div>Premios totales: <b><span id="myRewards">-</span> BNB</b></div>
 <div>Subastas ganadas: <span id="myAuctions">-</span></div>
 <div>Rifas ganadas: <span id="myRaffles">-</span></div>
 <button class="secondary" onclick="withdraw()">💰 Retirar mis premios</button>
 </div>
+</section>
 
+<section class="grid">
 <div class="card">
 <h2>📊 Estadísticas Globales</h2>
 <div>Total pujas: <span id="totalBids">-</span></div>
@@ -103,8 +116,7 @@ const CONTRACT_ADDRESS = '0x946409c61E622c6A007D47913C48A2B888F43d7C';
 const ABI = [{"inputs":[{"internalType":"address","name":"_treasury","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"pool","type":"uint256"}],"name":"AuctionClosed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint8","name":"rank","type":"uint8"}],"name":"AuctionReward","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"BidPlaced","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bool","name":"daily","type":"bool"},{"indexed":false,"internalType":"uint256","name":"pool","type":"uint256"}],"name":"RaffleClosed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"},{"indexed":false,"internalType":"bool","name":"daily","type":"bool"}],"name":"RaffleEntered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"bool","name":"daily","type":"bool"}],"name":"RaffleReward","type":"event"},{"inputs":[],"name":"AUCTION_INCREMENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"AUCTION_REWARDS","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RAFFLE_DAILY_DURATION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RAFFLE_HOURLY_DURATION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"auction","outputs":[{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"uint256","name":"currentBid","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"auctionWinners","outputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"rank","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"auctionsWon","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"bid","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"closeAuction","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"daily","type":"bool"}],"name":"closeRaffle","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"dailyPlayers","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"dailyTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tickets","type":"uint256"},{"internalType":"bool","name":"daily","type":"bool"}],"name":"enterRaffle","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"hourlyPlayers","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"hourlyTickets","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"raffleDaily","outputs":[{"internalType":"bool","name":"daily","type":"bool"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"raffleDailyWinners","outputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"rank","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"raffleHourly","outputs":[{"internalType":"bool","name":"daily","type":"bool"},{"internalType":"uint256","name":"prizePool","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"raffleHourlyWinners","outputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint8","name":"rank","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"rafflesWon","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_t","type":"address"}],"name":"setTreasury","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"topBidders","outputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalAuctions","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalBNBRepartido","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalBids","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalRaffles","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"totalUserRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"treasury","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawTreasury","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
 document.addEventListener('DOMContentLoaded',()=>{
-  const btn = document.getElementById('connectBtn');
-  btn.addEventListener('click', connect);
+  document.getElementById('connectBtn').addEventListener('click', connect);
 });
 
 async function connect(){
@@ -116,10 +128,7 @@ async function connect(){
     document.getElementById('wallet').innerText = account;
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
     loadAll(); listenEvents();
-  }catch(err){
-    console.error('Conexión fallida:',err);
-    alert('No se pudo conectar con Metamask');
-  }
+  }catch(err){console.error(err); alert('No se pudo conectar con Metamask');}
 }
 
 async function bid(){
@@ -127,16 +136,29 @@ async function bid(){
   const inc = await contract.methods.AUCTION_INCREMENT().call();
   const nextBid = web3.utils.toBN(a.currentBid).add(web3.utils.toBN(inc));
   await contract.methods.bid().send({ from: account, value: nextBid });
+  loadAuction();
 }
 
-async function buyTickets(amount){
+async function buyTickets(amount,daily){
   const price = web3.utils.toWei((0.001*amount).toString());
-  await contract.methods.enterRaffle(amount,false).send({ from: account, value: price });
+  await contract.methods.enterRaffle(amount,daily).send({ from: account, value: price });
+  loadRaffles();
 }
 
 async function enterRaffle(daily){
   const t = daily ? document.getElementById('dailyTickets').value : document.getElementById('hourlyTickets').value;
-  await contract.methods.enterRaffle(t,daily).send({ from: account, value: web3.utils.toWei((0.001*t).toString()) });
+  await buyTickets(t,daily);
+}
+
+async function stakeBNB(){
+  const val = document.getElementById('stakeAmount').value;
+  await contract.methods.stake().send({ from: account, value: web3.utils.toWei(val) });
+  loadStaking();
+}
+
+async function withdrawStake(){
+  await contract.methods.withdraw().send({ from: account });
+  loadStaking();
 }
 
 async function withdraw(){
@@ -145,14 +167,14 @@ async function withdraw(){
 }
 
 async function loadAll(){
-  loadAuction(); loadRaffles(); loadProfile(); loadStats();
+  loadAuction(); loadRaffles(); loadProfile(); loadStats(); loadStaking();
 }
 
 async function loadAuction(){
   const a = await contract.methods.auction().call();
   document.getElementById('auctionPool').innerText = web3.utils.fromWei(a.prizePool);
   document.getElementById('auctionBid').innerText = web3.utils.fromWei(a.currentBid);
-  timer(a.endTime,document.getElementById('auctionTimer'));
+  timer(a.endTime, document.getElementById('auctionTimer'));
 
   const topEl = document.getElementById('topBidders');
   topEl.innerHTML='';
@@ -169,12 +191,26 @@ async function loadAuction(){
 }
 
 async function loadRaffles(){
-  const h=await contract.methods.raffleHourly().call();
+  const h = await contract.methods.raffleHourly().call();
   document.getElementById('hourlyPool').innerText = web3.utils.fromWei(h.prizePool);
-  timer(h.endTime,document.getElementById('hourlyTimer'));
-  const d=await contract.methods.raffleDaily().call();
+  const d = await contract.methods.raffleDaily().call();
   document.getElementById('dailyPool').innerText = web3.utils.fromWei(d.prizePool);
-  timer(d.endTime,document.getElementById('dailyTimer'));
+  timer(h.endTime, document.getElementById('hourlyTimer'));
+  timer(d.endTime, document.getElementById('dailyTimer'));
+  // Aquí puedes agregar conteo de tickets vendidos usando totalTicketsVendidos o mapeos de players
+}
+
+async function loadStaking(){
+  const staked = await contract.methods.stakedBNB(account).call();
+  const last = await contract.methods.lastStakeClaim(account).call();
+  document.getElementById('myStaked').innerText = web3.utils.fromWei(staked);
+  document.getElementById('lastStake').innerText = new Date(last*1000).toLocaleString();
+}
+
+async function loadProfile(){
+  document.getElementById('myRewards').innerText = web3.utils.fromWei(await contract.methods.totalUserRewards(account).call());
+  document.getElementById('myAuctions').innerText = await contract.methods.auctionsWon(account).call();
+  document.getElementById('myRaffles').innerText = await contract.methods.rafflesWon(account).call();
 }
 
 async function loadStats(){
@@ -187,12 +223,6 @@ async function loadStats(){
   document.getElementById('totalRaffles').innerText=raffles;
   document.getElementById('totalBNB').innerText=bnb;
   new Chart(document.getElementById('statsChart'),{type:'bar',data:{labels:['Bids','Auctions','Raffles'],datasets:[{data:[bids,auctions,raffles]}]}});
-}
-
-async function loadProfile(){
-  document.getElementById('myRewards').innerText=web3.utils.fromWei(await contract.methods.totalUserRewards(account).call());
-  document.getElementById('myAuctions').innerText=await contract.methods.auctionsWon(account).call();
-  document.getElementById('myRaffles').innerText=await contract.methods.rafflesWon(account).call();
 }
 
 function timer(end,el){
