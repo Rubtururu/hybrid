@@ -3,30 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hybrid Raffle & Staking Dashboard - web3.js</title>
+<title>Hybrid Raffle & Staking Ultra-Pro Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/web3@1.10.1/dist/web3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-  body { font-family:'Arial', sans-serif; background:#0d0d0d; color:#f0f0f0; margin:0; padding:0;}
-  header { text-align:center; padding:1rem; font-size:1.8rem; font-weight:bold; background:linear-gradient(90deg,#ff6a00,#ee0979); color:white; }
-  .container { max-width:1200px; margin:auto; padding:2rem; display:grid; grid-template-columns:1fr 1fr; gap:2rem;}
-  .card { background:#1a1a1a; padding:1rem 1.5rem; border-radius:15px; box-shadow:0 0 25px rgba(255,0,150,0.3); transition:0.3s; position:relative;}
-  .card:hover { transform: translateY(-5px); }
-  h2 { color:#ff6a00; margin-top:0; }
-  button { padding:0.6rem 1rem; background:#ff3c6e; border:none; border-radius:8px; color:white; cursor:pointer; font-weight:bold; transition:0.2s;}
-  button:hover { background:#ff1a4d; }
-  input, select { padding:0.5rem; border-radius:6px; border:none; margin-right:0.5rem; width:100px;}
-  .stat { font-size:1.2rem; margin-bottom:0.5rem; }
-  .countdown { font-weight:bold; color:#00ffcc; }
-  .list { max-height:150px; overflow-y:auto; margin-top:0.5rem; background:#111; padding:0.5rem; border-radius:8px; }
-  .highlight { animation:highlight 1s ease-in-out; }
-  @keyframes highlight { 0%{background:#ff3c6e;}50%{background:#ff1a4d;}100%{background:#1a1a1a;} }
-  canvas { background:#111; border-radius:12px; }
+body { font-family:'Arial',sans-serif; background:#0d0d0d; color:#f0f0f0; margin:0; padding:0;}
+header {text-align:center;padding:1rem;font-size:1.8rem;font-weight:bold;background:linear-gradient(90deg,#ff6a00,#ee0979); color:white;}
+.container {max-width:1200px;margin:auto;padding:2rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+.card {background:#1a1a1a;padding:1rem 1.5rem;border-radius:15px;box-shadow:0 0 25px rgba(255,0,150,0.3);transition:0.3s;position:relative;}
+.card:hover{transform:translateY(-5px);}
+h2{color:#ff6a00;margin-top:0;}
+button{padding:0.6rem 1rem;background:#ff3c6e;border:none;border-radius:8px;color:white;cursor:pointer;font-weight:bold;transition:0.2s;}
+button:hover{background:#ff1a4d;}
+input,select{padding:0.5rem;border-radius:6px;border:none;margin-right:0.5rem;width:100px;}
+.stat{font-size:1.2rem;margin-bottom:0.5rem;}
+.countdown{font-weight:bold;color:#00ffcc;}
+.list{max-height:200px;overflow-y:auto;margin-top:0.5rem;background:#111;padding:0.5rem;border-radius:8px;}
+.highlight{animation:highlight 1s ease-in-out;}
+@keyframes highlight{0%{background:#ff3c6e;}50%{background:#ff1a4d;}100%{background:#1a1a1a;}}
+.toast {position:fixed;top:20px;right:20px;background:#ff3c6e;padding:1rem 1.5rem;border-radius:10px;color:white;box-shadow:0 0 10px rgba(255,0,150,0.5); z-index:1000; animation:fadein 0.5s, fadeout 0.5s 3s;}
+@keyframes fadein{0%{opacity:0;}100%{opacity:1;}}
+@keyframes fadeout{0%{opacity:1;}100%{opacity:0;}}
+canvas{background:#111;border-radius:12px;}
 </style>
 </head>
 <body>
-
-<header>Hybrid Raffle & Staking Dashboard</header>
+<header>Hybrid Raffle & Staking Ultra-Pro Dashboard</header>
 
 <div class="container">
 
@@ -72,7 +74,7 @@
     <h2>Rifa Horaria</h2>
     <p>Premio: <span id="hourlyPrize">0</span> BNB</p>
     <p>Finaliza en: <span class="countdown" id="hourlyCountdown">--:--:--</span></p>
-    <div class="list" id="hourlyRaffleList"></div>
+    <div class="list" id="hourlyWinners"></div>
   </div>
 
   <!-- Daily Raffle -->
@@ -80,7 +82,7 @@
     <h2>Rifa Diaria</h2>
     <p>Premio: <span id="dailyPrize">0</span> BNB</p>
     <p>Finaliza en: <span class="countdown" id="dailyCountdown">--:--:--</span></p>
-    <div class="list" id="dailyRaffleList"></div>
+    <div class="list" id="dailyWinners"></div>
   </div>
 
   <!-- Auction -->
@@ -90,7 +92,7 @@
     <p>Finaliza en: <span class="countdown" id="auctionCountdown">--:--:--</span></p>
     <input type="number" id="bidAmount" placeholder="BNB"/>
     <button onclick="placeBid()">Ofertar</button>
-    <div class="list" id="auctionList"></div>
+    <div class="list" id="bidRanking"></div>
   </div>
 
   <!-- Staking -->
@@ -122,6 +124,7 @@ async function connectWallet(){
             document.getElementById("userAddress").innerText = userAddress;
             contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
             loadDashboard();
+            setupEvents();
             startCountdowns();
             loadChart();
         }catch(err){
@@ -132,7 +135,7 @@ async function connectWallet(){
     }
 }
 
-// Cargar dashboard
+// Dashboard
 async function loadDashboard(){
     const totalBNB = await contract.methods.totalBNB().call();
     document.getElementById("totalBNB").innerText = web3.utils.fromWei(totalBNB,'ether');
@@ -149,7 +152,7 @@ async function loadDashboard(){
 // Tickets
 async function buyTickets(){
     const pack = document.getElementById("ticketPack").value;
-    const price = web3.utils.toWei("0.01","ether"); // ajustar según contrato
+    const price = web3.utils.toWei("0.01","ether"); 
     await contract.methods.buyTickets(pack).send({from:userAddress,value:price});
     highlight("#ticketList", `Compraste ${pack} tickets!`);
     loadDashboard();
@@ -165,7 +168,7 @@ async function useTickets(){
 async function placeBid(){
     const amount = document.getElementById("bidAmount").value;
     await contract.methods.bid().send({from:userAddress,value:web3.utils.toWei(amount,'ether')});
-    highlight("#auctionList", `Oferta de ${amount} BNB enviada!`);
+    highlight("#bidRanking", `Pusiste ${amount} BNB!`);
 }
 
 // Staking
@@ -186,7 +189,7 @@ async function claimRewards(){
     loadDashboard();
 }
 
-// Highlight animado
+// Animación
 function highlight(elementId,message){
     const el = document.querySelector(elementId);
     const div = document.createElement("div");
@@ -196,12 +199,21 @@ function highlight(elementId,message){
     setTimeout(()=>{ div.remove() },3000);
 }
 
-// Countdown animado
+// Toast notificación
+function showToast(message){
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerText = message;
+    document.body.appendChild(toast);
+    setTimeout(()=>{ toast.remove() },3500);
+}
+
+// Countdown
 function startCountdowns(){
     function updateCountdown(id,seconds){
         const el = document.getElementById(id);
         const interval = setInterval(()=>{
-            if(seconds<=0){ clearInterval(interval); el.innerText="00:00:00"; return; }
+            if(seconds<=0){ clearInterval(interval); el.innerText="00:00:00"; return;}
             const h=Math.floor(seconds/3600);
             const m=Math.floor((seconds%3600)/60);
             const s=seconds%60;
@@ -214,7 +226,7 @@ function startCountdowns(){
     updateCountdown("auctionCountdown",7200);
 }
 
-// Chart de estadísticas
+// Chart
 function loadChart(){
     const ctx = document.getElementById('statsChart').getContext('2d');
     new Chart(ctx,{
@@ -223,7 +235,7 @@ function loadChart(){
             labels:['BNB','Tickets','Usuarios','Staked','Rifas'],
             datasets:[{
                 label:'Estadísticas Globales',
-                data:[100,50,30,75,40], // reemplazar con datos reales
+                data:[100,50,30,75,40],
                 backgroundColor:['#ff3c6e','#ff6a00','#00ffcc','#ee0979','#ff00ff']
             }]
         },
@@ -231,8 +243,59 @@ function loadChart(){
     });
 }
 
+// Configurar eventos del contrato
+function setupEvents(){
+    // Evento de nueva puja
+    contract.events.NewBid({}, (err,event)=>{
+        if(err) return;
+        const { bidder, amount } = event.returnValues;
+        document.getElementById("lastBid").innerText = web3.utils.fromWei(amount,'ether');
+        updateBidRanking(bidder, amount);
+        showToast(`Nueva puja: ${web3.utils.fromWei(amount,'ether')} BNB por ${bidder}`);
+    });
+
+    // Evento de finalización de rifa horaria
+    contract.events.HourlyRaffleWon({}, (err,event)=>{
+        if(err) return;
+        const winners = event.returnValues.winners; // array de wallets
+        const amounts = event.returnValues.amounts; // array de premios
+        const listEl = document.getElementById("hourlyWinners");
+        listEl.innerHTML = '';
+        winners.forEach((w,i)=>{
+            const div = document.createElement("div");
+            div.innerText = `${w} ganó ${web3.utils.fromWei(amounts[i],'ether')} BNB`;
+            listEl.appendChild(div);
+        });
+        showToast(`Rifa horaria finalizada!`);
+    });
+
+    // Evento de finalización de rifa diaria
+    contract.events.DailyRaffleWon({}, (err,event)=>{
+        if(err) return;
+        const winners = event.returnValues.winners;
+        const amounts = event.returnValues.amounts;
+        const listEl = document.getElementById("dailyWinners");
+        listEl.innerHTML = '';
+        winners.forEach((w,i)=>{
+            const div = document.createElement("div");
+            div.innerText = `${w} ganó ${web3.utils.fromWei(amounts[i],'ether')} BNB`;
+            listEl.appendChild(div);
+        });
+        showToast(`Rifa diaria finalizada!`);
+    });
+}
+
+// Ranking dinámico de pujas
+let ranking = [];
+function updateBidRanking(bidder, amount){
+    ranking.push({bidder,amount:web3.utils.fromWei(amount,'ether')});
+    ranking.sort((a,b)=>parseFloat(b.amount)-parseFloat(a.amount));
+    const top1 = ranking[0];
+    const el = document.getElementById("bidRanking");
+    el.innerHTML = `<div>Top 1: ${top1.bidder} - ${top1.amount} BNB</div>`;
+}
+
 document.getElementById("connectWalletBtn").onclick = connectWallet;
 </script>
-
 </body>
 </html>
