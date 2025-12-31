@@ -1,45 +1,90 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>BNB Universal Bank</title>
+<meta charset="UTF-8">
+<title>BNB Universal Bank - Dashboard</title>
 
-  <!-- Web3.js CDN -->
-  <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
-  <!-- Chart.js CDN para mini charts -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="style.css">
 
-  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>🏦 BNB Universal Bank</h1>
+<h1>🏦 BNB Universal Bank Dashboard</h1>
 
 <button id="connectBtn">🔌 Conectar Wallet</button>
 
-<!-- GLOBAL STATS -->
+<!-- ---------------------- GLOBAL STATS ---------------------- -->
 <div class="card">
-  <h3>📊 Stats Generales</h3>
-  <p>TVL: <span id="tvl">-</span> BNB</p>
-  <p>Dividend Pool: <span id="divPool">-</span> BNB</p>
-  <p>Total Usuarios: <span id="users">-</span></p>
-  <p>Volumen 24h: <span id="volume">-</span> BNB</p>
-  <canvas id="chart" height="100"></canvas>
+  <h2>📊 Stats Generales</h2>
+  <div class="grid">
+    <div class="stat">
+      <h3>TVL (Tesoro)</h3>
+      <p id="tvl">- BNB</p>
+    </div>
+    <div class="stat">
+      <h3>Dividend Pool</h3>
+      <p id="divPool">- BNB</p>
+    </div>
+    <div class="stat">
+      <h3>Total Usuarios</h3>
+      <p id="users">-</p>
+    </div>
+    <div class="stat">
+      <h3>Volumen 24h</h3>
+      <p id="volume">- BNB</p>
+    </div>
+    <div class="stat">
+      <h3>Total Depositado</h3>
+      <p id="totalDeposits">- BNB</p>
+    </div>
+    <div class="stat">
+      <h3>Total Retirado</h3>
+      <p id="totalWithdrawn">- BNB</p>
+    </div>
+    <div class="stat">
+      <h3>Total Claim</h3>
+      <p id="totalClaimed">- BNB</p>
+    </div>
+    <div class="stat">
+      <h3>Total Shares</h3>
+      <p id="totalShares">-</p>
+    </div>
+  </div>
+  <canvas id="chart" height="150"></canvas>
 </div>
 
-<!-- USER STATS -->
+<!-- ---------------------- USER STATS ---------------------- -->
 <div class="card">
-  <h3>👤 Mis Stats</h3>
-  <p>Depositado: <span id="dep">-</span> BNB</p>
-  <p>Shares: <span id="shares">-</span></p>
-  <p>Pendiente: <span id="pending">-</span> BNB</p>
-  <p>Retirado: <span id="withdrawn">-</span> BNB</p>
-  <p>Claim Total: <span id="claimed">-</span> BNB</p>
+  <h2>👤 Mis Stats</h2>
+  <div class="grid">
+    <div class="stat">
+      <h3>Depositado</h3>
+      <p id="dep">- BNB</p>
+    </div>
+    <div class="stat">
+      <h3>Retirado</h3>
+      <p id="withdrawn">- BNB</p>
+    </div>
+    <div class="stat">
+      <h3>Shares</h3>
+      <p id="shares">-</p>
+    </div>
+    <div class="stat">
+      <h3>Claim total</h3>
+      <p id="claimed">- BNB</p>
+    </div>
+    <div class="stat">
+      <h3>Pendiente</h3>
+      <p id="pending">- BNB</p>
+    </div>
+  </div>
 </div>
 
-<!-- ACTIONS -->
+<!-- ---------------------- ACCIONES ---------------------- -->
 <div class="card">
-  <h3>⚡ Acciones</h3>
+  <h2>⚡ Acciones</h2>
   <input id="amount" placeholder="Cantidad BNB">
   <br>
   <button id="depositBtn">Depositar</button>
@@ -47,10 +92,20 @@
   <button id="claimBtn">Claim</button>
 </div>
 
-<!-- LEADERBOARD -->
+<!-- ---------------------- DIVIDEND HISTORY / INFO ---------------------- -->
 <div class="card">
-  <h3>🏆 Leaderboard (Top Shares)</h3>
-  <ol id="leaderboard"></ol>
+  <h2>📈 Dividend Info</h2>
+  <p>Dividendos diarios: <span id="dailyDividend">- BNB</span></p>
+  <p>Último pago: <span id="lastDividend">-</span></p>
+  <p>Siguiente pago: <span id="nextDividend">-</span></p>
+</div>
+
+<!-- ---------------------- TREASURY / CONTRACT INFO ---------------------- -->
+<div class="card">
+  <h2>🏛️ Tesorería / Contrato</h2>
+  <p>Pool del Tesoro: <span id="treasury">- BNB</span></p>
+  <p>Fee acumulado para creador: <span id="creatorFee">- BNB</span></p>
+  <p>Total BNB en contrato: <span id="totalBNB">- BNB</span></p>
 </div>
 
 <script src="app.js"></script>
