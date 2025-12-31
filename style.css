@@ -1,32 +1,48 @@
 body {
-  background: #0b0b0f;
+  background: linear-gradient(120deg, #0b0b0f, #1a1a24);
   color: white;
   font-family: Arial, sans-serif;
   padding: 20px;
 }
 
 h1 {
+  text-align: center;
   margin-bottom: 20px;
+  font-size: 2.5em;
+  color: #1e90ff;
 }
 
 button {
-  padding: 10px 15px;
+  padding: 10px 20px;
   margin: 5px 0;
   cursor: pointer;
   background: #1e1eff;
   border: none;
   color: white;
   border-radius: 6px;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #3a3aff;
 }
 
 input {
   padding: 8px;
   width: 200px;
+  margin-bottom: 5px;
 }
 
 .card {
   background: #15151d;
-  padding: 15px;
-  margin-top: 15px;
-  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+canvas {
+  margin-top: 10px;
+  background: #0b0b0f;
+  border-radius: 6px;
 }
