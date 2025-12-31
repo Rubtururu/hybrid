@@ -12,7 +12,6 @@
 
 <div class="container">
 
-  <!-- HEADER -->
   <header>
     <h1>HybridDeFi Dashboard</h1>
     <button id="connectBtn" class="btn-primary">Conectar MetaMask</button>
@@ -36,8 +35,10 @@
       <div class="stat-card"><span>Depositado</span><span id="userDeposited">0</span> BNB</div>
       <div class="stat-card"><span>Retirado</span><span id="userWithdrawn">0</span> BNB</div>
       <div class="stat-card"><span>Shares</span><span id="userShares">0</span></div>
+      <div class="stat-card"><span>% de Share</span><span id="userSharePercent">0</span>%</div>
       <div class="stat-card"><span>Dividends Claimados</span><span id="userDividendsClaimed">0</span> BNB</div>
       <div class="stat-card"><span>Dividends Pendientes</span><span id="userPendingDividends">0</span> BNB</div>
+      <div class="stat-card"><span>Tickets Rifa</span><span id="userTickets">0</span></div>
     </div>
   </section>
 
@@ -58,7 +59,9 @@
     <h2>Subasta</h2>
     <div class="auction-grid">
       <div><span>Current Bid:</span> <span id="auctionCurrentBid">0</span> BNB</div>
-      <div><span>Ends At:</span> <span id="auctionEndTime">-</span></div>
+      <div><span>Ends In:</span> <span id="auctionCountdown">0s</span></div>
+      <div><span>Top 5 Bidders:</span></div>
+      <ul id="auctionTopBidders"></ul>
       <input type="text" id="auctionBidAmount" placeholder="BNB para pujar">
       <button id="bidBtn" class="btn-primary">Pujar</button>
     </div>
@@ -69,7 +72,10 @@
     <h2>Rifa</h2>
     <div class="raffle-grid">
       <div><span>Prize Pot:</span> <span id="rafflePrizePot">0</span> BNB</div>
-      <div><span>Ends At:</span> <span id="raffleEndTime">-</span></div>
+      <div><span>Ends In:</span> <span id="raffleCountdown">0s</span></div>
+      <div><span>Total Tickets:</span> <span id="raffleTotalTickets">0</span></div>
+      <div><span>Top 5 Ganadores:</span></div>
+      <ul id="raffleTopWinners"></ul>
       <input type="text" id="raffleTickets" placeholder="Número de tickets">
       <button id="enterRaffleBtn" class="btn-primary">Entrar Rifa</button>
     </div>
