@@ -1,95 +1,52 @@
 /* ===== RESET ===== */
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
-body { background: linear-gradient(135deg,#0e0f17,#171823); color:#f0f0f0; overflow-x:hidden; }
+body { background:#0f111b; color:#e0e0e0; }
 
 /* ===== CONTAINER ===== */
-.container { max-width:1400px; margin:auto; padding:20px; }
+.container { max-width:1300px; margin:auto; padding:20px; }
 
 /* ===== HEADER ===== */
 header { display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; }
-header h1 { font-size:2.2rem; color:#00ff99; text-shadow: 0 0 10px #00ff99; }
-.connect-btn { background: linear-gradient(135deg,#1e90ff,#00ff99); color:#0e0f17; border:none; padding:12px 25px; border-radius:15px; cursor:pointer; font-weight:bold; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,255,153,0.4); }
-.connect-btn:hover { transform:scale(1.05); box-shadow: 0 6px 25px rgba(0,255,153,0.6); }
+header h1 { font-size:2.2rem; color:#00ffcc; text-shadow:0 0 10px #00ffcc; }
+.connect-btn { background:#00ffcc; color:#0f111b; border:none; padding:12px 25px; border-radius:15px; cursor:pointer; font-weight:bold; transition: all 0.3s; }
+.connect-btn:hover { transform:scale(1.05); box-shadow:0 4px 20px rgba(0,255,204,0.4); }
 
 /* ===== SECCIONES ===== */
 section { margin-bottom:40px; }
 
-/* ===== GRID STATS ===== */
+/* ===== GRID ===== */
 .stats-grid, .user-grid, .actions-grid { display:grid; gap:20px; }
 .stats-grid { grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); }
-.user-grid { grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); }
-.actions-grid { grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); }
+.user-grid { grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); }
+.actions-grid { grid-template-columns: repeat(auto-fit,minmax(120px,1fr)); }
 
 /* ===== CARDS ===== */
 .stat-card, .user-card { 
-    background: linear-gradient(145deg,#1b1d2a,#13141f); 
+    background:#171823; 
     padding:20px; 
-    border-radius:20px; 
+    border-radius:15px; 
     text-align:center; 
-    box-shadow: 8px 8px 20px rgba(0,0,0,0.4), -8px -8px 20px rgba(0,255,153,0.2);
-    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.5); 
+    transition: all 0.3s;
 }
-.stat-card:hover, .user-card:hover { 
-    transform: translateY(-6px); 
-    box-shadow: 12px 12px 25px rgba(0,0,0,0.6), -12px -12px 25px rgba(0,255,153,0.3);
-}
-.stat-card h3, .user-card h3 { color:#00ff99; font-size:1rem; margin-bottom:10px; }
+.stat-card:hover, .user-card:hover { transform:translateY(-5px); box-shadow: 8px 8px 20px rgba(0,255,204,0.4); }
+.stat-card h3, .user-card h3 { color:#00ffcc; font-size:1rem; margin-bottom:10px; }
 .stat-card p, .user-card p { font-size:1.3rem; font-weight:bold; color:#fff; }
 
 /* ===== BOTONES ===== */
-.btn, .action-btn { 
-    background: linear-gradient(135deg,#00ff99,#1e90ff); 
-    color:#0e0f17; 
-    border:none; 
-    padding:12px; 
-    border-radius:15px; 
-    cursor:pointer; 
-    font-weight:bold; 
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 15px rgba(0,255,153,0.3);
-}
-.action-btn:hover, .btn:hover { 
-    transform: scale(1.05); 
-    box-shadow: 0 8px 20px rgba(0,255,153,0.6);
-}
+.btn, .action-btn { background:#00ffcc; color:#0f111b; border:none; padding:12px; border-radius:12px; cursor:pointer; font-weight:bold; transition: all 0.3s; }
+.btn:hover, .action-btn:hover { transform:scale(1.05); box-shadow:0 6px 20px rgba(0,255,204,0.6); }
 
 /* ===== INPUT ===== */
-input#amount { 
-    padding:12px; 
-    border-radius:15px; 
-    border:none; 
-    margin-bottom:15px; 
-    width:180px; 
-    text-align:center; 
-    font-weight:bold; 
-    background:#0e0f17; 
-    color:#fff; 
-    box-shadow: inset 4px 4px 10px rgba(0,0,0,0.4), inset -4px -4px 10px rgba(0,255,153,0.2);
-}
+input#amount { padding:12px; border-radius:12px; border:none; width:100%; text-align:center; font-weight:bold; background:#0f111b; color:#fff; }
 
 /* ===== CHART ===== */
-.chart-section canvas { 
-    background: linear-gradient(145deg,#171823,#0e0f17); 
-    border-radius:20px; 
-    padding:15px; 
-    box-shadow: 8px 8px 20px rgba(0,0,0,0.5), -8px -8px 20px rgba(0,255,153,0.2);
-}
+.chart-section canvas { background:#171823; border-radius:15px; padding:10px; }
 
 /* ===== RAFFLE ===== */
 .raffle-section ul { list-style:none; padding-left:0; }
-.raffle-section li { 
-    background: linear-gradient(145deg,#1b1d2a,#13141f); 
-    padding:12px; 
-    margin-bottom:8px; 
-    border-radius:15px; 
-    box-shadow: 6px 6px 15px rgba(0,0,0,0.4), -6px -6px 15px rgba(30,144,255,0.2); 
-    transition: all 0.3s ease;
-}
-.raffle-section li:hover { transform:translateX(5px); box-shadow: 8px 8px 20px rgba(0,0,0,0.6), -8px -8px 20px rgba(30,144,255,0.3); }
-
-/* ===== ANIMACIONES ===== */
-@keyframes fadeIn { from {opacity:0;} to{opacity:1;} }
-.stat-card, .user-card, .action-btn, .raffle-section li { animation:fadeIn 0.5s ease forwards; }
+.raffle-section li { background:#171823; padding:12px; margin-bottom:10px; border-radius:12px; transition: all 0.3s; }
+.raffle-section li:hover { transform:translateX(5px); box-shadow:0 5px 20px rgba(0,255,204,0.4); }
 
 /* ===== RESPONSIVE ===== */
 @media(max-width:900px){
@@ -97,8 +54,5 @@ input#amount {
   input#amount { width:100%; }
 }
 
-/* ===== HOVER INTERACTIVO ===== */
-.stat-card p.update, .user-card p.update { color:#1e90ff; transform: scale(1.1); transition: all 0.5s ease; }
-
-/* ===== DETALLES 3D ADICIONALES ===== */
-.stat-card:before, .user-card:before { content:""; position:absolute; top:0; left:0; width:100%; height:100%; border-radius:20px; background:linear-gradient(135deg, rgba(0,255,153,0.1), rgba(30,144,255,0.1)); pointer-events:none; }
+/* ===== ANIMACIONES ===== */
+.stat-card p.update, .user-card p.update { color:#1e90ff; transform:scale(1.1); transition: all 0.5s; }
