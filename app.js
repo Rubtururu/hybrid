@@ -1,168 +1,273 @@
-let web3, contract, account, chart;
+/* =========================
+   CONFIG
+========================= */
 
 const CONTRACT_ADDRESS = "0x2A9C22f5b3Ccf204D1d7d11305a8F1D2FF5AbaE2";
 const ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"boost","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"duration","type":"uint256"}],"name":"Boost","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Claim","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Loan","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"RaffleEnter","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"}],"name":"RaffleWin","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdraw","type":"event"},{"inputs":[],"name":"accDividendPerShare","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"boostBP","type":"uint256"},{"internalType":"uint256","name":"duration","type":"uint256"}],"name":"activateBoost","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"deposit","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"dividendPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"drawRaffleWinner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"effectiveShares","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"enterRaffle","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"lastDividendTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastVolumeReset","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"pendingDividends","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"rafflePlayers","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rafflePot","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"duration","type":"uint256"}],"name":"takeLoan","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"totalDeposited","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalDividendsPaid","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalShares","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalUsers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalWithdrawn","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"treasuryPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"users","outputs":[{"internalType":"uint256","name":"deposited","type":"uint256"},{"internalType":"uint256","name":"withdrawn","type":"uint256"},{"internalType":"uint256","name":"shares","type":"uint256"},{"internalType":"uint256","name":"rewardDebt","type":"uint256"},{"internalType":"uint256","name":"dividendsClaimed","type":"uint256"},{"internalType":"uint256","name":"lastAction","type":"uint256"},{"internalType":"uint256","name":"boostBP","type":"uint256"},{"internalType":"uint256","name":"boostEnd","type":"uint256"},{"internalType":"uint256","name":"loanAmount","type":"uint256"},{"internalType":"uint256","name":"loanEnd","type":"uint256"},{"internalType":"bool","name":"exists","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"volume24h","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
 
-document.addEventListener("DOMContentLoaded", () => {
-  connectBtn.onclick = connect;
-  depositBtn.onclick = deposit;
-  withdrawBtn.onclick = withdraw;
-  claimBtn.onclick = claim;
-  raffleBtn.onclick = enterRaffle;
+let web3;
+let contract;
+let account;
+let chart;
+
+/* =========================
+   HELPERS
+========================= */
+
+const fromWei = (v) => Web3.utils.fromWei(v.toString(), "ether");
+const toWei   = (v) => Web3.utils.toWei(v.toString(), "ether");
+
+const $ = (id) => document.getElementById(id);
+
+/* =========================
+   INIT
+========================= */
+
+window.addEventListener("load", () => {
+  $("connectBtn").onclick  = connect;
+  $("depositBtn").onclick  = deposit;
+  $("withdrawBtn").onclick = withdraw;
+  $("claimBtn").onclick    = claim;
+  $("boostBtn").onclick    = boost;
+  $("loanBtn").onclick     = loan;
+  $("raffleBtn").onclick   = raffle;
 });
 
+/* =========================
+   METAMASK
+========================= */
+
 async function connect() {
-  if (!window.ethereum) return alert("Instala MetaMask");
+  if (!window.ethereum) {
+    alert("Instala MetaMask");
+    return;
+  }
 
-  web3 = new Web3(window.ethereum);
-  const accs = await ethereum.request({ method: "eth_requestAccounts" });
-  account = accs[0];
+  try {
+    web3 = new Web3(window.ethereum);
 
-  const chainId = await ethereum.request({ method: "eth_chainId" });
-  if (chainId !== "0x61") return alert("BSC Testnet");
+    const accounts = await ethereum.request({
+      method: "eth_requestAccounts"
+    });
+    account = accounts[0];
 
-  contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
-  wallet.innerText = account.slice(0,6)+"..."+account.slice(-4);
+    const chainId = await ethereum.request({ method: "eth_chainId" });
+    if (chainId !== "0x61") {
+      alert("Cambia a BSC Testnet");
+      return;
+    }
 
-  await loadStats();
-  initChart();
+    contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+
+    $("wallet").innerText =
+      account.slice(0, 6) + "..." + account.slice(-4);
+
+    await loadStats();
+    initChart();
+
+    setInterval(loadStats, 15000);
+
+  } catch (err) {
+    console.error("MetaMask error:", err);
+    alert("Error MetaMask: " + err.message);
+  }
 }
+
+/* =========================
+   STATS
+========================= */
 
 async function loadStats() {
   if (!contract || !account) return;
 
-  const [
-    treasuryPool,
-    dividendPool,
-    totalUsers,
-    totalShares,
-    rafflePot,
-    lastDividendTime
-  ] = await Promise.all([
-    contract.methods.treasuryPool().call(),
-    contract.methods.dividendPool().call(),
-    contract.methods.totalUsers().call(),
-    contract.methods.totalShares().call(),
-    contract.methods.rafflePot().call(),
-    contract.methods.lastDividendTime().call()
-  ]);
+  try {
+    // --- GLOBAL ---
+    const dividendPool = await contract.methods.dividendPool().call();
+    const totalUsers   = await contract.methods.totalUsers().call();
+    const totalShares  = await contract.methods.totalShares().call();
+    const rafflePot    = await contract.methods.rafflePot().call();
+    const lastDist     = await contract.methods.lastDistributionTime().call();
 
-  // GLOBAL
-  tvl.innerText = formatBNB(treasuryPool);
-  divPool.innerText = formatBNB(dividendPool);
-  rafflePotEl.innerText = formatBNB(rafflePot);
-  users.innerText = Number(totalUsers);
-  totalSharesEl.innerText = formatBNB(totalShares);
+    const tvlWei = await web3.eth.getBalance(CONTRACT_ADDRESS);
 
-  const nextDividend = Number(web3.utils.fromWei(dividendPool)) * 0.01;
-  nextDividendEl.innerText = nextDividend.toFixed(6);
+    $("tvl").innerText        = fromWei(tvlWei);
+    $("divPool").innerText    = fromWei(dividendPool);
+    $("users").innerText     = Number(totalUsers); // ⚠️ NO fromWei
+    $("totalShares").innerText = fromWei(totalShares);
+    $("rafflePot").innerText = fromWei(rafflePot);
 
-  startCountdown(Number(lastDividendTime));
+    // --- DAILY DIVIDEND (1%) ---
+    const daily = Number(fromWei(dividendPool)) * 0.01;
+    $("nextDividend").innerText = daily.toFixed(6);
 
-  // USER
-  const u = await contract.methods.users(account).call();
+    startCountdown(Number(lastDist));
 
-  dep.innerText = formatBNB(u.deposited);
-  withdrawn.innerText = formatBNB(u.withdrawn);
-  shares.innerText = formatBNB(u.shares);
-  pending.innerText = formatBNB(
-    await contract.methods.pendingDividends(account).call()
-  );
+    // --- USER ---
+    const u = await contract.methods.users(account).call();
 
-  // SHARE %
-  const myShares = BigInt(u.shares);
-  const totShares = BigInt(totalShares);
-  const pct = totShares > 0n
-    ? Number(myShares * 10000n / totShares) / 100
-    : 0;
+    $("dep").innerText       = fromWei(u.deposited);
+    $("withdrawn").innerText = fromWei(u.withdrawn);
+    $("shares").innerText    = fromWei(u.shares);
+    $("claimed").innerText   = fromWei(u.dividendsClaimed);
 
-  sharePct.innerText = pct.toFixed(2);
+    const pending = await contract.methods
+      .pendingDividends(account)
+      .call();
+    $("pending").innerText = fromWei(pending);
 
-  updateChart(treasuryPool, dividendPool);
-}
-
-// ---------- HELPERS ----------
-function formatBNB(v){
-  return Number(web3.utils.fromWei(v)).toFixed(6);
-}
-
-function startCountdown(last){
-  clearInterval(window._cd);
-  window._cd = setInterval(()=>{
-    const next = last + 86400;
-    const now = Math.floor(Date.now()/1000);
-    const diff = next - now;
-    if(diff<=0){
-      countdown.innerText = "Pagando…";
-      return;
+    // --- SHARE % ---
+    let pct = 0;
+    if (BigInt(totalShares) > 0n) {
+      pct =
+        Number(
+          (BigInt(u.shares) * 10000n) / BigInt(totalShares)
+        ) / 100;
     }
-    countdown.innerText =
-      `${Math.floor(diff/3600)}h ${Math.floor(diff%3600/60)}m ${diff%60}s`;
-  },1000);
+    $("sharePct").innerText = pct.toFixed(2);
+
+    updateChart(tvlWei, dividendPool);
+
+  } catch (err) {
+    console.error("Stats error:", err);
+  }
 }
 
-// ---------- CHART ----------
-function initChart(){
-  if(chart){ chart.destroy(); chart=null; }
+/* =========================
+   COUNTDOWN
+========================= */
 
-  const ctx = document.getElementById("chart").getContext("2d");
-  chart = new Chart(ctx,{
-    type:"line",
-    data:{
-      labels:[],
-      datasets:[
-        {label:"TVL", data:[], borderColor:"#3b82f6", tension:0.4},
-        {label:"Dividend Pool", data:[], borderColor:"#10b981", tension:0.4}
+function startCountdown(lastTime) {
+  const next = lastTime + 86400;
+
+  clearInterval(window.countdownInterval);
+
+  window.countdownInterval = setInterval(() => {
+    const now = Math.floor(Date.now() / 1000);
+    let diff = next - now;
+
+    if (diff < 0) diff = 0;
+
+    const h = Math.floor(diff / 3600);
+    const m = Math.floor((diff % 3600) / 60);
+    const s = diff % 60;
+
+    $("countdown").innerText =
+      `${h}h ${m}m ${s}s`;
+  }, 1000);
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+async function deposit() {
+  const v = $("amount").value;
+  if (!v || isNaN(v)) return alert("Cantidad inválida");
+
+  await contract.methods.deposit().send({
+    from: account,
+    value: toWei(v)
+  });
+
+  loadStats();
+}
+
+async function withdraw() {
+  const v = $("amount").value;
+  if (!v || isNaN(v)) return alert("Cantidad inválida");
+
+  await contract.methods.withdraw(toWei(v)).send({
+    from: account
+  });
+
+  loadStats();
+}
+
+async function claim() {
+  await contract.methods.claim().send({ from: account });
+  loadStats();
+}
+
+async function boost() {
+  const v = prompt("BNB para Boost");
+  if (!v || isNaN(v)) return;
+
+  await contract.methods
+    .activateBoost(toWei(v), 86400)
+    .send({ from: account });
+
+  loadStats();
+}
+
+async function loan() {
+  const v = prompt("BNB para préstamo");
+  if (!v || isNaN(v)) return;
+
+  await contract.methods
+    .takeLoan(toWei(v), 86400)
+    .send({ from: account });
+
+  loadStats();
+}
+
+async function raffle() {
+  await contract.methods.enterRaffle().send({
+    from: account,
+    value: toWei("0.01")
+  });
+
+  loadStats();
+}
+
+/* =========================
+   CHART
+========================= */
+
+function initChart() {
+  const ctx = $("chart").getContext("2d");
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: "TVL (BNB)",
+          data: [],
+          borderWidth: 2,
+          tension: 0.3
+        },
+        {
+          label: "Dividend Pool (BNB)",
+          data: [],
+          borderWidth: 2,
+          tension: 0.3
+        }
       ]
     },
-    options:{
-      responsive:true,
-      plugins:{legend:{labels:{color:"#e5e7eb"}}},
-      scales:{
-        x:{ticks:{color:"#9ca3af"}},
-        y:{ticks:{color:"#9ca3af"}}
-      }
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true } },
+      scales: { y: { beginAtZero: true } }
     }
   });
 }
 
-function updateChart(tvl,div){
-  if(!chart) return;
-  chart.data.labels.push(new Date().toLocaleTimeString());
-  chart.data.datasets[0].data.push(Number(web3.utils.fromWei(tvl)));
-  chart.data.datasets[1].data.push(Number(web3.utils.fromWei(div)));
-  if(chart.data.labels.length>20){
+function updateChart(tvl, div) {
+  if (!chart) return;
+
+  const t = new Date().toLocaleTimeString();
+
+  chart.data.labels.push(t);
+  chart.data.datasets[0].data.push(fromWei(tvl));
+  chart.data.datasets[1].data.push(fromWei(div));
+
+  if (chart.data.labels.length > 20) {
     chart.data.labels.shift();
-    chart.data.datasets.forEach(d=>d.data.shift());
+    chart.data.datasets.forEach(d => d.data.shift());
   }
+
   chart.update();
-}
-
-// ---------- ACTIONS ----------
-async function deposit(){
-  await contract.methods.deposit().send({
-    from:account,
-    value:web3.utils.toWei(amount.value)
-  });
-  loadStats();
-}
-
-async function withdraw(){
-  await contract.methods.withdraw(
-    web3.utils.toWei(amount.value)
-  ).send({from:account});
-  loadStats();
-}
-
-async function claim(){
-  await contract.methods.claim().send({from:account});
-  loadStats();
-}
-
-async function enterRaffle(){
-  await contract.methods.enterRaffle().send({
-    from:account,
-    value:web3.utils.toWei("0.01")
-  });
-  loadStats();
 }
