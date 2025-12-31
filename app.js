@@ -15,22 +15,29 @@ async function connect() {
   if (!window.ethereum) return alert("Instala MetaMask");
 
   web3 = new Web3(window.ethereum);
-  const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-  account = accounts[0];
+  const accs = await ethereum.request({ method: "eth_requestAccounts" });
+  account = accs[0];
 
-  if (await ethereum.request({ method: "eth_chainId" }) !== "0x61")
-    return alert("BSC Testnet");
+  const chainId = await ethereum.request({ method: "eth_chainId" });
+  if (chainId !== "0x61") return alert("BSC Testnet");
 
   contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
-  wallet.innerText = account.slice(0, 6) + "..." + account.slice(-4);
+  wallet.innerText = account.slice(0,6)+"..."+account.slice(-4);
 
   await loadStats();
   initChart();
 }
 
 async function loadStats() {
+  if (!contract || !account) return;
+
   const [
-    tvl, divPool, users, totalShares, rafflePot, lastDividend
+    treasuryPool,
+    dividendPool,
+    totalUsers,
+    totalShares,
+    rafflePot,
+    lastDividendTime
   ] = await Promise.all([
     contract.methods.treasuryPool().call(),
     contract.methods.dividendPool().call(),
@@ -40,94 +47,122 @@ async function loadStats() {
     contract.methods.lastDividendTime().call()
   ]);
 
-  tvlEl(tvl, "tvl");
-  tvlEl(divPool, "divPool");
-  tvlEl(rafflePot, "rafflePot");
+  // GLOBAL
+  tvl.innerText = formatBNB(treasuryPool);
+  divPool.innerText = formatBNB(dividendPool);
+  rafflePotEl.innerText = formatBNB(rafflePot);
+  users.innerText = Number(totalUsers);
+  totalSharesEl.innerText = formatBNB(totalShares);
 
-  users.innerText = users;
-  totalShares.innerText = web3.utils.fromWei(totalShares);
+  const nextDividend = Number(web3.utils.fromWei(dividendPool)) * 0.01;
+  nextDividendEl.innerText = nextDividend.toFixed(6);
 
-  const next = web3.utils.fromWei(divPool) * 0.01;
-  nextDividend.innerText = next.toFixed(6);
+  startCountdown(Number(lastDividendTime));
 
-  startCountdown(lastDividend);
-
+  // USER
   const u = await contract.methods.users(account).call();
-  dep.innerText = web3.utils.fromWei(u.deposited);
-  withdrawn.innerText = web3.utils.fromWei(u.withdrawn);
-  shares.innerText = web3.utils.fromWei(u.shares);
 
-  const pct = totalShares > 0
-    ? (u.shares * 100n) / BigInt(totalShares)
-    : 0n;
-
-  sharePct.innerText = pct.toString();
-  pending.innerText = web3.utils.fromWei(
+  dep.innerText = formatBNB(u.deposited);
+  withdrawn.innerText = formatBNB(u.withdrawn);
+  shares.innerText = formatBNB(u.shares);
+  pending.innerText = formatBNB(
     await contract.methods.pendingDividends(account).call()
   );
 
-  updateChart(tvl, divPool);
+  // SHARE %
+  const myShares = BigInt(u.shares);
+  const totShares = BigInt(totalShares);
+  const pct = totShares > 0n
+    ? Number(myShares * 10000n / totShares) / 100
+    : 0;
+
+  sharePct.innerText = pct.toFixed(2);
+
+  updateChart(treasuryPool, dividendPool);
 }
 
-function tvlEl(val, id) {
-  document.getElementById(id).innerText =
-    Number(web3.utils.fromWei(val)).toFixed(6);
+// ---------- HELPERS ----------
+function formatBNB(v){
+  return Number(web3.utils.fromWei(v)).toFixed(6);
 }
 
-function startCountdown(last) {
-  setInterval(() => {
-    const next = Number(last) + 86400;
-    const diff = next - Math.floor(Date.now() / 1000);
-    if (diff <= 0) return countdown.innerText = "Pagando…";
+function startCountdown(last){
+  clearInterval(window._cd);
+  window._cd = setInterval(()=>{
+    const next = last + 86400;
+    const now = Math.floor(Date.now()/1000);
+    const diff = next - now;
+    if(diff<=0){
+      countdown.innerText = "Pagando…";
+      return;
+    }
     countdown.innerText =
       `${Math.floor(diff/3600)}h ${Math.floor(diff%3600/60)}m ${diff%60}s`;
-  }, 1000);
+  },1000);
 }
 
-function initChart() {
-  if (chart) chart.destroy();
-  chart = new Chart(chartEl(), {
-    type: "line",
-    data: { labels: [], datasets: [{ data: [] }] },
-    options: { responsive: true }
+// ---------- CHART ----------
+function initChart(){
+  if(chart){ chart.destroy(); chart=null; }
+
+  const ctx = document.getElementById("chart").getContext("2d");
+  chart = new Chart(ctx,{
+    type:"line",
+    data:{
+      labels:[],
+      datasets:[
+        {label:"TVL", data:[], borderColor:"#3b82f6", tension:0.4},
+        {label:"Dividend Pool", data:[], borderColor:"#10b981", tension:0.4}
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{labels:{color:"#e5e7eb"}}},
+      scales:{
+        x:{ticks:{color:"#9ca3af"}},
+        y:{ticks:{color:"#9ca3af"}}
+      }
+    }
   });
 }
 
-function updateChart(tvl, div) {
+function updateChart(tvl,div){
+  if(!chart) return;
   chart.data.labels.push(new Date().toLocaleTimeString());
-  chart.data.datasets[0].data.push(web3.utils.fromWei(tvl));
-  if (chart.data.labels.length > 20) {
+  chart.data.datasets[0].data.push(Number(web3.utils.fromWei(tvl)));
+  chart.data.datasets[1].data.push(Number(web3.utils.fromWei(div)));
+  if(chart.data.labels.length>20){
     chart.data.labels.shift();
-    chart.data.datasets[0].data.shift();
+    chart.data.datasets.forEach(d=>d.data.shift());
   }
   chart.update();
 }
 
-const chartEl = () => document.getElementById("chart").getContext("2d");
-
-async function deposit() {
+// ---------- ACTIONS ----------
+async function deposit(){
   await contract.methods.deposit().send({
-    from: account,
-    value: web3.utils.toWei(amount.value)
+    from:account,
+    value:web3.utils.toWei(amount.value)
   });
   loadStats();
 }
 
-async function withdraw() {
-  await contract.methods.withdraw(web3.utils.toWei(amount.value))
-    .send({ from: account });
+async function withdraw(){
+  await contract.methods.withdraw(
+    web3.utils.toWei(amount.value)
+  ).send({from:account});
   loadStats();
 }
 
-async function claim() {
-  await contract.methods.claim().send({ from: account });
+async function claim(){
+  await contract.methods.claim().send({from:account});
   loadStats();
 }
 
-async function enterRaffle() {
+async function enterRaffle(){
   await contract.methods.enterRaffle().send({
-    from: account,
-    value: web3.utils.toWei("0.01")
+    from:account,
+    value:web3.utils.toWei("0.01")
   });
   loadStats();
 }
