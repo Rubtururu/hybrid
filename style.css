@@ -1,121 +1,21 @@
-/* ---------------- RESET ---------------- */
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
-html,body{width:100%;height:100%;background:#0d0d0d;color:#f0f0f0;}
-a{text-decoration:none;color:inherit;}
-button{cursor:pointer;outline:none;}
-ul{list-style:none;}
-
-/* ---------------- CONTAINER ---------------- */
-.container{width:95%;max-width:1400px;margin:20px auto;padding:20px;}
-
-/* ---------------- HEADER ---------------- */
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
-header h1{font-size:2rem;color:#1e90ff;text-shadow:0 0 8px #1e90ff;}
-header .btn{padding:10px 20px;font-size:1rem;border:none;border-radius:12px;transition:all 0.3s;box-shadow:0 0 10px rgba(0,0,0,0.3);}
-header .btn.primary{background:linear-gradient(90deg,#1e90ff,#00bfff);color:#fff;}
-header .btn.primary:hover{background:linear-gradient(90deg,#00bfff,#1e90ff);transform:scale(1.05);box-shadow:0 0 20px #00bfff;}
-
-/* ---------------- SECTIONS ---------------- */
-section{margin-bottom:30px;position:relative;}
-h2{font-size:1.6rem;color:#00ff99;margin-bottom:15px;text-shadow:0 0 5px #00ff99;}
-
-/* ---------------- STATS GRID ---------------- */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;}
-.stat{background:linear-gradient(145deg,#111111,#1a1a1a);padding:18px;border-radius:15px;position:relative;transition:0.3s;box-shadow:0 5px 15px rgba(0,0,0,0.4);}
-.stat h3{font-size:1rem;color:#ccc;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;}
-.stat span{font-size:1.5rem;font-weight:bold;color:#fff;display:block;transition:0.3s;}
-.stat .small{font-size:0.75rem;color:#888;margin-top:3px;}
-.stat.update{animation:updateAnim 0.7s ease-in-out;}
-@keyframes updateAnim{
-  0%{transform:scale(1);color:#fff;}
-  50%{transform:scale(1.15);color:#00ff99;text-shadow:0 0 8px #00ff99;}
-  100%{transform:scale(1);color:#fff;text-shadow:none;}
-}
-
-/* ---------------- BUTTONS ---------------- */
-.btn{margin:5px 0;padding:12px 18px;border-radius:12px;font-weight:bold;font-size:0.95rem;transition:all 0.3s;box-shadow:0 0 8px rgba(0,0,0,0.3);}
-.btn.green{background:linear-gradient(90deg,#28a745,#5ce27f);color:#fff;}
-.btn.green:hover{background:linear-gradient(90deg,#5ce27f,#28a745);transform:scale(1.08);box-shadow:0 0 15px #5ce27f;}
-.btn.red{background:linear-gradient(90deg,#dc3545,#ff6b6b);color:#fff;}
-.btn.red:hover{background:linear-gradient(90deg,#ff6b6b,#dc3545);transform:scale(1.08);box-shadow:0 0 15px #ff6b6b;}
-.btn.blue{background:linear-gradient(90deg,#007bff,#00bfff);color:#fff;}
-.btn.blue:hover{background:linear-gradient(90deg,#00bfff,#007bff);transform:scale(1.08);box-shadow:0 0 15px #00bfff;}
-.btn.purple{background:linear-gradient(90deg,#6f42c1,#b05ce7);color:#fff;}
-.btn.purple:hover{background:linear-gradient(90deg,#b05ce7,#6f42c1);transform:scale(1.08);box-shadow:0 0 15px #b05ce7;}
-.btn.orange{background:linear-gradient(90deg,#fd7e14,#ffa94d);color:#fff;}
-.btn.orange:hover{background:linear-gradient(90deg,#ffa94d,#fd7e14);transform:scale(1.08);box-shadow:0 0 15px #ffa94d;}
-.btn.yellow{background:linear-gradient(90deg,#ffc107,#fff17f);color:#000;}
-.btn.yellow:hover{background:linear-gradient(90deg,#fff17f,#ffc107);transform:scale(1.08);box-shadow:0 0 15px #fff17f;}
-.btn.pink{background:linear-gradient(90deg,#e83e8c,#ff6eb4);color:#fff;}
-.btn.pink:hover{background:linear-gradient(90deg,#ff6eb4,#e83e8c);transform:scale(1.08);box-shadow:0 0 15px #ff6eb4;}
-
-/* ---------------- INPUTS ---------------- */
-input[type=text]{padding:12px;border-radius:12px;border:none;margin-right:10px;width:160px;background:#222;color:#fff;box-shadow:0 0 10px rgba(0,0,0,0.5);transition:0.3s;}
-input[type=text]:focus{background:#333;box-shadow:0 0 15px #00ff99;outline:none;}
-
-/* ---------------- CHARTS ---------------- */
-.charts canvas{background:linear-gradient(0deg,#111111,#1a1a1a);border-radius:15px;padding:10px;box-shadow:0 5px 15px rgba(0,0,0,0.4);}
-
-/* ---------------- RAFFLE ---------------- */
-.raffle ul{list-style:none;padding:0;margin-top:10px;}
-.raffle ul li{padding:12px;background:linear-gradient(145deg,#1a1a1a,#111111);margin-bottom:10px;border-radius:12px;transition:0.3s;box-shadow:0 3px 10px rgba(0,0,0,0.3);}
-.raffle ul li:hover{background:linear-gradient(145deg,#00ff99,#005522);transform:scale(1.03);color:#fff;}
-.raffle .winner{margin-top:15px;padding:15px;font-size:1.3rem;color:#ffdd00;text-shadow:0 0 8px #ffdd00;animation:winnerAnim 1s ease-in-out;}
-@keyframes winnerAnim{0%{transform:scale(0);}50%{transform:scale(1.3);}100%{transform:scale(1);}}
-
-/* ---------------- TOOLTIP ---------------- */
-.stat[data-tooltip]{position:relative;cursor:help;}
-.stat[data-tooltip]:hover::after{
-  content:attr(data-tooltip);
-  position:absolute;
-  top:-35px;left:50%;
-  transform:translateX(-50%);
-  background:rgba(0,0,0,0.8);
-  color:#fff;
-  padding:6px 10px;
-  border-radius:6px;
-  font-size:0.75rem;
-  white-space:nowrap;
-  opacity:0;
-  animation:fadeTooltip 0.3s forwards;
-}
-@keyframes fadeTooltip{0%{opacity:0;}100%{opacity:1;}}
-
-/* ---------------- RESPONSIVE ---------------- */
-@media(max-width:1024px){.stat-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));}}
-@media(max-width:768px){.stat-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}}
-@media(max-width:480px){
-  header{flex-direction:column;align-items:flex-start;}
-  header h1{margin-bottom:15px;}
-  input[type=text]{width:120px;margin-bottom:10px;}
-}
-
-/* ---------------- ADDITIONAL EFFECTS ---------------- */
-/* Glow animation for stats that change */
-.stat span{transition:0.3s;color:#fff;}
-.stat span.glow{animation:glowAnim 1s ease-in-out;}
-@keyframes glowAnim{
-  0%{text-shadow:0 0 5px #00ff99;color:#fff;}
-  50%{text-shadow:0 0 20px #00ff99;color:#00ff99;}
-  100%{text-shadow:0 0 5px #00ff99;color:#fff;}
-}
-
-/* Pulsing buttons */
-.btn{position:relative;}
-.btn::after{
-  content:"";
-  position:absolute;
-  top:-2px;left:-2px;right:-2px;bottom:-2px;
-  border-radius:inherit;
-  box-shadow:0 0 20px rgba(255,255,255,0.1);
-  opacity:0;
-  transition:0.3s;
-}
-.btn:hover::after{opacity:1;}
-
-/* Hover effect on container sections */
-section:hover{box-shadow:0 0 20px rgba(0,255,153,0.3);transform:scale(1.01);transition:all 0.4s;}
-
-/* Glow for chart datasets */
-.charts canvas{animation:chartGlow 2s infinite alternate;}
-@keyframes chartGlow{0%{box-shadow:0 0 15px #00ff99;}100%{box-shadow:0 0 30px #00ff99;}}
+/* Reset */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+body{background:#0f111a;color:#f0f0f0;line-height:1.6;}
+.container{max-width:1400px;margin:0 auto;padding:20px;}
+h1,h2,h3{margin-bottom:10px;}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.btn-primary{padding:10px 20px;background:#1e90ff;color:#fff;border:none;border-radius:8px;cursor:pointer;transition:all 0.3s;}
+.btn-primary:hover{background:#1c7ed6;transform:scale(1.05);}
+section{margin-bottom:30px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;}
+.card{background:#1a1c2b;padding:20px;border-radius:12px;box-shadow:0 0 15px rgba(0,0,0,0.5);transition:all 0.3s;position:relative;}
+.card h3{font-size:1rem;color:#aaa;margin-bottom:5px;}
+.card p{font-size:1.3rem;font-weight:700;}
+.card p.update{animation:flash 0.6s ease;}
+@keyframes flash{0%{color:#1e90ff;}50%{color:#00ff99;}100%{color:#f0f0f0;}}
+input[type=text]{padding:10px;border-radius:8px;border:none;margin-right:10px;width:120px;background:#1a1c2b;color:#fff;}
+.charts canvas{background:#1a1c2b;padding:20px;border-radius:12px;box-shadow:0 0 15px rgba(0,0,0,0.5);}
+.raffle ul{list-style:none;padding-left:0;}
+.raffle li{background:#1a1c2b;padding:10px;border-radius:8px;margin-bottom:5px;box-shadow:0 0 10px rgba(0,0,0,0.4);transition:all 0.3s;}
+.raffle li:hover{background:#22243b;transform:scale(1.02);}
+.actions button{margin-top:10px;margin-right:10px;}
