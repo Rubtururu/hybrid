@@ -1,23 +1,23 @@
 body {
     margin: 0;
     font-family: 'Arial', sans-serif;
-    background: #f0f2f5;
-    color: #111;
+    background:#f0f2f5;
+    color:#111;
 }
 
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 40px;
-    background: #1a1a2e;
-    color: #fff;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 40px;
+    background:#1a1a2e;
+    color:#fff;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
 }
 
-header h1 { margin:0; }
-header button {
-    padding: 10px 20px;
+header h1{margin:0;}
+header button{
+    padding:10px 20px;
     border:none;
     border-radius:10px;
     background:#ff5722;
@@ -26,54 +26,72 @@ header button {
     cursor:pointer;
     transition:0.3s;
 }
-header button:hover { background:#e64a19; }
+header button:hover{background:#e64a19;}
 
-main { padding:20px 40px; }
-
-section { 
-    background:#fff; 
-    border-radius:20px; 
-    padding:20px; 
+main{padding:20px 40px;}
+section{
+    background:#fff;
+    border-radius:20px;
+    padding:20px;
     margin-bottom:20px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+    position:relative;
+}
+section h2{margin-top:0;}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:15px;
+    margin-bottom:15px;
 }
 
-section h2 { margin-top:0; }
-
-.stats div {
-    margin:8px 0;
-    font-size:1.1rem;
+.stat-card{
+    background:#f8f9fa;
+    padding:15px;
+    border-radius:15px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+    font-weight:bold;
+    text-align:center;
+    transition:0.3s;
+}
+.stat-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
 }
 
-.actions, .actions input, .actions button {
-    margin:8px 0;
+.actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:15px;
 }
 
-.actions input {
+.actions input{
     padding:8px;
     border-radius:10px;
     border:1px solid #ccc;
     width:150px;
 }
 
-.actions button {
+.actions button{
     padding:8px 15px;
     border:none;
     border-radius:10px;
-    margin-left:5px;
     cursor:pointer;
     background:#2979ff;
     color:#fff;
     font-weight:bold;
     transition:0.3s;
 }
+.actions button:hover{background:#1565c0;}
 
-.actions button:hover { background:#1565c0; }
-
-canvas {
+.chart-container{
     margin-top:15px;
-    border-radius:10px;
+    padding:10px;
+    border-radius:15px;
     background:#fafafa;
+    box-shadow:inset 0 0 10px rgba(0,0,0,0.05);
 }
 
-ol { padding-left:20px; }
+ol{padding-left:20px;}
