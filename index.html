@@ -5,72 +5,71 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartStakingBNB Dashboard</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/web3@1.9.1/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <header>
+    <h1>SmartStakingBNB Dashboard</h1>
+    <button id="connectBtn" class="btn primary">Conectar Wallet</button>
+  </header>
 
-<header>
-  <h1>SmartStakingBNB Dashboard</h1>
-  <button id="connectBtn">Conectar MetaMask</button>
-</header>
-
-<main>
-  <section class="card-section">
-    <h2>👤 Mis Stats</h2>
-    <div class="grid">
-      <div class="stat-card"><span>Depositado</span><p id="dep">-</p></div>
-      <div class="stat-card"><span>Retirado</span><p id="withdrawn">-</p></div>
-      <div class="stat-card"><span>Shares</span><p id="shares">-</p></div>
-      <div class="stat-card highlight"><span>Pending</span><p id="pending">-</p></div>
-      <div class="stat-card"><span>Claimed</span><p id="claimed">-</p></div>
-      <div class="stat-card"><span>Boost</span><p id="boost">-</p></div>
-      <div class="stat-card"><span>Loan</span><p id="loan">-</p></div>
-    </div>
-
-    <div class="actions">
-      <input id="amount" placeholder="Cantidad BNB" type="number" min="0" step="0.0001">
-      <div class="btn-group">
-        <button id="depositBtn">Depositar</button>
-        <button id="withdrawBtn">Retirar</button>
-        <button id="claimBtn">Claim</button>
-        <button id="boostBtn">Activar Boost</button>
-        <button id="loanBtn">Préstamo</button>
-        <button id="raffleBtn">Entrar Rifa</button>
+  <main>
+    <section class="stats">
+      <h2>Estadísticas del Contrato</h2>
+      <div class="grid">
+        <div class="card">TVL: <span id="tvl">0</span> BNB</div>
+        <div class="card">Dividend Pool: <span id="divPool">0</span> BNB</div>
+        <div class="card">Usuarios: <span id="users">0</span></div>
+        <div class="card">Total Shares: <span id="totalShares">0</span> BNB</div>
+        <div class="card">Volumen 24h: <span id="volume">0</span> BNB</div>
+        <div class="card">Total Depositado: <span id="totalDeposited">0</span> BNB</div>
+        <div class="card">Total Retirado: <span id="totalWithdrawn">0</span> BNB</div>
+        <div class="card">Raffle Pot: <span id="rafflePot">0</span> BNB</div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="card-section">
-    <h2>📊 Global Stats</h2>
-    <div class="grid">
-      <div class="stat-card"><span>TVL</span><p id="tvl">-</p></div>
-      <div class="stat-card highlight"><span>Dividend Pool</span><p id="divPool">-</p></div>
-      <div class="stat-card"><span>Total Shares</span><p id="totalShares">-</p></div>
-      <div class="stat-card"><span>Total Users</span><p id="users">-</p></div>
-      <div class="stat-card"><span>Volume 24h</span><p id="volume">-</p></div>
-      <div class="stat-card"><span>Total Deposited</span><p id="totalDeposited">-</p></div>
-      <div class="stat-card"><span>Total Withdrawn</span><p id="totalWithdrawn">-</p></div>
-      <div class="stat-card highlight"><span>Raffle Pot</span><p id="rafflePot">-</p></div>
-    </div>
-  </section>
+    <section class="user-stats">
+      <h2>Tu Estadística</h2>
+      <div class="grid">
+        <div class="card">Depositado: <span id="dep">0</span> BNB</div>
+        <div class="card">Retirado: <span id="withdrawn">0</span> BNB</div>
+        <div class="card">Shares: <span id="shares">0</span> BNB</div>
+        <div class="card">Claimed: <span id="claimed">0</span> BNB</div>
+        <div class="card">Pending: <span id="pending">0</span> BNB</div>
+        <div class="card">Boost: <span id="boost">-</span></div>
+        <div class="card">Loan: <span id="loan">-</span></div>
+      </div>
+    </section>
 
-  <section class="card-section">
-    <h2>📈 TVL vs Dividend Pool</h2>
-    <canvas id="chart" height="180"></canvas>
-  </section>
+    <section class="actions">
+      <h2>Acciones</h2>
+      <div class="action-grid">
+        <input type="text" id="amount" placeholder="Cantidad en BNB">
+        <button id="depositBtn" class="btn primary">Depositar</button>
+        <button id="withdrawBtn" class="btn secondary">Retirar</button>
+        <button id="claimBtn" class="btn success">Claim</button>
+        <button id="boostBtn" class="btn warning">Boost</button>
+        <button id="loanBtn" class="btn danger">Préstamo</button>
+        <button id="raffleBtn" class="btn info">Entrar en Rifa</button>
+      </div>
+    </section>
 
-  <section class="card-section">
-    <h2>🏆 Leaderboard Rifa</h2>
-    <ul id="leaderboard" class="leaderboard"></ul>
-  </section>
+    <section class="chart-section">
+      <h2>Gráfico TVL / Dividend Pool</h2>
+      <canvas id="chart"></canvas>
+    </section>
 
-</main>
+    <section class="raffle">
+      <h2>Leaderboard Rifa</h2>
+      <ul id="leaderboard"></ul>
+    </section>
+  </main>
 
-<footer>
-  SmartStakingBNB Dashboard - Testnet
-</footer>
+  <footer>
+    <p>SmartStakingBNB Dashboard &copy; 2025</p>
+  </footer>
 
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
