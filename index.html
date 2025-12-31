@@ -5,19 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartStakingBNB Dashboard</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/web3@1.9.0/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.12.0/dist/web3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+
 <div class="container">
 
+  <!-- HEADER -->
   <header>
     <h1>SmartStakingBNB Dashboard</h1>
-    <button id="connectBtn" class="btn connect-btn">Conectar MetaMask</button>
+    <button id="connectBtn" class="connect-btn">Conectar MetaMask</button>
   </header>
 
+  <!-- ESTADÍSTICAS GENERALES -->
   <section class="stats-section">
-    <h2>Estadísticas Globales</h2>
+    <h2>Estadísticas Generales</h2>
     <div class="stats-grid">
       <div class="stat-card">
         <h3>Total TVL</h3>
@@ -52,16 +55,17 @@
         <p id="rafflePot">0</p>
       </div>
       <div class="stat-card">
-        <h3>Next Dividend (1%)</h3>
+        <h3>Next Dividend</h3>
         <p id="nextDividend">0</p>
       </div>
       <div class="stat-card">
         <h3>Countdown</h3>
-        <p id="dividendCountdown">0h 0m 0s</p>
+        <p id="dividendCountdown">00:00:00</p>
       </div>
     </div>
   </section>
 
+  <!-- MIS STATS -->
   <section class="user-section">
     <h2>Mis Stats</h2>
     <div class="user-grid">
@@ -78,16 +82,16 @@
         <p id="shares">0</p>
       </div>
       <div class="user-card">
+        <h3>Mi % de Share</h3>
+        <p id="sharePercent">0%</p>
+      </div>
+      <div class="user-card">
         <h3>Dividends Claimados</h3>
         <p id="claimed">0</p>
       </div>
       <div class="user-card">
         <h3>Dividends Pendientes</h3>
         <p id="pending">0</p>
-      </div>
-      <div class="user-card">
-        <h3>% de Share</h3>
-        <p id="sharePercent">0</p>
       </div>
       <div class="user-card">
         <h3>Boost</h3>
@@ -100,24 +104,27 @@
     </div>
   </section>
 
+  <!-- ACCIONES -->
   <section class="actions-section">
     <h2>Acciones</h2>
-    <input type="text" id="amount" placeholder="BNB">
     <div class="actions-grid">
-      <button class="btn action-btn" id="depositBtn">Depositar</button>
-      <button class="btn action-btn" id="withdrawBtn">Retirar</button>
-      <button class="btn action-btn" id="claimBtn">Claim</button>
-      <button class="btn action-btn" id="boostBtn">Activar Boost</button>
-      <button class="btn action-btn" id="loanBtn">Préstamo</button>
-      <button class="btn action-btn" id="raffleBtn">Entrar Rifa</button>
+      <input type="text" id="amount" placeholder="BNB cantidad">
+      <button class="action-btn" id="depositBtn">Depositar</button>
+      <button class="action-btn" id="withdrawBtn">Retirar</button>
+      <button class="action-btn" id="claimBtn">Claim</button>
+      <button class="action-btn" id="boostBtn">Activar Boost</button>
+      <button class="action-btn" id="loanBtn">Préstamo</button>
+      <button class="action-btn" id="raffleBtn">Entrar Rifa</button>
     </div>
   </section>
 
+  <!-- CHART -->
   <section class="chart-section">
     <h2>Gráficos</h2>
-    <canvas id="chart"></canvas>
+    <canvas id="chart" height="250"></canvas>
   </section>
 
+  <!-- RIFA -->
   <section class="raffle-section">
     <h2>Jugadores Rifa</h2>
     <ul id="leaderboard"></ul>
