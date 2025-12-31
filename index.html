@@ -9,35 +9,42 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
-    <h1>SmartStakingBNB Dashboard</h1>
-    <button id="connectBtn">Conectar MetaMask</button>
-  </header>
+  <div class="container">
+    <header>
+      <h1>SmartStakingBNB Dashboard</h1>
+      <button id="connectBtn">Conectar MetaMask</button>
+    </header>
 
-  <main>
-    <section class="stats-grid">
-      <div class="stat-card"><h3>Total TVL</h3><p id="tvl">-</p></div>
-      <div class="stat-card"><h3>Dividend Pool</h3><p id="divPool">-</p></div>
-      <div class="stat-card"><h3>Total Users</h3><p id="users">-</p></div>
-      <div class="stat-card"><h3>Total Shares</h3><p id="totalShares">-</p></div>
-      <div class="stat-card"><h3>24h Volume</h3><p id="volume">-</p></div>
-      <div class="stat-card"><h3>Total Deposited</h3><p id="totalDeposited">-</p></div>
-      <div class="stat-card"><h3>Total Withdrawn</h3><p id="totalWithdrawn">-</p></div>
-      <div class="stat-card"><h3>Raffle Pot</h3><p id="rafflePot">-</p></div>
-      <div class="stat-card"><h3>Last Dividend</h3><p id="lastDividendTime">-</p></div>
-      <div class="stat-card"><h3>Last Volume Reset</h3><p id="lastVolumeReset">-</p></div>
+    <section class="stats">
+      <h2>Stats Globales</h2>
+      <div class="stat-grid">
+        <div>Total TVL <span id="tvl">0</span> BNB</div>
+        <div>Dividend Pool <span id="divPool">0</span> BNB</div>
+        <div>Total Users <span id="users">0</span></div>
+        <div>Total Shares <span id="totalShares">0</span> BNB</div>
+        <div>24h Volume <span id="volume">0</span> BNB</div>
+        <div>Total Deposited <span id="totalDeposited">0</span> BNB</div>
+        <div>Total Withdrawn <span id="totalWithdrawn">0</span> BNB</div>
+        <div>Raffle Pot <span id="rafflePot">0</span> BNB</div>
+        <div>Last Dividend <span id="lastDividend">-</span></div>
+        <div>Last Volume Reset <span id="lastVolumeReset">-</span></div>
+      </div>
     </section>
 
     <section class="user-stats">
       <h2>Mis Stats</h2>
-      <div class="user-card"><h4>Depositado</h4><p id="dep">-</p></div>
-      <div class="user-card"><h4>Retirado</h4><p id="withdrawn">-</p></div>
-      <div class="user-card"><h4>Shares</h4><p id="shares">-</p></div>
-      <div class="user-card"><h4>Dividends Claimados</h4><p id="claimed">-</p></div>
-      <div class="user-card"><h4>Dividends Pendientes</h4><p id="pending">-</p></div>
-      <div class="user-card"><h4>Boost</h4><p id="boost">-</p></div>
-      <div class="user-card"><h4>Préstamo</h4><p id="loan">-</p></div>
-      <div class="user-card"><h4>Última Acción</h4><p id="lastAction">-</p></div>
+      <div class="stat-grid">
+        <div>Depositado <span id="dep">0</span> BNB</div>
+        <div>Retirado <span id="withdrawn">0</span> BNB</div>
+        <div>Shares <span id="shares">0</span> BNB</div>
+        <div>% Share <span id="percentShare">0</span>%</div>
+        <div>Dividends Claimados <span id="claimed">0</span> BNB</div>
+        <div>Dividends Pendientes <span id="pending">0</span> BNB</div>
+        <div>Dividendos diarios (1%) <span id="dailyDividend">0</span> BNB</div>
+        <div>Boost <span id="boost">-</span></div>
+        <div>Préstamo <span id="loan">-</span></div>
+        <div>Última Acción <span id="lastAction">-</span></div>
+      </div>
     </section>
 
     <section class="actions">
@@ -60,11 +67,7 @@
       <h2>Jugadores Rifa</h2>
       <ul id="leaderboard"></ul>
     </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2025 SmartStakingBNB</p>
-  </footer>
+  </div>
 
   <script src="app.js"></script>
 </body>
