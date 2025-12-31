@@ -3,6 +3,7 @@ const ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{
 
 let web3, contract, account, chart;
 
+// Botones
 document.getElementById("connectBtn").onclick = connect;
 document.getElementById("depositBtn").onclick = deposit;
 document.getElementById("withdrawBtn").onclick = withdraw;
@@ -11,87 +12,163 @@ document.getElementById("boostBtn").onclick = activateBoost;
 document.getElementById("loanBtn").onclick = takeLoan;
 document.getElementById("raffleBtn").onclick = enterRaffle;
 
-async function connect(){
-  if(window.ethereum){
-    web3 = new Web3(window.ethereum);
-    try{
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      account = accounts[0];
+// Conectar MetaMask
+async function connect() {
+    if (window.ethereum) {
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            web3 = new Web3(window.ethereum);
+            const accounts = await web3.eth.getAccounts();
+            account = accounts[0];
 
-      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      if(chainId !== '0x61'){ alert("Cambia MetaMask a BSC Testnet"); return; }
+            const chainId = await web3.eth.getChainId();
+            if (chainId !== 97) { // BSC Testnet
+                alert("Cambia MetaMask a BSC Testnet");
+                return;
+            }
 
-      contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
-      alert("Wallet conectada: " + account);
+            contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+            alert("Wallet conectada: " + account);
 
-      loadStats();
-      initChart();
-
-    } catch(err){ alert("Error MetaMask: " + err.message); }
-  } else { alert("Instala MetaMask"); }
+            loadStats();
+            initChart();
+        } catch (err) {
+            alert("Error MetaMask: " + err.message);
+        }
+    } else {
+        alert("Instala MetaMask");
+    }
 }
 
-async function loadStats(){
-  if(!contract||!account) return;
-  try{
-    const [tvl, divPool, users, volume24h, totalShares, totalDeposited, totalWithdrawn, rafflePot] =
-      await Promise.all([
-        contract.methods.treasuryPool().call(),
-        contract.methods.dividendPool().call(),
-        contract.methods.totalUsers().call(),
-        contract.methods.volume24h().call(),
-        contract.methods.totalShares().call(),
-        contract.methods.totalDeposited().call(),
-        contract.methods.totalWithdrawn().call(),
-        contract.methods.rafflePot().call()
-      ]);
+// Cargar todas las estadísticas
+async function loadStats() {
+    if (!contract || !account) return;
+    try {
+        // Stats globales
+        const [tvl, divPool, users, volume, totalShares, totalDeposited, totalWithdrawn, rafflePot] = await Promise.all([
+            contract.methods.treasuryPool().call(),
+            contract.methods.dividendPool().call(),
+            contract.methods.totalUsers().call(),
+            contract.methods.volume24h().call(),
+            contract.methods.totalShares().call(),
+            contract.methods.totalDeposited().call(),
+            contract.methods.totalWithdrawn().call(),
+            contract.methods.rafflePot().call()
+        ]);
 
-    document.getElementById("tvl").innerText = web3.utils.fromWei(tvl);
-    document.getElementById("divPool").innerText = web3.utils.fromWei(divPool);
-    document.getElementById("users").innerText = users;
-    document.getElementById("volume").innerText = web3.utils.fromWei(volume24h);
-    document.getElementById("totalShares").innerText = web3.utils.fromWei(totalShares);
-    document.getElementById("totalDeposited").innerText = web3.utils.fromWei(totalDeposited);
-    document.getElementById("totalWithdrawn").innerText = web3.utils.fromWei(totalWithdrawn);
-    document.getElementById("rafflePot").innerText = web3.utils.fromWei(rafflePot);
+        updateStat("tvl", tvl);
+        updateStat("divPool", divPool);
+        updateStat("users", users);
+        updateStat("volume", volume);
+        updateStat("totalShares", totalShares);
+        updateStat("totalDeposited", totalDeposited);
+        updateStat("totalWithdrawn", totalWithdrawn);
+        updateStat("rafflePot", rafflePot);
 
-    const u = await contract.methods.users(account).call();
-    document.getElementById("dep").innerText = web3.utils.fromWei(u.deposited);
-    document.getElementById("withdrawn").innerText = web3.utils.fromWei(u.withdrawn);
-    document.getElementById("shares").innerText = web3.utils.fromWei(u.shares);
-    document.getElementById("claimed").innerText = web3.utils.fromWei(u.dividendsClaimed);
-    const pending = await contract.methods.pendingDividends(account).call();
-    document.getElementById("pending").innerText = web3.utils.fromWei(pending);
-    document.getElementById("boost").innerText = u.boostBP>0?`${u.boostBP/100}%` : '-';
-    document.getElementById("loan").innerText = u.loanAmount>0?web3.utils.fromWei(u.loanAmount)+" BNB":'-';
+        // Stats del usuario
+        const u = await contract.methods.users(account).call();
+        updateStat("dep", u.deposited);
+        updateStat("withdrawn", u.withdrawn);
+        updateStat("shares", u.shares);
+        updateStat("claimed", u.dividendsClaimed);
+        const pending = await contract.methods.pendingDividends(account).call();
+        updateStat("pending", pending);
 
-    updateChart(tvl, divPool);
-  } catch(err){ console.error(err); }
+        document.getElementById("boost").innerText = u.boostBP > 0 ? `${u.boostBP/100}% hasta ${new Date(u.boostEnd*1000).toLocaleString()}` : "-";
+        document.getElementById("loan").innerText = u.loanAmount > 0 ? `${web3.utils.fromWei(u.loanAmount)} BNB hasta ${new Date(u.loanEnd*1000).toLocaleString()}` : "-";
+
+        updateChart(tvl, divPool);
+
+    } catch (err) {
+        console.error("Error cargando stats:", err);
+    }
 }
 
-async function deposit(){ const amount = document.getElementById("amount").value; if(!amount) return alert("Ingresa cantidad"); await contract.methods.deposit().send({ from: account, value: web3.utils.toWei(amount) }); loadStats(); }
-async function withdraw(){ const amount = document.getElementById("amount").value; if(!amount) return alert("Ingresa cantidad"); await contract.methods.withdraw(web3.utils.toWei(amount)).send({ from: account }); loadStats(); }
-async function claim(){ await contract.methods.claim().send({from:account}); loadStats(); }
-async function activateBoost(){ const amt = prompt("BNB para boost"); if(amt) await contract.methods.activateBoost(web3.utils.toWei(amt),3600*24).send({from:account}); loadStats(); }
-async function takeLoan(){ const amt = prompt("BNB préstamo"); if(amt) await contract.methods.takeLoan(web3.utils.toWei(amt),3600*24).send({from:account}); loadStats(); }
-async function enterRaffle(){ await contract.methods.enterRaffle().send({from:account,value:web3.utils.toWei('0.01')}); loadStats(); }
-
-function initChart(){
-  const ctx = document.getElementById('chart').getContext('2d');
-  chart = new Chart(ctx,{ type:'line', data:{ labels:[], datasets:[
-    {label:'TVL', data:[], borderColor:'#1e90ff'},
-    {label:'Dividend Pool', data:[], borderColor:'#00ff99'}
-  ]}});
+// Actualizar cada elemento de stats
+function updateStat(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const old = el.innerText;
+    el.innerText = web3.utils.fromWei(value.toString());
+    if (old !== el.innerText) {
+        el.classList.add("update");
+        setTimeout(() => el.classList.remove("update"), 600);
+    }
 }
 
-function updateChart(tvl, div){
-  if(!chart) return;
-  const time = new Date().toLocaleTimeString();
-  chart.data.labels.push(time);
-  chart.data.datasets[0].data.push(web3.utils.fromWei(tvl));
-  chart.data.datasets[1].data.push(web3.utils.fromWei(div));
-  if(chart.data.labels.length>30){ chart.data.labels.shift(); chart.data.datasets.forEach(d=>d.data.shift()); }
-  chart.update();
+// Funciones del contrato
+async function deposit() {
+    const amt = document.getElementById("amount").value;
+    if (!amt || isNaN(amt)) return alert("Cantidad inválida");
+    await contract.methods.deposit().send({ from: account, value: web3.utils.toWei(amt) });
+    loadStats();
 }
 
-setInterval(()=>{ if(contract&&account) loadStats(); }, 15000);
+async function withdraw() {
+    const amt = document.getElementById("amount").value;
+    if (!amt || isNaN(amt)) return alert("Cantidad inválida");
+    await contract.methods.withdraw(web3.utils.toWei(amt)).send({ from: account });
+    loadStats();
+}
+
+async function claim() {
+    await contract.methods.claim().send({ from: account });
+    loadStats();
+}
+
+async function activateBoost() {
+    const amt = prompt("BNB para boost");
+    if (amt && !isNaN(amt)) {
+        await contract.methods.activateBoost(web3.utils.toWei(amt), 3600*24).send({ from: account });
+        loadStats();
+    }
+}
+
+async function takeLoan() {
+    const amt = prompt("BNB préstamo");
+    if (amt && !isNaN(amt)) {
+        await contract.methods.takeLoan(web3.utils.toWei(amt), 3600*24).send({ from: account });
+        loadStats();
+    }
+}
+
+async function enterRaffle() {
+    await contract.methods.enterRaffle().send({ from: account, value: web3.utils.toWei('0.01') });
+    loadStats();
+}
+
+// Chart
+function initChart() {
+    const ctx = document.getElementById('chart').getContext('2d');
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                { label: 'TVL BNB', data: [], borderColor: '#1e90ff', fill: false },
+                { label: 'Dividend Pool BNB', data: [], borderColor: '#00ff99', fill: false }
+            ]
+        },
+        options: {
+            responsive: true,
+            animation: { duration: 500 },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+function updateChart(tvl, div) {
+    if (!chart) return;
+    const time = new Date().toLocaleTimeString();
+    chart.data.labels.push(time);
+    chart.data.datasets[0].data.push(web3.utils.fromWei(tvl));
+    chart.data.datasets[1].data.push(web3.utils.fromWei(div));
+    if (chart.data.labels.length > 30) {
+        chart.data.labels.shift();
+        chart.data.datasets.forEach(d => d.data.shift());
+    }
+    chart.update();
+}
+
+// Auto refresh stats cada 15 segundos
+setInterval(() => { if (contract && account) loadStats(); }, 15000);
