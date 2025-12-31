@@ -2,101 +2,74 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>BNB Universal Bank - Dashboard Pro</title>
-<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartStakingBNB Dashboard</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/web3@1.9.1/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
 <header>
-  <h1>🏦 BNB Universal Bank</h1>
-  <button id="connectBtn">🔌 Conectar Wallet</button>
+    <h1>SmartStakingBNB Dashboard</h1>
+    <button id="connectBtn">Conectar MetaMask</button>
 </header>
 
 <main>
+    <!-- ------------------ USER STATS ------------------ -->
+    <section class="card-section">
+        <h2>👤 Mis Stats</h2>
+        <div class="grid">
+            <div class="stat-card"><h3>Depositado</h3><p id="dep">- BNB</p></div>
+            <div class="stat-card"><h3>Withdrawn</h3><p id="withdrawn">- BNB</p></div>
+            <div class="stat-card"><h3>Shares</h3><p id="shares">-</p></div>
+            <div class="stat-card"><h3>Pending</h3><p id="pending">- BNB</p></div>
+            <div class="stat-card"><h3>Claimed</h3><p id="claimed">- BNB</p></div>
+            <div class="stat-card"><h3>Boost</h3><p id="boost">-</p></div>
+            <div class="stat-card"><h3>Loan</h3><p id="loan">-</p></div>
+        </div>
+        <div class="actions">
+            <input type="text" id="amount" placeholder="Cantidad en BNB">
+            <div class="btn-group">
+                <button id="depositBtn">Depositar</button>
+                <button id="withdrawBtn">Retirar</button>
+                <button id="claimBtn">Claim Dividendos</button>
+                <button id="boostBtn">Activar Boost</button>
+                <button id="loanBtn">Tomar Préstamo</button>
+                <button id="raffleBtn">Entrar Rifa</button>
+            </div>
+        </div>
+    </section>
 
-<!-- GLOBAL STATS -->
-<section class="card-section">
-  <h2>📊 Estadísticas Generales</h2>
-  <div class="grid">
-    <div class="stat-card"><h3>TVL (Tesoro)</h3><p id="tvl">- BNB</p></div>
-    <div class="stat-card"><h3>Pool Dividendos</h3><p id="divPool">- BNB</p></div>
-    <div class="stat-card"><h3>Total Usuarios</h3><p id="users">-</p></div>
-    <div class="stat-card"><h3>Volumen 24h</h3><p id="volume">- BNB</p></div>
-    <div class="stat-card"><h3>Total Shares</h3><p id="totalShares">-</p></div>
-    <div class="stat-card"><h3>Raffle Pot</h3><p id="rafflePot">- BNB</p></div>
-    <div class="stat-card"><h3>Próximo pago dividendos</h3><p id="nextDividend">-</p></div>
-    <div class="stat-card"><h3>% Distribuido a Dividendos</h3><p id="sharePercent">- %</p></div>
-  </div>
-  <canvas id="chart" height="150"></canvas>
-</section>
+    <!-- ------------------ GLOBAL STATS ------------------ -->
+    <section class="card-section extra">
+        <h2>📊 Global Stats</h2>
+        <div class="grid">
+            <div class="stat-card treasury-card"><h3>TVL</h3><p id="tvl">- BNB</p></div>
+            <div class="stat-card dividend-card"><h3>Dividend Pool</h3><p id="divPool">- BNB</p></div>
+            <div class="stat-card"><h3>Total Shares</h3><p id="totalShares">-</p></div>
+            <div class="stat-card"><h3>Total Users</h3><p id="users">-</p></div>
+            <div class="stat-card"><h3>Raffle Pot</h3><p id="rafflePot">- BNB</p></div>
+            <div class="stat-card"><h3>Raffle Players</h3><p id="rafflePlayers">-</p></div>
+            <div class="stat-card"><h3>Raffle Mi Posición</h3><p id="raffleUserPos">-</p></div>
+            <div class="stat-card"><h3>Next Raffle</h3><p id="raffleNext">-</p></div>
+            <div class="stat-card"><h3>Next Dividend</h3><p id="nextDividend">-</p></div>
+            <div class="stat-card"><h3>Daily Dividend</h3><p id="dailyDividend">- BNB</p></div>
+            <div class="stat-card"><h3>User Share %</h3><p id="userSharePercent">- %</p></div>
+            <div class="stat-card"><h3>Creator Fee</h3><p id="creatorFee">- BNB</p></div>
+            <div class="stat-card"><h3>Total BNB</h3><p id="totalBNB">- BNB</p></div>
+        </div>
+    </section>
 
-<!-- USER STATS -->
-<section class="card-section">
-  <h2>👤 Mis Estadísticas</h2>
-  <div class="grid">
-    <div class="stat-card"><h3>Depositado</h3><p id="dep">- BNB</p></div>
-    <div class="stat-card"><h3>Retirado</h3><p id="withdrawn">- BNB</p></div>
-    <div class="stat-card"><h3>Shares</h3><p id="shares">-</p></div>
-    <div class="stat-card"><h3>Claim Total</h3><p id="claimed">- BNB</p></div>
-    <div class="stat-card"><h3>Pendiente</h3><p id="pending">- BNB</p></div>
-    <div class="stat-card"><h3>Boost Activo</h3><p id="boost">-</p></div>
-    <div class="stat-card"><h3>Préstamo Activo</h3><p id="loan">-</p></div>
-  </div>
-</section>
+    <!-- ------------------ CHART ------------------ -->
+    <section class="card-section">
+        <h2>📈 TVL vs Dividend Pool</h2>
+        <canvas id="chart" width="400" height="200"></canvas>
+    </section>
+</main>
 
-<!-- DIVIDEND SYSTEM -->
-<section class="card-section">
-  <h2>💰 Dividendos</h2>
-  <div class="grid">
-    <div class="stat-card"><h3>Dividendos diarios</h3><p id="dailyDividend">- BNB</p></div>
-    <div class="stat-card"><h3>Total distribuido</h3><p id="totalDistributed">- BNB</p></div>
-    <div class="stat-card"><h3>Proporción de tu share</h3><p id="userSharePercent">- %</p></div>
-    <div class="stat-card"><h3>Último pago</h3><p id="lastDividend">-</p></div>
-  </div>
-</section>
-
-<!-- RAFFLE SYSTEM -->
-<section class="card-section">
-  <h2>🎟️ Rifas</h2>
-  <div class="grid">
-    <div class="stat-card"><h3>Pot Actual</h3><p id="rafflePot2">- BNB</p></div>
-    <div class="stat-card"><h3>Participantes</h3><p id="rafflePlayers">-</p></div>
-    <div class="stat-card"><h3>Tu posición</h3><p id="raffleUserPos">-</p></div>
-    <div class="stat-card"><h3>Próxima Rifa</h3><p id="raffleNext">-</p></div>
-  </div>
-</section>
-
-<!-- ACTIONS -->
-<section class="card-section">
-  <h2>⚡ Acciones</h2>
-  <div class="actions">
-    <input id="amount" placeholder="Cantidad BNB" type="number" min="0" step="0.0001">
-    <div class="btn-group">
-      <button id="depositBtn">Depositar</button>
-      <button id="withdrawBtn">Retirar</button>
-      <button id="claimBtn">Claim</button>
-      <button id="boostBtn">Activar Boost</button>
-      <button id="loanBtn">Tomar Préstamo</button>
-      <button id="raffleBtn">Entrar en Rifa</button>
-    </div>
-  </div>
-</section>
-
-<!-- TREASURY -->
-<section class="card-section">
-  <h2>🏛️ Tesorería</h2>
-  <div class="grid">
-    <div class="stat-card"><h3>Pool Tesoro</h3><p id="treasury">- BNB</p></div>
-    <div class="stat-card"><h3>Fee Creador</h3><p id="creatorFee">- BNB</p></div>
-    <div class="stat-card"><h3>Total BNB en Contrato</h3><p id="totalBNB">- BNB</p></div>
-  </div>
-</section>
-
-<!-- FOOTER -->
 <footer>
-  <p>© 2025 BNB Universal Bank | Testnet</p>
+    SmartStakingBNB Dashboard - 2025
 </footer>
 
 <script src="app.js"></script>
