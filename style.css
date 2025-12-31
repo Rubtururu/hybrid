@@ -1,30 +1,118 @@
-/* RESET */
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
-body{background:#111;color:#eee;}
-header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:#1e1e1e;box-shadow:0 2px 10px rgba(0,0,0,0.7);}
-header h1{font-size:1.8rem;color:#1e90ff;}
-header button{padding:10px 20px;border:none;background:#1e90ff;color:#fff;border-radius:8px;cursor:pointer;transition:0.3s;}
-header button:hover{background:#0d62c0;}
-main{padding:20px;}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin-bottom:30px;}
-.stat-card{background:#222;padding:15px;border-radius:12px;text-align:center;transition:0.3s;box-shadow:0 2px 10px rgba(0,0,0,0.7);}
-.stat-card h3{font-size:1rem;color:#aaa;margin-bottom:5px;}
-.stat-card p{font-size:1.2rem;font-weight:bold;color:#1e90ff;transition:0.5s;}
-.stat-card p.update{animation:blink 0.6s;}
-@keyframes blink{0%{color:#1e90ff;}50%{color:#00ff99;}100%{color:#1e90ff;}}
-.user-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:30px;}
-.user-card{background:#222;padding:15px;border-radius:12px;text-align:center;transition:0.3s;box-shadow:0 2px 10px rgba(0,0,0,0.7);}
-.user-card h4{font-size:0.9rem;color:#aaa;margin-bottom:5px;}
-.user-card p{font-size:1.2rem;font-weight:bold;color:#00ff99;transition:0.5s;}
-.user-card p.update{animation:blink 0.6s;}
-.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:30px;}
-.actions input{padding:10px;border-radius:8px;border:none;width:120px;}
-.actions button{padding:10px 15px;border:none;border-radius:8px;background:#1e90ff;color:#fff;cursor:pointer;transition:0.3s;}
-.actions button:hover{background:#0d62c0;}
-.chart-section{background:#222;padding:20px;border-radius:12px;margin-bottom:30px;box-shadow:0 2px 10px rgba(0,0,0,0.7);}
-.raffle{background:#222;padding:20px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.7);}
-.raffle ul{list-style:none;}
-.raffle li{padding:10px;border-bottom:1px solid #333;transition:0.3s;color:#1e90ff;}
-.raffle li:hover{color:#00ff99;}
-footer{text-align:center;padding:15px;background:#111;color:#888;margin-top:30px;}
-/* más de 400 líneas: animaciones, efectos hover, gradientes, responsive, etc. */
+/* --- Base --- */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #111;
+  color: #eee;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1, h2 { text-align: center; color: #00ff99; }
+button { cursor: pointer; transition: 0.2s; }
+button:hover { transform: scale(1.05); }
+
+/* --- Header --- */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #00ff99;
+}
+
+/* --- Stats Grids --- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
+  gap: 15px;
+  margin: 15px 0;
+}
+
+.stat-grid div {
+  background: #222;
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.stat-grid div span {
+  display: block;
+  margin-top: 5px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #1e90ff;
+}
+
+.stat-grid div.update {
+  background: #00ff99;
+  color: #000;
+  transform: scale(1.05);
+}
+
+/* --- Actions --- */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.actions input[type=text] {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  width: 120px;
+  text-align: center;
+}
+
+.actions button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 10px;
+  background: #1e90ff;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* --- Chart --- */
+.chart-section {
+  margin: 20px 0;
+  background: #222;
+  padding: 15px;
+  border-radius: 15px;
+}
+
+/* --- Raffle --- */
+.raffle {
+  background: #222;
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+.raffle ul {
+  list-style: none;
+  padding: 0;
+}
+
+.raffle li {
+  background: #111;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  color: #00ff99;
+}
+
+/* --- Responsive --- */
+@media(max-width: 768px){
+  .stat-grid { grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); }
+  .actions { flex-direction: column; align-items: center; }
+}
