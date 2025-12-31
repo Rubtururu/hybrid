@@ -1,57 +1,79 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>BNB Universal Bank</title>
-
-  <!-- Web3.js CDN -->
-  <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
-  <!-- Chart.js CDN para mini charts -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartStakingBNB Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/web3@1.9.1/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<h1>🏦 BNB Universal Bank</h1>
+<header>
+  <h1>SmartStakingBNB Dashboard</h1>
+  <button id="connectBtn">Conectar MetaMask</button>
+</header>
 
-<button id="connectBtn">🔌 Conectar Wallet</button>
+<main>
+  <!-- Usuario -->
+  <section class="card-section">
+    <h2>👤 Mis Stats</h2>
+    <div class="grid">
+      <div class="stat-card"><span>Depositado</span><p id="dep">-</p></div>
+      <div class="stat-card"><span>Retirado</span><p id="withdrawn">-</p></div>
+      <div class="stat-card"><span>Shares</span><p id="shares">-</p></div>
+      <div class="stat-card highlight"><span>Pending</span><p id="pending">-</p></div>
+      <div class="stat-card"><span>Claimed</span><p id="claimed">-</p></div>
+      <div class="stat-card"><span>Boost</span><p id="boost">-</p></div>
+      <div class="stat-card"><span>Loan</span><p id="loan">-</p></div>
+    </div>
 
-<!-- GLOBAL STATS -->
-<div class="card">
-  <h3>📊 Stats Generales</h3>
-  <p>TVL: <span id="tvl">-</span> BNB</p>
-  <p>Dividend Pool: <span id="divPool">-</span> BNB</p>
-  <p>Total Usuarios: <span id="users">-</span></p>
-  <p>Volumen 24h: <span id="volume">-</span> BNB</p>
-  <canvas id="chart" height="100"></canvas>
-</div>
+    <div class="actions">
+      <input id="amount" placeholder="Cantidad BNB" type="number" min="0" step="0.0001">
+      <div class="btn-group">
+        <button id="depositBtn">Depositar</button>
+        <button id="withdrawBtn">Retirar</button>
+        <button id="claimBtn">Claim</button>
+        <button id="boostBtn">Activar Boost</button>
+        <button id="loanBtn">Tomar Préstamo</button>
+        <button id="raffleBtn">Entrar Rifa</button>
+      </div>
+    </div>
+  </section>
 
-<!-- USER STATS -->
-<div class="card">
-  <h3>👤 Mis Stats</h3>
-  <p>Depositado: <span id="dep">-</span> BNB</p>
-  <p>Shares: <span id="shares">-</span></p>
-  <p>Pendiente: <span id="pending">-</span> BNB</p>
-  <p>Retirado: <span id="withdrawn">-</span> BNB</p>
-  <p>Claim Total: <span id="claimed">-</span> BNB</p>
-</div>
+  <!-- Global -->
+  <section class="card-section">
+    <h2>📊 Global Stats</h2>
+    <div class="grid">
+      <div class="stat-card"><span>TVL</span><p id="tvl">-</p></div>
+      <div class="stat-card highlight"><span>Dividend Pool</span><p id="divPool">-</p></div>
+      <div class="stat-card"><span>Total Shares</span><p id="totalShares">-</p></div>
+      <div class="stat-card"><span>Total Users</span><p id="users">-</p></div>
+      <div class="stat-card"><span>Volume 24h</span><p id="volume">-</p></div>
+      <div class="stat-card"><span>Total Deposited</span><p id="totalDeposited">-</p></div>
+      <div class="stat-card"><span>Total Withdrawn</span><p id="totalWithdrawn">-</p></div>
+      <div class="stat-card highlight"><span>Raffle Pot</span><p id="rafflePot">-</p></div>
+    </div>
+  </section>
 
-<!-- ACTIONS -->
-<div class="card">
-  <h3>⚡ Acciones</h3>
-  <input id="amount" placeholder="Cantidad BNB">
-  <br>
-  <button id="depositBtn">Depositar</button>
-  <button id="withdrawBtn">Retirar</button>
-  <button id="claimBtn">Claim</button>
-</div>
+  <!-- Chart -->
+  <section class="card-section">
+    <h2>📈 TVL vs Dividend Pool</h2>
+    <canvas id="chart" height="180"></canvas>
+  </section>
 
-<!-- LEADERBOARD -->
-<div class="card">
-  <h3>🏆 Leaderboard (Top Shares)</h3>
-  <ol id="leaderboard"></ol>
-</div>
+  <!-- Leaderboard -->
+  <section class="card-section">
+    <h2>🏆 Leaderboard</h2>
+    <ul id="leaderboard" class="leaderboard"></ul>
+  </section>
+
+</main>
+
+<footer>
+  SmartStakingBNB Dashboard - Testnet
+</footer>
 
 <script src="app.js"></script>
 </body>
