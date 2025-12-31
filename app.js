@@ -1,8 +1,7 @@
 const CONTRACT_ADDRESS = "0x36420c27638f21Aebae9e4b8B98c7AB27CB6d9d6";
 const ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"bidNumber","type":"uint256"}],"name":"AuctionBid","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address[5]","name":"winners","type":"address[5]"},{"indexed":false,"internalType":"uint256[5]","name":"prizes","type":"uint256[5]"}],"name":"AuctionClosed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"DividendsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address[5]","name":"winners","type":"address[5]"},{"indexed":false,"internalType":"uint256[5]","name":"prizes","type":"uint256[5]"}],"name":"RaffleClosed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"}],"name":"RaffleEntered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdraw","type":"event"},{"inputs":[],"name":"AUCTION_DURATION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"AUCTION_INCREMENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"AUCTION_MAX_DURATION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DAILY_DIVIDEND_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RAFFLE_DURATION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RAFFLE_TICKET_PRICE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"auction","outputs":[{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"bidCount","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"bidAuction","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimDividends","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"deposit","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"dividendPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tickets","type":"uint256"}],"name":"enterRaffle","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"lastDividendDay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"raffle","outputs":[{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"prizePot","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalStaked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"users","outputs":[{"internalType":"uint256","name":"staked","type":"uint256"},{"internalType":"uint256","name":"withdrawn","type":"uint256"},{"internalType":"uint256","name":"dividendsClaimed","type":"uint256"},{"internalType":"uint16","name":"dailyBoost","type":"uint16"},{"internalType":"uint32","name":"lastBoostDay","type":"uint32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
-let provider, signer, contract;
-let account;
+let provider, signer, contract, account;
 
 const connectBtn = document.getElementById("connectBtn");
 const depositBtn = document.getElementById("depositBtn");
@@ -18,6 +17,8 @@ claimBtn.onclick = claimDividends;
 bidBtn.onclick = bidAuction;
 raffleBtn.onclick = enterRaffle;
 
+let divChart, auctionChart, raffleChart;
+
 async function connect() {
     if (!window.ethereum) { alert("Instala MetaMask"); return; }
     provider = new ethers.BrowserProvider(window.ethereum);
@@ -26,19 +27,37 @@ async function connect() {
     account = await signer.getAddress();
     contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
     document.getElementById("walletAddress").innerText = account;
+    initCharts();
     loadStats();
-    setInterval(loadStats, 5000);
+    setInterval(loadStats, 3000);
 }
 
+// --- INIT CHARTS ---
+function initCharts(){
+    const divCtx = document.getElementById("divChart").getContext("2d");
+    divChart = new Chart(divCtx, {
+        type:"doughnut",
+        data:{labels:["Claimed","Pending"],datasets:[{data:[0,0],backgroundColor:["#2979ff","#ff5722"]}]},
+        options:{responsive:true, plugins:{legend:{position:"bottom"}}}
+    });
+
+    const auctionCtx = document.getElementById("auctionChart").getContext("2d");
+    auctionChart = new Chart(auctionCtx, {type:"bar",data:{labels:[],datasets:[{label:"Bids",data:[],backgroundColor:"#2979ff"}]},options:{responsive:true}});
+
+    const raffleCtx = document.getElementById("raffleChart").getContext("2d");
+    raffleChart = new Chart(raffleCtx, {type:"bar",data:{labels:[],datasets:[{label:"Tickets",data:[],backgroundColor:"#ff5722"}]},options:{responsive:true}});
+}
+
+// --- LOAD STATS ---
 async function loadStats(){
     if(!contract || !account) return;
 
-    // --- User Stats ---
+    // --- User ---
     const user = await contract.users(account);
     const totalStaked = await contract.totalStaked();
     const dividendPool = await contract.dividendPool();
-    const pending = totalStaked > 0 ? dividendPool * user.staked / totalStaked : 0;
-    const sharePercent = totalStaked > 0 ? (user.staked*100/totalStaked).toFixed(2) : 0;
+    const pending = totalStaked>0 ? dividendPool*user.staked/totalStaked : 0;
+    const sharePercent = totalStaked>0 ? (user.staked*100/totalStaked).toFixed(2):0;
 
     document.getElementById("staked").innerText = ethers.formatEther(user.staked);
     document.getElementById("withdrawn").innerText = ethers.formatEther(user.withdrawn);
@@ -48,40 +67,60 @@ async function loadStats(){
 
     // --- Dividend Pool ---
     document.getElementById("divPool").innerText = ethers.formatEther(dividendPool);
-    const dailyDividend = dividendPool/100;
-    document.getElementById("nextDividend").innerText = ethers.formatEther(dailyDividend);
+    document.getElementById("nextDividend").innerText = ethers.formatEther(dividendPool/100);
 
-    // Countdown to next dividend (simple 24h)
     const lastDay = await contract.lastDividendDay();
-    let nextTime = Number(lastDay) + 24*3600;
+    const nextTime = Number(lastDay)+24*3600;
     updateCountdown("divCountdown", nextTime);
 
+    divChart.data.datasets[0].data=[parseFloat(ethers.formatEther(user.dividendsClaimed)),parseFloat(ethers.formatEther(pending))];
+    divChart.update();
+
     // --- Auction ---
-    const auctionInfo = await contract.auction();
-    document.getElementById("auctionActive").innerText = auctionInfo.active ? "Sí" : "No";
-    document.getElementById("currentBid").innerText = ethers.formatEther(auctionInfo.currentBid || 0);
-    document.getElementById("bidCount").innerText = auctionInfo.bidCount;
-    updateCountdown("auctionCountdown", Number(auctionInfo.endTime));
+    const auc = await contract.auction();
+    document.getElementById("auctionActive").innerText=auc.active?"Sí":"No";
+    document.getElementById("currentBid").innerText=ethers.formatEther(auc.currentBid||0);
+    document.getElementById("bidCount").innerText=auc.bidCount;
+    updateCountdown("auctionCountdown",Number(auc.endTime));
+
+    // Top bidders placeholder
+    const top = ["Bidder1","Bidder2","Bidder3","Bidder4","Bidder5"];
+    const topBidders = document.getElementById("topBidders");
+    topBidders.innerHTML="";
+    top.forEach(b=>{const li=document.createElement("li"); li.innerText=b; topBidders.appendChild(li);});
+
+    auctionChart.data.labels=top;
+    auctionChart.data.datasets[0].data=[1,2,1,0,0];
+    auctionChart.update();
 
     // --- Raffle ---
-    const raffleInfo = await contract.raffle();
-    document.getElementById("raffleActive").innerText = raffleInfo.active ? "Sí" : "No";
-    document.getElementById("rafflePot").innerText = ethers.formatEther(raffleInfo.prizePot);
-    document.getElementById("raffleCountdown").innerText = "--:--:--";
+    const r = await contract.raffle();
+    document.getElementById("raffleActive").innerText=r.active?"Sí":"No";
+    document.getElementById("rafflePot").innerText=ethers.formatEther(r.prizePot);
+    updateCountdown("raffleCountdown",Number(r.endTime));
 
-    // Por ahora no se obtiene top 5 ni tickets, puedes expandir con getRaffleInfo y getAuctionInfo si implementas esas funciones en el contrato
+    const myTickets = 10; // placeholder
+    const totalTickets = 50; // placeholder
+    document.getElementById("myTickets").innerText=myTickets;
+    document.getElementById("totalTickets").innerText=totalTickets;
+    const chance = totalTickets>0?((myTickets*100)/totalTickets).toFixed(2):0;
+    document.getElementById("chancePercent").innerText=chance;
+
+    raffleChart.data.labels=["Tú","Otros"];
+    raffleChart.data.datasets[0].data=[myTickets,totalTickets-myTickets];
+    raffleChart.update();
 }
 
 // --- Countdown Helper ---
-function updateCountdown(id, target){
+function updateCountdown(id,target){
     function tick(){
-        const now = Math.floor(Date.now()/1000);
-        let diff = target - now;
+        const now=Math.floor(Date.now()/1000);
+        let diff=target-now;
         if(diff<0) diff=0;
-        const h = Math.floor(diff/3600);
-        const m = Math.floor((diff%3600)/60);
-        const s = diff%60;
-        document.getElementById(id).innerText = `${h}h ${m}m ${s}s`;
+        const h=Math.floor(diff/3600);
+        const m=Math.floor((diff%3600)/60);
+        const s=diff%60;
+        document.getElementById(id).innerText=`${h}h ${m}m ${s}s`;
     }
     tick();
     setInterval(tick,1000);
@@ -89,32 +128,22 @@ function updateCountdown(id, target){
 
 // --- Actions ---
 async function deposit(){
-    const amt = document.getElementById("depositAmount").value;
-    if(!amt || isNaN(amt)) return alert("Cantidad inválida");
-    await contract.deposit({value: ethers.parseEther(amt)});
+    const amt=document.getElementById("depositAmount").value;
+    if(!amt||isNaN(amt)) return alert("Cantidad inválida");
+    await contract.deposit({value:ethers.parseEther(amt)});
     loadStats();
 }
-
 async function withdraw(){
-    const amt = document.getElementById("withdrawAmount").value;
-    if(!amt || isNaN(amt)) return alert("Cantidad inválida");
+    const amt=document.getElementById("withdrawAmount").value;
+    if(!amt||isNaN(amt)) return alert("Cantidad inválida");
     await contract.withdraw(ethers.parseEther(amt));
     loadStats();
 }
-
-async function claimDividends(){
-    await contract.claimDividends();
-    loadStats();
-}
-
-async function bidAuction(){
-    await contract.bidAuction({value: ethers.parseEther("0.001")});
-    loadStats();
-}
-
+async function claimDividends(){ await contract.claimDividends(); loadStats();}
+async function bidAuction(){ await contract.bidAuction({value:ethers.parseEther("0.001")}); loadStats();}
 async function enterRaffle(){
-    const tickets = document.getElementById("ticketAmount").value;
-    if(!tickets || isNaN(tickets)) return alert("Cantidad inválida");
-    await contract.enterRaffle(tickets,{value: ethers.parseEther((tickets*0.001).toString())});
+    const tickets=document.getElementById("ticketAmount").value;
+    if(!tickets||isNaN(tickets)) return alert("Cantidad inválida");
+    await contract.enterRaffle(tickets,{value:ethers.parseEther((tickets*0.001).toString())});
     loadStats();
 }
