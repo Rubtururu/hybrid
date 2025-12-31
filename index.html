@@ -3,73 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HybridDeFi Dashboard</title>
+<title>HybridDeFi Pro Dashboard</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <h1>HybridDeFi Dashboard</h1>
-        <button id="connectBtn">Conectar MetaMask</button>
-        <div id="walletAddress"></div>
-    </header>
+<header>
+    <h1>HybridDeFi Pro Dashboard</h1>
+    <button id="connectBtn">Conectar MetaMask</button>
+    <div id="walletAddress"></div>
+</header>
 
-    <main>
-        <section id="staking">
-            <h2>Staking</h2>
-            <div class="stats">
-                <div>Staked: <span id="staked">0</span> BNB</div>
-                <div>Withdrawn: <span id="withdrawn">0</span> BNB</div>
-                <div>Dividends Claimed: <span id="divClaimed">0</span> BNB</div>
-                <div>Pending Dividends: <span id="pendingDiv">0</span> BNB</div>
-                <div>Share %: <span id="sharePercent">0</span>%</div>
-            </div>
-            <div class="actions">
-                <input type="number" id="depositAmount" placeholder="BNB a depositar">
-                <button id="depositBtn">Depositar</button>
-                <input type="number" id="withdrawAmount" placeholder="BNB a retirar">
-                <button id="withdrawBtn">Retirar</button>
-                <button id="claimBtn">Claim Dividends</button>
-            </div>
-        </section>
+<main>
+    <!-- STAKING -->
+    <section id="staking">
+        <h2>Staking & Dividends</h2>
+        <div class="stats-grid">
+            <div class="stat-card">Staked: <span id="staked">0</span> BNB</div>
+            <div class="stat-card">Withdrawn: <span id="withdrawn">0</span> BNB</div>
+            <div class="stat-card">Dividends Claimed: <span id="divClaimed">0</span> BNB</div>
+            <div class="stat-card">Pending Dividends: <span id="pendingDiv">0</span> BNB</div>
+            <div class="stat-card">Share %: <span id="sharePercent">0</span>%</div>
+        </div>
+        <div class="actions">
+            <input type="number" id="depositAmount" placeholder="BNB a depositar">
+            <button id="depositBtn">Depositar</button>
+            <input type="number" id="withdrawAmount" placeholder="BNB a retirar">
+            <button id="withdrawBtn">Retirar</button>
+            <button id="claimBtn">Claim Dividends</button>
+        </div>
+        <div class="chart-container">
+            <canvas id="divChart"></canvas>
+        </div>
+    </section>
 
-        <section id="dividendPool">
-            <h2>Dividend Pool</h2>
-            <div>Total Pool: <span id="divPool">0</span> BNB</div>
-            <div>Next Dividend (1%): <span id="nextDividend">0</span> BNB</div>
-            <div>Countdown: <span id="divCountdown">--:--:--</span></div>
-            <canvas id="divChart" height="150"></canvas>
-        </section>
+    <!-- AUCTION -->
+    <section id="auction">
+        <h2>Subasta</h2>
+        <div class="stats-grid">
+            <div class="stat-card">Activo: <span id="auctionActive">-</span></div>
+            <div class="stat-card">Current Bid: <span id="currentBid">0</span> BNB</div>
+            <div class="stat-card">Bid Count: <span id="bidCount">0</span></div>
+            <div class="stat-card">Countdown: <span id="auctionCountdown">--:--:--</span></div>
+        </div>
+        <div>
+            <ol id="topBidders"></ol>
+        </div>
+        <button id="bidBtn">Pujar (+0.001 BNB)</button>
+        <div class="chart-container">
+            <canvas id="auctionChart"></canvas>
+        </div>
+    </section>
 
-        <section id="auction">
-            <h2>Auction</h2>
-            <div class="stats">
-                <div>Active: <span id="auctionActive">-</span></div>
-                <div>Current Bid: <span id="currentBid">0</span> BNB</div>
-                <div>Bid Count: <span id="bidCount">0</span></div>
-                <div>Top 5 Bidders:</div>
-                <ol id="topBidders"></ol>
-                <div>Countdown: <span id="auctionCountdown">--:--:--</span></div>
-            </div>
-            <button id="bidBtn">Pujar (incremento 0.001 BNB)</button>
-            <canvas id="auctionChart" height="150"></canvas>
-        </section>
-
-        <section id="raffle">
-            <h2>Raffle</h2>
-            <div class="stats">
-                <div>Active: <span id="raffleActive">-</span></div>
-                <div>Prize Pot: <span id="rafflePot">0</span> BNB</div>
-                <div>My Tickets: <span id="myTickets">0</span></div>
-                <div>Total Tickets: <span id="totalTickets">0</span></div>
-                <div>Countdown: <span id="raffleCountdown">--:--:--</span></div>
-            </div>
-            <input type="number" id="ticketAmount" placeholder="Tickets a comprar">
-            <button id="raffleBtn">Comprar Tickets</button>
-            <canvas id="raffleChart" height="150"></canvas>
-        </section>
-    </main>
+    <!-- RAFFLE -->
+    <section id="raffle">
+        <h2>Rifa</h2>
+        <div class="stats-grid">
+            <div class="stat-card">Activo: <span id="raffleActive">-</span></div>
+            <div class="stat-card">Prize Pot: <span id="rafflePot">0</span> BNB</div>
+            <div class="stat-card">Mis Tickets: <span id="myTickets">0</span></div>
+            <div class="stat-card">Total Tickets: <span id="totalTickets">0</span></div>
+            <div class="stat-card">Chance %: <span id="chancePercent">0</span>%</div>
+            <div class="stat-card">Countdown: <span id="raffleCountdown">--:--:--</span></div>
+        </div>
+        <input type="number" id="ticketAmount" placeholder="Tickets a comprar">
+        <button id="raffleBtn">Comprar Tickets</button>
+        <div class="chart-container">
+            <canvas id="raffleChart"></canvas>
+        </div>
+    </section>
+</main>
 
 <script src="app.js"></script>
 </body>
