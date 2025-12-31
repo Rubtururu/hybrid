@@ -4,63 +4,71 @@
     <meta charset="UTF-8">
     <title>HybridDeFi Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
 </head>
 <body>
     <header>
         <h1>HybridDeFi Dashboard</h1>
-        <button id="connectBtn">Conectar MetaMask</button>
-        <span id="walletAddress"></span>
+        <button id="connectBtn" class="btn">Conectar MetaMask</button>
     </header>
 
     <main>
         <!-- STAKING -->
         <section class="card">
-            <h2>Mi Staking</h2>
+            <h2>Staking & Dividendos</h2>
             <div class="stats">
-                <div>Depositado: <span id="staked">0</span> BNB</div>
-                <div>Retirado: <span id="withdrawn">0</span> BNB</div>
-                <div>Dividends Claimados: <span id="dividendsClaimed">0</span> BNB</div>
-                <div>% Share: <span id="sharePercent">0%</span></div>
-                <div>Dividendos diarios (1%): <span id="dailyDividend">0</span> BNB</div>
-                <div>Próximo pago de dividendos: <span id="nextDividendCountdown">0h 0m 0s</span></div>
+                <div>Total Staked: <span id="totalStaked">0</span> BNB</div>
+                <div>Dividend Pool: <span id="dividendPool">0</span> BNB</div>
+                <div>Dividendos Pendientes: <span id="pendingDividends">0</span> BNB</div>
+                <div>Dividendos Reclamados: <span id="dividendsClaimed">0</span> BNB</div>
+                <div>Mi % Share: <span id="sharePercent">0%</span></div>
+                <div>Deposited: <span id="deposited">0</span> BNB</div>
+                <div>Withdrawn: <span id="withdrawn">0</span> BNB</div>
+                <div>Próximo Pago Dividendos: <span id="dividendCountdown">0h 0m 0s</span></div>
             </div>
-            <input type="text" id="amount" placeholder="Cantidad BNB">
-            <div class="buttons">
-                <button id="depositBtn">Depositar</button>
-                <button id="withdrawBtn">Retirar</button>
-                <button id="claimBtn">Reclamar Dividendos</button>
+            <div class="actions">
+                <input type="text" id="depositAmount" placeholder="BNB a depositar">
+                <button id="depositBtn" class="btn">Depositar</button>
+                <input type="text" id="withdrawAmount" placeholder="BNB a retirar">
+                <button id="withdrawBtn" class="btn">Retirar</button>
+                <button id="claimBtn" class="btn">Reclamar Dividendos</button>
             </div>
         </section>
 
-        <!-- AUCTION -->
+        <!-- SUBASTA -->
         <section class="card">
             <h2>Subasta</h2>
             <div class="stats">
-                <div>Últimas 5 pujas: <span id="auctionBidCount">0</span></div>
-                <div>Última puja: <span id="auctionCurrentBid">0</span> BNB</div>
                 <div>Cuenta atrás: <span id="auctionCountdown">0h 0m 0s</span></div>
+                <div>Bid Count: <span id="auctionBidCount">0</span></div>
+                <div>Estado: <span id="auctionActive">Cerrada</span></div>
+                <div>Fin: <span id="auctionEndTime">-</span></div>
             </div>
-            <button id="auctionBidBtn">Pujar 0.001 BNB</button>
+            <div class="actions">
+                <button id="auctionBidBtn" class="btn">Pujar</button>
+            </div>
         </section>
 
-        <!-- RAFFLE -->
+        <!-- RAFA -->
         <section class="card">
             <h2>Rifa</h2>
             <div class="stats">
-                <div>Pot de premios: <span id="rafflePrizePot">0</span> BNB</div>
-                <div>Mis tickets: <span id="myRaffleTickets">0</span></div>
-                <div>Total tickets: <span id="totalRaffleTickets">0</span></div>
-                <div>% Probabilidad de ganar: <span id="raffleSharePercent">0%</span></div>
                 <div>Cuenta atrás: <span id="raffleCountdown">0h 0m 0s</span></div>
+                <div>Prize Pot: <span id="rafflePrizePot">0</span> BNB</div>
+                <div>Estado: <span id="raffleActive">Cerrada</span></div>
+                <div>Fin: <span id="raffleEndTime">-</span></div>
+                <div>Mis Tickets: <span id="userTickets">0</span></div>
+                <div>Total Tickets: <span id="totalTickets">0</span></div>
             </div>
-            <input type="number" id="raffleTickets" placeholder="Número de tickets">
-            <button id="raffleEnterBtn">Entrar en Rifa</button>
+            <div class="actions">
+                <input type="number" id="raffleTickets" placeholder="Número de tickets">
+                <button id="raffleEnterBtn" class="btn">Participar</button>
+            </div>
         </section>
     </main>
 
     <footer>
-        <p>HybridDeFi © 2025</p>
+        <p>&copy; 2025 HybridDeFi</p>
     </footer>
 
     <script src="app.js"></script>
