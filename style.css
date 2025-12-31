@@ -1,38 +1,60 @@
 /* Reset */
-* { margin:0; padding:0; box-sizing:border-box; font-family: 'Arial', sans-serif; }
-
-/* Body */
-body { background:#0d1117; color:#fff; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:#0d0d0d;color:#f0f0f0;line-height:1.4;}
 
 /* Container */
-.container { width:90%; margin:auto; padding:20px; }
+.container{width:95%;max-width:1400px;margin:20px auto;padding:20px;}
 
 /* Header */
-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-header h1 { font-size:2rem; color:#00ff99; }
-.btn { background:#1e90ff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; color:#fff; transition:0.3s; }
-.btn:hover { background:#00ff99; color:#000; }
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+header h1{font-size:2rem;color:#1e90ff;}
+header .btn{padding:10px 20px;font-size:1rem;border:none;border-radius:8px;cursor:pointer;transition:all 0.3s;}
+header .btn.primary{background:#1e90ff;color:#fff;}
+header .btn.primary:hover{background:#1c7cd5;}
 
 /* Sections */
-section { margin-bottom:30px; }
+section{margin-bottom:30px;}
+h2{font-size:1.5rem;color:#00ff99;margin-bottom:10px;}
 
-/* Grid */
-.grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap:15px; }
+/* Stats Grid */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;}
+.stat{background:#1a1a1a;padding:15px;border-radius:12px;position:relative;transition:0.3s;box-shadow:0 4px 8px rgba(0,0,0,0.3);}
+.stat h3{font-size:1rem;color:#ccc;margin-bottom:5px;}
+.stat span{font-size:1.3rem;font-weight:bold;color:#fff;display:block;}
+.stat .small{font-size:0.8rem;color:#888;margin-top:2px;}
+.stat.update{animation:updateAnim 0.6s ease-in-out;}
+@keyframes updateAnim{0%{transform:scale(1);}50%{transform:scale(1.1);color:#00ff99;}100%{transform:scale(1);color:#fff;}}
 
-/* Cards */
-.card { background:#161b22; padding:15px; border-radius:12px; text-align:center; transition:0.3s; position:relative; }
-.card span { display:block; font-size:1.2rem; font-weight:bold; margin-top:5px; }
-.card.update { animation:flash 0.6s; }
-
-@keyframes flash { 0%{background:#00ff99;} 50%{background:#161b22;} 100%{background:#00ff99;} }
-
-/* Actions */
-.actions input { padding:10px; border-radius:8px; border:none; width:150px; margin-right:10px; }
-.actions .buttons { display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
+/* Buttons */
+.btn{margin:5px 0;padding:10px 15px;border-radius:10px;font-weight:bold;}
+.btn.green{background:#28a745;color:#fff;}
+.btn.green:hover{background:#218838;}
+.btn.red{background:#dc3545;color:#fff;}
+.btn.red:hover{background:#c82333;}
+.btn.blue{background:#007bff;color:#fff;}
+.btn.blue:hover{background:#0069d9;}
+.btn.purple{background:#6f42c1;color:#fff;}
+.btn.purple:hover{background:#5a32a3;}
+.btn.orange{background:#fd7e14;color:#fff;}
+.btn.orange:hover{background:#e76b00;}
+.btn.yellow{background:#ffc107;color:#000;}
+.btn.yellow:hover{background:#e0a800;}
+.btn.pink{background:#e83e8c;color:#fff;}
+.btn.pink:hover{background:#c82375;}
 
 /* Charts */
-.charts canvas { background:#161b22; border-radius:12px; padding:10px; }
+.charts canvas{background:#111111;border-radius:12px;padding:10px;}
 
 /* Raffle */
-.raffle ul { list-style:none; padding:10px; }
-.raffle li { padding:8px; background:#1c2028; margin-bottom:5px; border-radius:8px; }
+.raffle ul{list-style:none;padding:0;}
+.raffle ul li{padding:10px;background:#1a1a1a;margin-bottom:8px;border-radius:8px;transition:0.3s;}
+.raffle ul li:hover{background:#222;color:#00ff99;}
+.raffle .winner{margin-top:15px;padding:10px;font-size:1.2rem;color:#ffdd00;animation:winnerAnim 1s ease-in-out;}
+@keyframes winnerAnim{0%{transform:scale(0);}50%{transform:scale(1.2);}100%{transform:scale(1);}}
+
+/* Inputs */
+input[type=text]{padding:10px;border-radius:8px;border:none;margin-right:10px;width:150px;background:#222;color:#fff;}
+
+/* Responsive */
+@media(max-width:768px){.stat-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}}
+@media(max-width:480px){header{flex-direction:column;align-items:flex-start;} header h1{margin-bottom:10px;}}
