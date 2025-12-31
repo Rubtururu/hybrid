@@ -5,96 +5,122 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartStakingBNB Dashboard</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/web3@1.10.1/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 <div class="container">
-  <header>
-    <h1>SmartStakingBNB Dashboard</h1>
-    <button id="connectBtn" class="btn-primary">Conectar MetaMask</button>
-  </header>
 
-  <section class="stats">
-    <h2>Estadísticas Generales</h2>
-    <div class="grid">
-      <div class="card">
-        <h3>Total TVL</h3>
-        <p id="tvl">0</p>
-      </div>
-      <div class="card">
-        <h3>Dividend Pool</h3>
-        <p id="divPool">0</p>
-      </div>
-      <div class="card">
-        <h3>Total Users</h3>
-        <p id="users">0</p>
-      </div>
-      <div class="card">
-        <h3>Total Shares</h3>
-        <p id="totalShares">0</p>
-      </div>
-      <div class="card">
-        <h3>24h Volume</h3>
-        <p id="volume">0</p>
-      </div>
-      <div class="card">
-        <h3>Total Deposited</h3>
-        <p id="totalDeposited">0</p>
-      </div>
-      <div class="card">
-        <h3>Total Withdrawn</h3>
-        <p id="totalWithdrawn">0</p>
-      </div>
-      <div class="card">
-        <h3>Raffle Pot</h3>
-        <p id="rafflePot">0</p>
-      </div>
-      <div class="card">
-        <h3>Next Dividend (1%)</h3>
-        <p id="nextDividend">0</p>
-      </div>
-      <div class="card">
-        <h3>Cuenta Atrás Dividendos</h3>
-        <p id="countdown">--:--:--</p>
-      </div>
-    </div>
-  </section>
+    <header>
+        <h1>SmartStakingBNB Dashboard</h1>
+        <button id="connectBtn" class="btn primary-btn">Conectar MetaMask</button>
+    </header>
 
-  <section class="user-stats">
-    <h2>Mis Stats</h2>
-    <div class="grid">
-      <div class="card"><h3>Depositado</h3><p id="dep">0</p></div>
-      <div class="card"><h3>Retirado</h3><p id="withdrawn">0</p></div>
-      <div class="card"><h3>Shares</h3><p id="shares">0</p></div>
-      <div class="card"><h3>Dividends Claimados</h3><p id="claimed">0</p></div>
-      <div class="card"><h3>Dividends Pendientes</h3><p id="pending">0</p></div>
-      <div class="card"><h3>Mi % de Share</h3><p id="mySharePercent">0%</p></div>
-      <div class="card"><h3>Boost</h3><p id="boost">-</p></div>
-      <div class="card"><h3>Préstamo</h3><p id="loan">-</p></div>
-    </div>
-  </section>
+    <section class="stats-grid">
+        <div class="stat-card">
+            <h3>Total TVL</h3>
+            <p id="tvl">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Dividend Pool</h3>
+            <p id="divPool">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Users</h3>
+            <p id="users">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Shares</h3>
+            <p id="totalShares">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>24h Volume</h3>
+            <p id="volume">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Deposited</h3>
+            <p id="totalDeposited">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Withdrawn</h3>
+            <p id="totalWithdrawn">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Raffle Pot</h3>
+            <p id="rafflePot">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Next Dividend</h3>
+            <p id="nextDividend">0</p>
+            <small>Cuenta atrás: <span id="divCountdown">0h 0m 0s</span></small>
+        </div>
+    </section>
 
-  <section class="actions">
-    <h2>Acciones</h2>
-    <input type="text" id="amount" placeholder="BNB">
-    <button id="depositBtn" class="btn-primary">Depositar</button>
-    <button id="withdrawBtn" class="btn-primary">Retirar</button>
-    <button id="claimBtn" class="btn-primary">Claim</button>
-    <button id="boostBtn" class="btn-primary">Activar Boost</button>
-    <button id="loanBtn" class="btn-primary">Préstamo</button>
-    <button id="raffleBtn" class="btn-primary">Entrar Rifa</button>
-  </section>
+    <section class="user-stats">
+        <h2>Mis Stats</h2>
+        <div class="user-grid">
+            <div class="user-card">
+                <h4>Depositado</h4>
+                <p id="dep">0</p>
+            </div>
+            <div class="user-card">
+                <h4>Retirado</h4>
+                <p id="withdrawn">0</p>
+            </div>
+            <div class="user-card">
+                <h4>Shares</h4>
+                <p id="shares">0</p>
+            </div>
+            <div class="user-card">
+                <h4>Mi % de share</h4>
+                <p id="sharePercent">0%</p>
+            </div>
+            <div class="user-card">
+                <h4>Dividends Claimados</h4>
+                <p id="claimed">0</p>
+            </div>
+            <div class="user-card">
+                <h4>Dividends Pendientes</h4>
+                <p id="pending">0</p>
+            </div>
+            <div class="user-card">
+                <h4>Boost</h4>
+                <p id="boost">-</p>
+            </div>
+            <div class="user-card">
+                <h4>Préstamo</h4>
+                <p id="loan">-</p>
+            </div>
+            <div class="user-card">
+                <h4>Última Acción</h4>
+                <p id="lastAction">-</p>
+            </div>
+        </div>
+    </section>
 
-  <section class="charts">
-    <h2>Gráficos</h2>
-    <canvas id="chart"></canvas>
-  </section>
+    <section class="actions">
+        <h2>Acciones</h2>
+        <input type="text" id="amount" placeholder="BNB">
+        <div class="btn-group">
+            <button id="depositBtn" class="btn primary-btn">Depositar</button>
+            <button id="withdrawBtn" class="btn danger-btn">Retirar</button>
+            <button id="claimBtn" class="btn secondary-btn">Claim</button>
+            <button id="boostBtn" class="btn warning-btn">Activar Boost</button>
+            <button id="loanBtn" class="btn info-btn">Préstamo</button>
+            <button id="raffleBtn" class="btn raffle-btn">Entrar Rifa</button>
+        </div>
+    </section>
 
-  <section class="raffle">
-    <h2>Jugadores Rifa</h2>
-    <ul id="leaderboard"></ul>
-  </section>
+    <section class="chart-section">
+        <h2>Gráficos</h2>
+        <canvas id="chart"></canvas>
+    </section>
+
+    <section class="raffle">
+        <h2>Jugadores Rifa</h2>
+        <ul id="leaderboard"></ul>
+    </section>
+
 </div>
 
 <script src="app.js"></script>
