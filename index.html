@@ -1,115 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>SmartStakingBNB Dashboard</title>
-
-  <!-- LIBS -->
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HybridDeFi Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+<div class="container">
+    <header>
+        <h1>HybridDeFi Dashboard</h1>
+        <button id="connectBtn">Conectar MetaMask</button>
+    </header>
 
-<header class="topbar">
-  <div class="logo">SmartStakingBNB</div>
-  <button id="connectBtn" class="btn primary">
-    Conectar MetaMask
-  </button>
-  <div id="wallet" class="wallet">No conectado</div>
-</header>
+    <section class="stats">
+        <h2>Global Stats</h2>
+        <div class="stat-grid">
+            <div class="stat-card">Total Deposited: <span id="totalDeposited">0</span> BNB</div>
+            <div class="stat-card">Total Withdrawn: <span id="totalWithdrawn">0</span> BNB</div>
+            <div class="stat-card">Dividend Pool: <span id="dividendPool">0</span> BNB</div>
+            <div class="stat-card">Total Shares: <span id="totalShares">0</span></div>
+        </div>
+    </section>
 
-<main class="container">
+    <section class="user-stats">
+        <h2>My Stats</h2>
+        <div class="stat-grid">
+            <div class="stat-card">Deposited: <span id="deposited">0</span> BNB</div>
+            <div class="stat-card">Withdrawn: <span id="withdrawn">0</span> BNB</div>
+            <div class="stat-card">Shares: <span id="shares">0</span></div>
+            <div class="stat-card">Dividends Claimed: <span id="claimed">0</span> BNB</div>
+            <div class="stat-card">Pending Dividends: <span id="pending">0</span> BNB</div>
+            <div class="stat-card">My % of Shares: <span id="sharePercent">0</span>%</div>
+        </div>
+    </section>
 
-  <!-- GLOBAL STATS -->
-  <section class="grid stats">
-    <div class="card">
-      <h4>Total TVL</h4>
-      <span id="tvl">0</span> BNB
-    </div>
-    <div class="card">
-      <h4>Dividend Pool</h4>
-      <span id="divPool">0</span> BNB
-    </div>
-    <div class="card">
-      <h4>Dividendos diarios (1%)</h4>
-      <span id="nextDividend">0</span> BNB
-    </div>
-    <div class="card">
-      <h4>Total Users</h4>
-      <span id="users">0</span>
-    </div>
-    <div class="card">
-      <h4>Total Shares</h4>
-      <span id="totalShares">0</span>
-    </div>
-    <div class="card">
-      <h4>Raffle Pot</h4>
-      <span id="rafflePot">0</span> BNB
-    </div>
-  </section>
+    <section class="actions">
+        <h2>Actions</h2>
+        <input type="number" id="amount" placeholder="BNB amount">
+        <div class="buttons">
+            <button id="depositBtn">Deposit</button>
+            <button id="withdrawBtn">Withdraw</button>
+            <button id="claimBtn">Claim Dividends</button>
+            <button id="bidBtn">Bid Auction</button>
+            <button id="raffleBtn">Enter Raffle</button>
+        </div>
+    </section>
 
-  <!-- COUNTDOWN -->
-  <section class="card countdown">
-    <h3>Próximo pago de dividendos</h3>
-    <div id="countdown">0h 0m 0s</div>
-  </section>
+    <section class="auction">
+        <h2>Auction</h2>
+        <div>Current Bid: <span id="currentBid">0</span> BNB</div>
+        <div>Ends in: <span id="auctionTimer">00:00:00</span></div>
+        <div>Top Bidders:
+            <ol id="topBidders"></ol>
+        </div>
+    </section>
 
-  <!-- USER STATS -->
-  <section class="grid user">
-    <div class="card">
-      <h4>Depositado</h4>
-      <span id="dep">0</span> BNB
-    </div>
-    <div class="card">
-      <h4>Retirado</h4>
-      <span id="withdrawn">0</span> BNB
-    </div>
-    <div class="card">
-      <h4>Shares</h4>
-      <span id="shares">0</span>
-    </div>
-    <div class="card highlight">
-      <h4>Mi % de Share</h4>
-      <span id="sharePct">0</span> %
-    </div>
-    <div class="card">
-      <h4>Dividends Pendientes</h4>
-      <span id="pending">0</span> BNB
-    </div>
-    <div class="card">
-      <h4>Dividends Claimados</h4>
-      <span id="claimed">0</span> BNB
-    </div>
-  </section>
+    <section class="raffle">
+        <h2>Raffle</h2>
+        <div>Prize Pot: <span id="rafflePot">0</span> BNB</div>
+        <div>Ends in: <span id="raffleTimer">00:00:00</span></div>
+        <div>Tickets Bought: <span id="ticketsBought">0</span></div>
+    </section>
 
-  <!-- ACTIONS -->
-  <section class="card actions">
-    <h3>Acciones</h3>
-    <input id="amount" type="number" step="0.001" placeholder="BNB" />
-    <div class="buttons">
-      <button id="depositBtn" class="btn success">Depositar</button>
-      <button id="withdrawBtn" class="btn danger">Retirar</button>
-      <button id="claimBtn" class="btn primary">Claim</button>
-      <button id="boostBtn" class="btn secondary">Boost</button>
-      <button id="loanBtn" class="btn secondary">Préstamo</button>
-      <button id="raffleBtn" class="btn warning">Entrar Rifa</button>
-    </div>
-  </section>
-
-  <!-- CHART -->
-  <section class="card chart">
-    <h3>TVL & Dividend Pool</h3>
-    <canvas id="chart"></canvas>
-  </section>
-
-</main>
-
-<footer class="footer">
-  SmartStakingBNB © 2025 – DeFi Dashboard
-</footer>
-
+    <section class="charts">
+        <h2>Charts</h2>
+        <canvas id="chart"></canvas>
+    </section>
+</div>
 <script src="app.js"></script>
 </body>
 </html>
