@@ -1,63 +1,91 @@
-/* Variables */
-:root {
-    --primary: #1e90ff;
-    --secondary: #00ff99;
-    --bg: #0f0f1a;
-    --card-bg: #1a1a2e;
-    --text: #fff;
-    --accent: #ffcc00;
+/* ---------- RESET & BASE ---------- */
+* {margin:0; padding:0; box-sizing:border-box; font-family: 'Poppins', sans-serif;}
+html,body {height:100%; background:#0b0c1a; color:#fff;}
+h1,h2,h3,h4,h5,h6 {margin-bottom:0.5rem; color:#fff;}
+button {cursor:pointer; border:none; outline:none; font-weight:bold;}
+input {outline:none; border-radius:6px; padding:0.5rem; width:100%; margin-bottom:0.5rem; border:none; font-size:1rem;}
+
+/* ---------- HEADER ---------- */
+header {
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    padding:1rem 2rem;
+    background:linear-gradient(90deg,#1e1f3d,#161727);
+    box-shadow:0 2px 10px rgba(0,0,0,0.5);
+}
+header h1 {font-size:1.8rem;}
+header button {padding:0.6rem 1.2rem; background:#1e90ff; color:#fff; transition:0.3s;}
+header button:hover {background:#00aaff; transform:scale(1.05);}
+
+/* ---------- GRID LAYOUT ---------- */
+.grid-container {
+    display:grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap:1.5rem;
+    padding:2rem;
 }
 
-/* Reset */
-* { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
-
-/* Body */
-body { background: var(--bg); color: var(--text); line-height:1.4; }
-
-/* Container */
-.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-
-/* Header */
-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; }
-header h1 { font-size:2rem; color: var(--accent); }
-header .btn { padding:10px 20px; font-size:1rem; background: var(--primary); border:none; color:#fff; cursor:pointer; border-radius:6px; transition:0.3s; }
-header .btn:hover { background: var(--accent); color:#000; }
-
-/* Sections */
-section { margin-bottom:40px; }
-section h2 { margin-bottom:20px; color: var(--accent); }
-
-/* Stat Grid */
-.stat-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:15px; }
-.stat-card { background: var(--card-bg); padding:15px; border-radius:10px; box-shadow: 0 0 15px rgba(0,0,0,0.5); transition: transform 0.3s, box-shadow 0.3s; }
-.stat-card:hover { transform: translateY(-5px); box-shadow: 0 0 25px rgba(0,0,0,0.7); }
-.stat-card span.update { color: var(--primary); font-weight:bold; transition: 0.5s; }
-
-/* Actions */
-.actions input[type=text] { padding:10px; width:200px; border-radius:6px; border:none; margin-right:10px; }
-.action-buttons { margin-top:10px; display:flex; flex-wrap:wrap; gap:10px; }
-.action-buttons .btn { background: var(--secondary); border-radius:6px; padding:10px 15px; transition:0.3s; }
-.action-buttons .btn:hover { background: var(--accent); color:#000; }
-
-/* Chart */
-.chart-section canvas { width:100%; height:400px; background: var(--card-bg); border-radius:10px; padding:15px; }
-
-/* Raffle */
-.raffle ul { list-style:none; }
-.raffle li { background: var(--card-bg); margin-bottom:8px; padding:10px; border-radius:6px; transition:0.3s; }
-.raffle li:hover { background: var(--primary); color:#000; }
-
-/* Animaciones */
-@keyframes blink {
-    0%, 100% { opacity:1; }
-    50% { opacity:0; }
+/* ---------- CARDS ---------- */
+.card {
+    background:linear-gradient(145deg,#1f203f,#161728);
+    padding:1.5rem;
+    border-radius:16px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    transition:0.3s;
 }
-.update { animation: blink 0.5s ease; }
+.card:hover {transform:translateY(-5px); box-shadow:0 15px 25px rgba(0,0,0,0.7);}
+.stat-card h3, .user-card h3, .actions-card h3, .raffle-card h3 {margin-bottom:1rem; font-size:1.2rem; text-transform:uppercase; letter-spacing:1px;}
+.stat-card p, .user-card p, .raffle-card p {font-size:1.4rem; margin-bottom:0.3rem;}
 
-/* Responsive */
-@media(max-width:768px){
-    .stat-grid { grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); }
-    header { flex-direction:column; gap:10px; }
+/* ---------- USER CARD ---------- */
+.user-card p span {font-weight:bold; color:#00ff99;}
+
+/* ---------- ACTIONS ---------- */
+.actions-card input {background:#1c1d36; color:#fff;}
+.btn-group {display:flex; gap:0.5rem; margin-bottom:0.5rem;}
+.btn-primary {background:#1e90ff; color:#fff; flex:1; padding:0.6rem 0; border-radius:10px; transition:0.3s;}
+.btn-primary:hover {background:#00aaff; transform:scale(1.05);}
+.btn-secondary {background:#00ff99; color:#0b0c1a; flex:1; padding:0.6rem 0; border-radius:10px; transition:0.3s;}
+.btn-secondary:hover {background:#00ffaa; transform:scale(1.05);}
+
+/* ---------- CHART ---------- */
+.chart-section {padding:2rem; background:#0b0c1a; border-radius:16px; margin:2rem;}
+#chart {width:100%; height:300px;}
+
+/* ---------- RAFFLE ---------- */
+.raffle-card ul {list-style:none; max-height:250px; overflow-y:auto;}
+.raffle-card ul li {padding:0.6rem; margin-bottom:0.3rem; background:rgba(255,255,255,0.05); border-radius:10px; font-size:0.9rem; transition:0.3s;}
+.raffle-card ul li:hover {background:rgba(0,255,153,0.2); transform:scale(1.02);}
+
+/* ---------- UPDATE ANIMATION ---------- */
+.update {
+    animation: pop 0.6s ease-out;
+    color:#00ff99;
+}
+@keyframes pop{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.3);}
+    100%{transform:scale(1);}
 }
 
-/* +300 líneas de CSS adicionales para gradientes, sombras, hover effects, pulsaciones, tooltips, badges, charts styling, responsive tweaks, etc... */
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:768px){.grid-container{grid-template-columns:1fr;}}
+@media(max-width:480px){header{flex-direction:column; gap:1rem;}}
+
+/* ---------- SCROLLBAR ---------- */
+.raffle-card ul::-webkit-scrollbar {width:6px;}
+.raffle-card ul::-webkit-scrollbar-thumb {background:#00ff99; border-radius:3px;}
+.raffle-card ul::-webkit-scrollbar-track {background:rgba(255,255,255,0.05);}
+
+/* ---------- EXTRA MODERN EFFECTS ---------- */
+.card::before {
+    content:'';
+    position:absolute;
+    top:0; left:0; right:0; bottom:0;
+    border-radius:16px;
+    background:linear-gradient(60deg, rgba(0,255,153,0.1), rgba(30,144,255,0.1));
+    opacity:0;
+    transition:0.5s;
+}
+.card:hover::before {opacity:1;}
