@@ -1,76 +1,66 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>HybridDeFi Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hybrid DeFi Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
 </head>
 <body>
+<div class="container">
     <header>
-        <h1>HybridDeFi Dashboard</h1>
-        <button id="connectBtn" class="btn">Conectar MetaMask</button>
+        <h1>Hybrid DeFi Dashboard</h1>
+        <button id="connectBtn">Conectar MetaMask</button>
+        <p id="walletAddress"></p>
     </header>
 
-    <main>
-        <!-- STAKING -->
-        <section class="card">
-            <h2>Staking & Dividendos</h2>
-            <div class="stats">
-                <div>Total Staked: <span id="totalStaked">0</span> BNB</div>
-                <div>Dividend Pool: <span id="dividendPool">0</span> BNB</div>
-                <div>Dividendos Pendientes: <span id="pendingDividends">0</span> BNB</div>
-                <div>Dividendos Reclamados: <span id="dividendsClaimed">0</span> BNB</div>
-                <div>Mi % Share: <span id="sharePercent">0%</span></div>
-                <div>Deposited: <span id="deposited">0</span> BNB</div>
-                <div>Withdrawn: <span id="withdrawn">0</span> BNB</div>
-                <div>Próximo Pago Dividendos: <span id="dividendCountdown">0h 0m 0s</span></div>
-            </div>
-            <div class="actions">
-                <input type="text" id="depositAmount" placeholder="BNB a depositar">
-                <button id="depositBtn" class="btn">Depositar</button>
-                <input type="text" id="withdrawAmount" placeholder="BNB a retirar">
-                <button id="withdrawBtn" class="btn">Retirar</button>
-                <button id="claimBtn" class="btn">Reclamar Dividendos</button>
-            </div>
-        </section>
+    <section class="stats">
+        <h2>Estadísticas Generales</h2>
+        <div class="grid">
+            <div class="stat"><span id="totalStaked">0</span> BNB<br>Total Staked</div>
+            <div class="stat"><span id="dividendPool">0</span> BNB<br>Dividend Pool</div>
+            <div class="stat"><span id="lastDividend">0</span><br>Último pago de dividendos</div>
+        </div>
+    </section>
 
-        <!-- SUBASTA -->
-        <section class="card">
-            <h2>Subasta</h2>
-            <div class="stats">
-                <div>Cuenta atrás: <span id="auctionCountdown">0h 0m 0s</span></div>
-                <div>Bid Count: <span id="auctionBidCount">0</span></div>
-                <div>Estado: <span id="auctionActive">Cerrada</span></div>
-                <div>Fin: <span id="auctionEndTime">-</span></div>
-            </div>
-            <div class="actions">
-                <button id="auctionBidBtn" class="btn">Pujar</button>
-            </div>
-        </section>
+    <section class="user-stats">
+        <h2>Mis Stats</h2>
+        <div class="grid">
+            <div class="stat"><span id="myStaked">0</span> BNB<br>Staked</div>
+            <div class="stat"><span id="myWithdrawn">0</span> BNB<br>Retirado</div>
+            <div class="stat"><span id="myDividends">0</span> BNB<br>Dividends Claimados</div>
+            <div class="stat"><span id="myShare">0</span>%<br>Mi Share</div>
+            <div class="stat"><span id="myTickets">0</span><br>Tickets Comprados</div>
+        </div>
+    </section>
 
-        <!-- RAFA -->
-        <section class="card">
-            <h2>Rifa</h2>
-            <div class="stats">
-                <div>Cuenta atrás: <span id="raffleCountdown">0h 0m 0s</span></div>
-                <div>Prize Pot: <span id="rafflePrizePot">0</span> BNB</div>
-                <div>Estado: <span id="raffleActive">Cerrada</span></div>
-                <div>Fin: <span id="raffleEndTime">-</span></div>
-                <div>Mis Tickets: <span id="userTickets">0</span></div>
-                <div>Total Tickets: <span id="totalTickets">0</span></div>
-            </div>
-            <div class="actions">
-                <input type="number" id="raffleTickets" placeholder="Número de tickets">
-                <button id="raffleEnterBtn" class="btn">Participar</button>
-            </div>
-        </section>
-    </main>
+    <section class="actions">
+        <h2>Acciones</h2>
+        <input type="number" id="amount" placeholder="Cantidad BNB">
+        <button id="depositBtn">Depositar</button>
+        <button id="withdrawBtn">Retirar</button>
+        <button id="claimBtn">Reclamar Dividendos</button>
+        <input type="number" id="raffleTickets" placeholder="Tickets Rifa">
+        <button id="raffleBtn">Entrar Rifa</button>
+        <button id="auctionBtn">Pujar Subasta</button>
+    </section>
 
-    <footer>
-        <p>&copy; 2025 HybridDeFi</p>
-    </footer>
+    <section class="raffle">
+        <h2>Rifa</h2>
+        <p>Prize Pot: <span id="rafflePot">0</span> BNB</p>
+        <p>Fin de rifa: <span id="raffleEnd">0</span></p>
+    </section>
 
-    <script src="app.js"></script>
+    <section class="auction">
+        <h2>Subasta</h2>
+        <p>Top 5 Pujadores:</p>
+        <ul id="auctionTop"></ul>
+        <p>Current Bid: <span id="auctionCurrent">0</span> BNB</p>
+        <p>Fin de Subasta: <span id="auctionEnd">0</span></p>
+    </section>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
