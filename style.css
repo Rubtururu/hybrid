@@ -1,49 +1,264 @@
+/* ---------------------------- BASE ---------------------------- */
+* { margin:0; padding:0; box-sizing:border-box; }
 body {
-  margin:0; font-family:'Arial',sans-serif;
+  font-family:'Arial',sans-serif;
   background: linear-gradient(135deg,#0a0a0f,#1c1c28);
-  color:white;
+  color:white; 
+  overflow-x:hidden;
 }
+a { color:inherit; text-decoration:none; }
+button, input { font-family:'Arial',sans-serif; outline:none; }
+h1,h2,h3,h4,h5,h6 { font-weight:normal; }
 
+/* -------------------------- HEADER --------------------------- */
 header {
   display:flex; justify-content:space-between; align-items:center;
-  padding:20px 40px; background:#111; box-shadow:0 3px 10px rgba(0,0,0,0.6);
+  padding:25px 50px;
+  background: #111;
+  box-shadow: 0 3px 20px rgba(0,0,0,0.7);
+  position:sticky; top:0; z-index:1000;
 }
-header h1 { color:#00ffff; font-size:2em; }
-header button { padding:10px 25px; background:#1e1eff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.3s; }
-header button:hover { background:#3a3aff; }
+header h1 {
+  color:#00ffff;
+  font-size:2.5em;
+  letter-spacing:2px;
+  text-shadow: 0 0 10px #00ffff;
+}
+header button {
+  padding:12px 30px;
+  background: linear-gradient(90deg,#1e1eff,#3a3aff);
+  border:none; border-radius:10px;
+  cursor:pointer; font-weight:bold;
+  box-shadow:0 5px 15px rgba(0,0,255,0.5);
+  transition:0.3s;
+}
+header button:hover {
+  background: linear-gradient(90deg,#3a3aff,#1e1eff);
+  transform:scale(1.05);
+  box-shadow:0 8px 20px rgba(0,0,255,0.7);
+}
 
-main { padding:20px 40px; display:flex; flex-direction:column; gap:30px; }
+/* ------------------------- MAIN ------------------------------ */
+main { 
+  padding:30px 60px;
+  display:flex; flex-direction:column; gap:35px;
+  animation:fadeIn 1s ease-out;
+}
 
+/* ---------------------- CARD SECTION ------------------------ */
 .card-section {
-  background:#15151d; padding:25px; border-radius:15px;
-  box-shadow:0 0 20px rgba(0,0,0,0.6); animation:fadeIn 0.5s ease-out;
+  background: linear-gradient(145deg,#15151d,#1c1c28);
+  padding:30px 25px;
+  border-radius:25px;
+  box-shadow:0 0 25px rgba(0,255,255,0.2);
+  transition:0.4s;
+  animation:fadeInUp 0.8s ease-out;
 }
-
-.card-section h2 { color:#00ffff; margin-bottom:15px; text-align:center; }
-
-.grid {
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:15px;
-}
-
-.stat-card {
-  background:#1f1f2b; border-radius:10px; padding:15px; text-align:center;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-.stat-card:hover {
+.card-section:hover {
+  box-shadow:0 0 40px rgba(0,255,255,0.4);
   transform:translateY(-5px);
-  box-shadow:0 8px 20px rgba(0,255,255,0.4);
 }
-.stat-card h3 { font-size:1em; color:#1e90ff; margin-bottom:5px; }
-.stat-card p { font-size:1.2em; font-weight:bold; }
+.card-section h2 {
+  color:#00ffff; 
+  text-align:center; 
+  margin-bottom:20px;
+  font-size:2em;
+  text-shadow:0 0 15px #00ffff;
+}
 
-canvas { margin-top:15px; border-radius:10px; background:#0b0b0f; }
+/* ------------------------ GRID ------------------------------ */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+}
 
-.actions { display:flex; flex-direction:column; align-items:center; gap:10px; }
-.actions input { width:250px; padding:10px; border-radius:6px; border:none; }
-.btn-group { display:flex; gap:15px; flex-wrap:wrap; justify-content:center; }
-.btn-group button { padding:10px 20px; border-radius:8px; background:#1e1eff; font-weight:bold; border:none; transition:0.3s; }
-.btn-group button:hover { background:#3a3aff; }
+/* ---------------------- STAT CARDS -------------------------- */
+.stat-card {
+  background: linear-gradient(145deg,#1f1f2b,#292934);
+  border-radius:20px;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 5px 25px rgba(0,0,0,0.5);
+  transition:0.4s;
+  position:relative;
+  overflow:hidden;
+}
+.stat-card:before {
+  content:'';
+  position:absolute; top:0; left:-50%;
+  width:200%; height:100%;
+  background: linear-gradient(90deg,rgba(0,255,255,0.1),rgba(0,255,255,0.2),rgba(0,255,255,0.1));
+  transform: skewX(-20deg);
+  transition:0.5s;
+}
+.stat-card:hover:before { left:100%; }
+.stat-card:hover {
+  transform:translateY(-8px);
+  box-shadow:0 10px 35px rgba(0,255,255,0.6);
+}
+.stat-card h3 {
+  font-size:1.2em;
+  color:#1e90ff;
+  margin-bottom:10px;
+  letter-spacing:1px;
+}
+.stat-card p {
+  font-size:1.5em;
+  font-weight:bold;
+  color:#fff;
+  text-shadow:0 0 10px rgba(0,255,255,0.5);
+  transition:0.3s;
+}
 
-footer { text-align:center; padding:15px 0; color:#999; margin-top:30px; border-top:1px solid #222; }
-
+/* ---------------------- ANIMATIONS -------------------------- */
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes fadeInUp { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+@keyframes pop { 0%,100%{opacity:0;} 50%{opacity:1;} }
+
+/* ----------------------- BUTTONS --------------------------- */
+.actions { display:flex; flex-direction:column; align-items:center; gap:15px; margin-top:20px; }
+.actions input {
+  width:300px;
+  padding:12px 15px;
+  border-radius:12px;
+  border:none;
+  font-size:1.1em;
+  background:#111;
+  color:white;
+  box-shadow:0 4px 15px rgba(0,0,0,0.5);
+  transition:0.3s;
+}
+.actions input:focus { box-shadow:0 0 25px rgba(0,255,255,0.7); }
+
+.btn-group {
+  display:flex; flex-wrap:wrap; gap:15px; justify-content:center;
+}
+.btn-group button {
+  padding:12px 25px;
+  border-radius:12px;
+  background: linear-gradient(90deg,#1e1eff,#3a3aff);
+  border:none;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 5px 20px rgba(0,0,255,0.5);
+  transition:0.3s, transform 0.2s;
+  position:relative;
+  overflow:hidden;
+}
+.btn-group button:after {
+  content:'';
+  position:absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(255,255,255,0.1);
+  opacity:0;
+  transition:0.3s;
+}
+.btn-group button:hover:after { opacity:1; }
+.btn-group button:hover { transform:scale(1.08); box-shadow:0 8px 30px rgba(0,0,255,0.7); }
+.btn-group button:active { transform:scale(0.97); box-shadow:0 4px 15px rgba(0,0,255,0.6); }
+
+/* ---------------------- CHART ----------------------------- */
+canvas {
+  margin-top:25px;
+  border-radius:15px;
+  background:#0b0b0f;
+  box-shadow:0 0 25px rgba(0,255,255,0.3);
+}
+
+/* ---------------------- FOOTER ---------------------------- */
+footer {
+  text-align:center;
+  padding:20px 0;
+  margin-top:40px;
+  border-top:1px solid #222;
+  color:#999;
+}
+
+/* ---------------------- RESPONSIVE ------------------------ */
+@media screen and (max-width:1200px){ main{padding:20px 30px;} .actions input{width:220px;} }
+@media screen and (max-width:768px){ .grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));} header{flex-direction:column;gap:15px;} header h1{font-size:2em;} }
+
+/* --------------------- GLOW EFFECTS ------------------------ */
+.stat-card.glow {
+  box-shadow:0 0 25px rgba(0,255,255,0.7),0 0 40px rgba(0,255,255,0.3) inset;
+  animation:glowPulse 2s infinite;
+}
+@keyframes glowPulse {
+  0%{box-shadow:0 0 25px rgba(0,255,255,0.7),0 0 40px rgba(0,255,255,0.3) inset;}
+  50%{box-shadow:0 0 35px rgba(0,255,255,0.9),0 0 50px rgba(0,255,255,0.5) inset;}
+  100%{box-shadow:0 0 25px rgba(0,255,255,0.7),0 0 40px rgba(0,255,255,0.3) inset;}
+}
+
+/* -------------------- DIVIDEND HIGHLIGHT ------------------ */
+.dividend-card {
+  border:2px solid #00ff99;
+  animation:glowPulse 3s infinite;
+}
+.stat-card.dividend { background: linear-gradient(145deg,#0d1f12,#123a20); }
+
+/* -------------------- RAFFLE HIGHLIGHT ------------------ */
+.raffle-card { border:2px solid #ff0d3a; animation:pulse 2s infinite; }
+@keyframes pulse {0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);}}
+
+/* -------------------- TREASURY HIGHLIGHT ------------------ */
+.treasury-card { border:2px solid #1e90ff; animation:glowPulse 3s infinite; }
+
+/* ------------------- ADDITIONAL VARIANTS ------------------- */
+.success-text { color:#0dff3a; font-weight:bold; text-shadow:0 0 10px #0dff3a;}
+.error-text { color:#ff0d3a; font-weight:bold; text-shadow:0 0 10px #ff0d3a; }
+.warning-text { color:#ffbf00; font-weight:bold; text-shadow:0 0 10px #ffbf00; }
+
+/* -------------------- TOOLTIP --------------------------- */
+.tooltip {
+  position:relative;
+  cursor:pointer;
+}
+.tooltip:hover::after {
+  content: attr(data-tip);
+  position:absolute; bottom:125%; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,0.8); padding:8px 12px; border-radius:8px;
+  font-size:0.85em; white-space:nowrap;
+  box-shadow:0 0 10px rgba(0,255,255,0.4);
+  opacity:1; transition:0.3s;
+}
+
+/* -------------------- COUNTUP EFFECTS ------------------- */
+.countup {
+  animation:countUp 2s ease-out;
+}
+@keyframes countUp {
+  0%{transform:scale(0.7); opacity:0;}
+  50%{transform:scale(1.1); opacity:1;}
+  100%{transform:scale(1); opacity:1;}
+}
+
+/* -------------------- SCROLLBAR ---------------------------- */
+::-webkit-scrollbar { width:10px; }
+::-webkit-scrollbar-track { background:#111; }
+::-webkit-scrollbar-thumb { background:#1e1eff; border-radius:5px; }
+::-webkit-scrollbar-thumb:hover { background:#3a3aff; }
+
+/* -------------------- EXTRA CARDS -------------------- */
+.card-section.extra { padding:35px; border-radius:30px; }
+.card-section.extra .stat-card { border:2px solid rgba(0,255,255,0.2); }
+
+/* -------------------- PSEUDO ELEMENTS ------------------- */
+.stat-card::after {
+  content:'';
+  position:absolute; bottom:0; left:0; width:100%; height:5px;
+  background:linear-gradient(90deg,#00ffff,#1e90ff,#00ffff);
+  border-radius:0 0 20px 20px;
+  animation:slide 3s infinite;
+}
+@keyframes slide {0%{left:-100%} 50%{left:0} 100%{left:100%}}
+
+/* -------------------- MORE ANIMATIONS ------------------ */
+.stat-card.pulse:hover { animation:pulse 1s infinite; }
+
+/* -------------------- ADDITIONAL EFFECTS ------------------ */
+.glow-text { text-shadow:0 0 10px #00ffff,0 0 20px #00ffff; }
+.fade-text { animation:fadeIn 1s forwards; opacity:0; }
+
+/* ---------------------------------------------------------------- */
