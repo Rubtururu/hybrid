@@ -1,117 +1,108 @@
-/* Reset básico */
+/* RESET */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
-    background-color: #f4f5f8;
-    color: #333;
+    background-color: #0f111a;
+    color: #f0f0f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 header {
-    background-color: #1b1f38;
-    color: #fff;
-    padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 1rem 2rem;
+    background: linear-gradient(90deg, #1b2735, #090a0f);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
 }
 
 header h1 {
-    font-size: 1.8em;
+    font-size: 1.8rem;
 }
 
-header button {
-    padding: 10px 20px;
+.btn {
+    background: #4cafee;
     border: none;
-    border-radius: 12px;
-    background-color: #4cafef;
     color: #fff;
-    font-weight: bold;
+    padding: 0.5rem 1rem;
+    margin: 0.2rem;
     cursor: pointer;
-    transition: 0.3s;
+    border-radius: 12px;
+    transition: all 0.3s ease;
 }
 
-header button:hover {
-    background-color: #3686e3;
+.btn:hover {
+    background: #3498db;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
 main {
-    padding: 20px;
+    flex: 1;
+    padding: 2rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
 }
 
 .card {
-    background-color: #fff;
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    padding: 20px;
-    transition: transform 0.3s, box-shadow 0.3s;
+    background-color: #1a1c2b;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.7);
 }
 
 .card h2 {
-    margin-bottom: 15px;
-    color: #1b1f38;
-    font-size: 1.5em;
-}
-
-.stats {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 15px;
+    margin-bottom: 1rem;
+    color: #4cafee;
+    text-align: center;
 }
 
 .stats div {
-    background-color: #f0f2f5;
-    padding: 10px 15px;
-    border-radius: 10px;
-    font-weight: 500;
-}
-
-input[type="text"], input[type="number"] {
-    width: 100%;
-    padding: 10px;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-}
-
-.buttons {
+    margin: 0.5rem 0;
+    font-size: 1rem;
     display: flex;
-    gap: 10px;
+    justify-content: space-between;
 }
 
-button {
-    flex: 1;
-    padding: 10px 15px;
+.actions {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.actions input {
+    padding: 0.5rem;
+    border-radius: 8px;
     border: none;
-    border-radius: 12px;
-    background-color: #4cafef;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-button:hover {
-    background-color: #3686e3;
+    outline: none;
+    width: 120px;
 }
 
 footer {
-    margin-top: 40px;
     text-align: center;
-    padding: 20px;
+    padding: 1rem;
+    background-color: #090a0f;
     color: #777;
-    font-size: 0.9em;
+}
+
+/* Animación de cuenta atrás */
+#dividendCountdown, #auctionCountdown, #raffleCountdown {
+    font-weight: bold;
+    color: #4cafee;
 }
