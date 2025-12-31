@@ -1,18 +1,21 @@
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#111; color:#eee; font-family:Arial;}
+body{background:#111;color:#eee;font-family:Arial,sans-serif;}
 header{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;background:#1a1a1a;}
 header h1{color:#00c0ff;}
-header button{padding:8px 20px;border:none;border-radius:6px;background:#00c0ff;color:#111;font-weight:bold;cursor:pointer;}
+header button{padding:8px 20px;border:none;border-radius:6px;background:#00c0ff;color:#111;font-weight:bold;cursor:pointer;transition:0.3s;}
+header button:hover{background:#00ff99;}
 main{padding:20px 40px;}
-.card-section{margin-bottom:25px;background:#1e1e28;padding:15px;border-radius:12px;}
+.card-section{margin-bottom:25px;background:#1e1e28;padding:15px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.5);}
 .card-section h2{color:#00c0ff;margin-bottom:12px;}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;}
-.stat-card{background:#282936;padding:12px;border-radius:10px;text-align:center;}
+.stat-card{background:#282936;padding:12px;border-radius:10px;text-align:center;transition:0.3s;}
 .stat-card span{display:block;font-size:0.9em;color:#7ebcff;}
 .stat-card p{font-size:1.3em;font-weight:bold;margin-top:6px;}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,255,153,0.6);}
 .actions{margin-top:15px;}
 .actions input{padding:8px 10px;width:200px;border-radius:6px;border:1px solid #00c0ff;background:#111;color:#eee;}
 .btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
-.btn-group button{padding:8px 14px;border-radius:6px;border:none;background:#00c0ff;color:#111;font-weight:bold;cursor:pointer;}
+.btn-group button{padding:8px 14px;border-radius:6px;border:none;background:#00c0ff;color:#111;font-weight:bold;cursor:pointer;transition:0.3s;}
+.btn-group button:hover{background:#00ff99;}
 canvas{background:#111;border-radius:8px;}
 footer{text-align:center;padding:12px;background:#1a1a1a;color:#888;}
