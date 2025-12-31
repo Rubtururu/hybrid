@@ -28,10 +28,13 @@ async function connect(){
   }catch(e){alert("Error MetaMask: "+e.message);}
 }
 
-async function loadStats(){
-  if(!contract||!account) return;
+async function loadStats() {
+  if(!contract || !account) return;
   try{
-    const [tvl,div,users,totalShares,volume,totalDeposited,totalWithdrawn,rafflePot,lastDividend,lastVolume] = await Promise.all([
+    const [
+      tvl, divPool, totalUsers, totalShares, volume, totalDeposited, totalWithdrawn, rafflePot,
+      lastDividend, lastVolume
+    ] = await Promise.all([
       contract.methods.treasuryPool().call(),
       contract.methods.dividendPool().call(),
       contract.methods.totalUsers().call(),
@@ -44,125 +47,61 @@ async function loadStats(){
       contract.methods.lastVolumeReset().call()
     ]);
 
-    updateStat("tvl",tvl);
-    updateStat("divPool",div);
-    updateStat("users",users);
-    updateStat("volume",volume);
-    updateStat("totalShares",totalShares);
-    updateStat("totalDeposited",totalDeposited);
-    updateStat("totalWithdrawn",totalWithdrawn);
-    updateStat("rafflePot",rafflePot);
+    // Mostrar stats generales
+    document.getElementById("tvl").innerText = web3.utils.fromWei(tvl.toString());
+    document.getElementById("divPool").innerText = web3.utils.fromWei(divPool.toString());
+    document.getElementById("users").innerText = totalUsers; // <-- SIN fromWei()
+    document.getElementById("volume").innerText = web3.utils.fromWei(volume.toString());
+    document.getElementById("totalShares").innerText = web3.utils.fromWei(totalShares.toString());
+    document.getElementById("totalDeposited").innerText = web3.utils.fromWei(totalDeposited.toString());
+    document.getElementById("totalWithdrawn").innerText = web3.utils.fromWei(totalWithdrawn.toString());
+    document.getElementById("rafflePot").innerText = web3.utils.fromWei(rafflePot.toString());
 
-    nextDividendTime = parseInt(lastDividend)+24*3600;
-    updateDividendCountdown();
-
+    // Mostrar mis stats
     const u = await contract.methods.users(account).call();
     const pending = await contract.methods.pendingDividends(account).call();
+    const userShares = parseFloat(web3.utils.fromWei(u.shares.toString()));
+    const totalSharesFloat = parseFloat(web3.utils.fromWei(totalShares.toString()));
+    const mySharePercent = totalSharesFloat > 0 ? ((userShares / totalSharesFloat) * 100).toFixed(2) : 0;
 
     document.getElementById("dep").innerText = web3.utils.fromWei(u.deposited.toString());
     document.getElementById("withdrawn").innerText = web3.utils.fromWei(u.withdrawn.toString());
     document.getElementById("shares").innerText = web3.utils.fromWei(u.shares.toString());
     document.getElementById("claimed").innerText = web3.utils.fromWei(u.dividendsClaimed.toString());
     document.getElementById("pending").innerText = web3.utils.fromWei(pending.toString());
+    document.getElementById("mySharePercent").innerText = mySharePercent + "%";
 
-    const sharePct = u.shares>0 && totalShares>0 ? ((u.shares/totalShares)*100).toFixed(2) : '0';
-    document.getElementById("myShare").innerText = sharePct;
+    // Next Dividend (1% del pool de dividendos)
+    const nextDividend = parseFloat(web3.utils.fromWei(divPool.toString())) * 0.01;
+    document.getElementById("nextDividend").innerText = nextDividend.toFixed(6) + " BNB";
 
-    document.getElementById("boost").innerText = u.boostBP>0?`${u.boostBP/100}% hasta ${new Date(u.boostEnd*1000).toLocaleString()}`:'-';
-    document.getElementById("loan").innerText = u.loanAmount>0?`${web3.utils.fromWei(u.loanAmount)} BNB hasta ${new Date(u.loanEnd*1000).toLocaleString()}`:'-';
-    document.getElementById("lastAction").innerText = u.lastAction>0?new Date(u.lastAction*1000).toLocaleString():'-';
+    // Boost y préstamo
+    document.getElementById("boost").innerText = u.boostBP>0 ? `${u.boostBP/100}% hasta ${new Date(u.boostEnd*1000).toLocaleString()}` : '-';
+    document.getElementById("loan").innerText = u.loanAmount>0 ? `${web3.utils.fromWei(u.loanAmount)} BNB hasta ${new Date(u.loanEnd*1000).toLocaleString()}` : '-';
 
-    updateChart(tvl,div);
+    // Cuenta atrás dividendos
+    updateCountdown(lastDividend);
+
+    updateChart(tvl, divPool);
     loadRafflePlayers();
-  }catch(err){console.error(err);}
+  } catch(err){
+    console.error(err);
+  }
 }
 
-function updateStat(id,value){
-  const el=document.getElementById(id);
-  const old = el.innerText;
-  el.innerText = web3.utils.fromWei(value.toString());
-  if(old!==el.innerText){ el.classList.add("update"); setTimeout(()=>el.classList.remove("update"),600);}
-}
-
-// ---------- Dividend Countdown ----------
-function updateDividendCountdown(){
-  if(!nextDividendTime) return;
-  const countdownEl = document.getElementById("divCountdown");
-  const interval = setInterval(()=>{
+// ---------- Cuenta atrás dividendos ----------
+function updateCountdown(lastDividendTimestamp){
+  const countdownEl = document.getElementById("countdown");
+  const interval = setInterval(() => {
     const now = Math.floor(Date.now()/1000);
-    const diff = nextDividendTime-now;
-    if(diff<=0){ countdownEl.innerText = "00:00:00"; clearInterval(interval); loadStats(); return;}
-    const h = Math.floor(diff/3600).toString().padStart(2,'0');
-    const m = Math.floor((diff%3600)/60).toString().padStart(2,'0');
-    const s = (diff%60).toString().padStart(2,'0');
-    countdownEl.innerText = `${h}:${m}:${s}`;
+    const nextPay = parseInt(lastDividendTimestamp) + 24*3600; // 24h
+    const remaining = nextPay - now;
+    if(remaining<=0){ countdownEl.innerText = "Dividendos disponibles"; clearInterval(interval);}
+    else{
+      const h = Math.floor(remaining/3600);
+      const m = Math.floor((remaining%3600)/60);
+      const s = remaining%60;
+      countdownEl.innerText = `${h}h ${m}m ${s}s`;
+    }
   },1000);
 }
-
-// ---------- ACTIONS ----------
-async function deposit(){ 
-  const amt = document.getElementById("amount").value;
-  if(!amt||isNaN(amt)) return alert("Cantidad inválida");
-  await contract.methods.deposit().send({from:account,value:web3.utils.toWei(amt)});
-  loadStats();
-}
-async function withdraw(){
-  const amt = document.getElementById("amount").value;
-  if(!amt||isNaN(amt)) return alert("Cantidad inválida");
-  await contract.methods.withdraw(web3.utils.toWei(amt)).send({from:account});
-  loadStats();
-}
-async function claim(){ await contract.methods.claim().send({from:account}); loadStats();}
-async function activateBoost(){const amt=prompt("BNB para Boost"); if(!amt||isNaN(amt)) return; await contract.methods.activateBoost(web3.utils.toWei(amt),3600*24).send({from:account}); loadStats();}
-async function takeLoan(){const amt=prompt("BNB para préstamo"); if(!amt||isNaN(amt)) return; await contract.methods.takeLoan(web3.utils.toWei(amt),3600*24).send({from:account}); loadStats();}
-async function enterRaffle(){ await contract.methods.enterRaffle().send({from:account,value:web3.utils.toWei('0.01')}); loadStats();}
-
-// ---------- DRAW RAFFLE ----------
-async function drawRaffleWinner(){
-  try{
-    await contract.methods.drawRaffleWinner().send({from:account});
-    alert("Sorteo realizado!");
-    loadRafflePlayers();
-    loadStats();
-  }catch(e){alert("Error al sortear: "+e.message);}
-}
-
-// ---------- RAFFLE PLAYERS ----------
-async function loadRafflePlayers(){
-  const ul=document.getElementById("leaderboard");
-  ul.innerHTML='';
-  const pot = parseFloat(web3.utils.fromWei(await contract.methods.rafflePot().call()));
-  const totalPlayers = parseInt(await contract.methods.totalUsers().call());
-  for(let i=0;i<Math.min(5,totalPlayers);i++){
-    const p = await contract.methods.rafflePlayers(i).call().catch(()=>null);
-    if(p){
-      const share = (pot/totalPlayers).toFixed(4);
-      const li=document.createElement("li");
-      li.innerText = `${p} - Pot Share ${share} BNB`;
-      ul.appendChild(li);
-    }
-  }
-  const winnerEl = document.getElementById("raffleWinner");
-  winnerEl.innerText = '';
-}
-
-// ---------- CHART ----------
-function initChart(){
-  const ctx=document.getElementById('chart').getContext('2d');
-  chart=new Chart(ctx,{type:'line',data:{labels:[],datasets:[
-    {label:'TVL BNB',data:[],borderColor:'#1e90ff',fill:false},
-    {label:'Dividend Pool BNB',data:[],borderColor:'#00ff99',fill:false}
-  ]},options:{responsive:true,animation:{duration:500},scales:{y:{beginAtZero:true}}}});
-}
-function updateChart(tvl,div){
-  if(!chart) return;
-  const time=new Date().toLocaleTimeString();
-  chart.data.labels.push(time);
-  chart.data.datasets[0].data.push(web3.utils.fromWei(tvl.toString()));
-  chart.data.datasets[1].data.push(web3.utils.fromWei(div.toString()));
-  if(chart.data.labels.length>30){ chart.data.labels.shift(); chart.data.datasets.forEach(d=>d.data.shift()); }
-  chart.update();
-}
-
-// ---------- Refresh Stats ----------
-setInterval(()=>{if(contract&&account) loadStats();},15000);
