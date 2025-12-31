@@ -1,72 +1,76 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hybrid DeFi Dashboard</title>
+<title>HybridDeFi Dashboard</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.min.js"></script>
-<script src="app.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<div class="container">
     <header>
-        <h1>Hybrid DeFi Dashboard</h1>
-        <button id="connectWalletBtn" onclick="connectWallet()">Conectar MetaMask</button>
-        <span id="walletAddress"></span>
+        <h1>HybridDeFi Dashboard</h1>
+        <button id="connectBtn">Conectar MetaMask</button>
+        <div id="walletAddress"></div>
     </header>
 
-    <section class="staking">
-        <h2>Mi Staking</h2>
-        <div class="stats-grid">
-            <div class="stat-box">Staked: <span id="staked">0 BNB</span></div>
-            <div class="stat-box">Withdrawn: <span id="withdrawn">0 BNB</span></div>
-            <div class="stat-box">% Share: <span id="percentShare">0%</span></div>
-        </div>
-        <div class="actions">
-            <input type="text" id="depositAmount" placeholder="Cantidad a depositar">
-            <button onclick="deposit()">Depositar</button>
-            <input type="text" id="withdrawAmount" placeholder="Cantidad a retirar">
-            <button onclick="withdraw()">Retirar</button>
-            <button onclick="claimDividends()">Reclamar Dividendos</button>
-        </div>
-    </section>
+    <main>
+        <section id="staking">
+            <h2>Staking</h2>
+            <div class="stats">
+                <div>Staked: <span id="staked">0</span> BNB</div>
+                <div>Withdrawn: <span id="withdrawn">0</span> BNB</div>
+                <div>Dividends Claimed: <span id="divClaimed">0</span> BNB</div>
+                <div>Pending Dividends: <span id="pendingDiv">0</span> BNB</div>
+                <div>Share %: <span id="sharePercent">0</span>%</div>
+            </div>
+            <div class="actions">
+                <input type="number" id="depositAmount" placeholder="BNB a depositar">
+                <button id="depositBtn">Depositar</button>
+                <input type="number" id="withdrawAmount" placeholder="BNB a retirar">
+                <button id="withdrawBtn">Retirar</button>
+                <button id="claimBtn">Claim Dividends</button>
+            </div>
+        </section>
 
-    <section class="dividends">
-        <h2>Pool de Dividendos</h2>
-        <div class="stats-grid">
-            <div class="stat-box">Dividend Pool: <span id="dividendPool">0 BNB</span></div>
-            <div class="stat-box">Dividendos diarios (1%): <span id="dailyDividend">0 BNB</span></div>
-            <div class="stat-box">Cuenta atrás próximo pago: <span id="countdownDividend">0h 0m 0s</span></div>
-        </div>
-    </section>
+        <section id="dividendPool">
+            <h2>Dividend Pool</h2>
+            <div>Total Pool: <span id="divPool">0</span> BNB</div>
+            <div>Next Dividend (1%): <span id="nextDividend">0</span> BNB</div>
+            <div>Countdown: <span id="divCountdown">--:--:--</span></div>
+            <canvas id="divChart" height="150"></canvas>
+        </section>
 
-    <section class="auction">
-        <h2>Subasta</h2>
-        <div class="stats-grid">
-            <div class="stat-box">Estado: <span id="auctionActive">-</span></div>
-            <div class="stat-box">Current Bid: <span id="auctionCurrentBid">0 BNB</span></div>
-            <div class="stat-box">Número de pujas: <span id="auctionBidCount">0</span></div>
-            <div class="stat-box">Cuenta atrás: <span id="countdownAuction">0h 0m 0s</span></div>
-        </div>
-        <div class="actions">
-            <button onclick="bidAuction()">Pujar 0.001 BNB</button>
-        </div>
-    </section>
+        <section id="auction">
+            <h2>Auction</h2>
+            <div class="stats">
+                <div>Active: <span id="auctionActive">-</span></div>
+                <div>Current Bid: <span id="currentBid">0</span> BNB</div>
+                <div>Bid Count: <span id="bidCount">0</span></div>
+                <div>Top 5 Bidders:</div>
+                <ol id="topBidders"></ol>
+                <div>Countdown: <span id="auctionCountdown">--:--:--</span></div>
+            </div>
+            <button id="bidBtn">Pujar (incremento 0.001 BNB)</button>
+            <canvas id="auctionChart" height="150"></canvas>
+        </section>
 
-    <section class="raffle">
-        <h2>Rifa</h2>
-        <div class="stats-grid">
-            <div class="stat-box">Premio Pot: <span id="rafflePrizePot">0 BNB</span></div>
-            <div class="stat-box">Tickets Totales: <span id="raffleTotalTickets">0</span></div>
-            <div class="stat-box">Mis Tickets: <span id="raffleMyTickets">0</span></div>
-            <div class="stat-box">Cuenta atrás: <span id="countdownRaffle">0h 0m 0s</span></div>
-        </div>
-        <div class="actions">
-            <input type="text" id="raffleTickets" placeholder="Número de tickets">
-            <button onclick="buyRaffleTickets()">Comprar Tickets</button>
-        </div>
-    </section>
-</div>
+        <section id="raffle">
+            <h2>Raffle</h2>
+            <div class="stats">
+                <div>Active: <span id="raffleActive">-</span></div>
+                <div>Prize Pot: <span id="rafflePot">0</span> BNB</div>
+                <div>My Tickets: <span id="myTickets">0</span></div>
+                <div>Total Tickets: <span id="totalTickets">0</span></div>
+                <div>Countdown: <span id="raffleCountdown">--:--:--</span></div>
+            </div>
+            <input type="number" id="ticketAmount" placeholder="Tickets a comprar">
+            <button id="raffleBtn">Comprar Tickets</button>
+            <canvas id="raffleChart" height="150"></canvas>
+        </section>
+    </main>
+
+<script src="app.js"></script>
 </body>
 </html>
