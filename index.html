@@ -1,97 +1,154 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hybrid DeFi Dashboard</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HybridDeFi Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
-<div class="container">
     <header>
-        <h1>Hybrid DeFi Dashboard</h1>
-        <button class="btn" id="connectBtn">Conectar MetaMask</button>
+        <h1>HybridDeFi Dashboard</h1>
+        <button id="connectBtn" class="btn btn-primary">Conectar MetaMask</button>
     </header>
 
-    <!-- ==================== STATS ==================== -->
-    <section class="stats-grid">
-        <div class="stat-card">
-            <h2>Total Deposited</h2>
-            <span id="totalDeposited">0</span> BNB
-        </div>
-        <div class="stat-card">
-            <h2>Total Withdrawn</h2>
-            <span id="totalWithdrawn">0</span> BNB
-        </div>
-        <div class="stat-card">
-            <h2>Dividend Pool</h2>
-            <span id="dividendPool">0</span> BNB
-        </div>
-        <div class="stat-card">
-            <h2>Mis Shares</h2>
-            <span id="shares">0</span>
-        </div>
-        <div class="stat-card">
-            <h2>Dividends Pendientes</h2>
-            <span id="pending">0</span> BNB
-        </div>
-        <div class="stat-card">
-            <h2>Dividends Claimados</h2>
-            <span id="claimed">0</span> BNB
-        </div>
-    </section>
-
-    <!-- ==================== ACCIONES ==================== -->
-    <section class="grid">
-        <div class="card">
-            <h2>Staking</h2>
-            <div class="form-group">
-                <label>BNB</label>
-                <input type="number" id="amount" placeholder="Cantidad en BNB">
+    <main>
+        <section class="stats-container">
+            <h2>Estadísticas Generales</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Deposited</h3>
+                    <p id="totalDeposited">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Withdrawn</h3>
+                    <p id="totalWithdrawn">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Dividend Pool</h3>
+                    <p id="dividendPool">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Shares</h3>
+                    <p id="totalShares">0</p>
+                </div>
             </div>
-            <button class="btn" id="depositBtn">Depositar</button>
-            <button class="btn" id="withdrawBtn">Retirar</button>
-            <button class="btn" id="claimBtn">Claim Dividends</button>
-        </div>
+        </section>
 
-        <div class="card">
+        <section class="user-stats">
+            <h2>Mis Stats</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Depositado</h3>
+                    <p id="myDeposited">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Retirado</h3>
+                    <p id="myWithdrawn">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Shares</h3>
+                    <p id="myShares">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Dividends Claimados</h3>
+                    <p id="myDividendsClaimed">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Dividends Pendientes</h3>
+                    <p id="myPendingDividends">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>% de Share</h3>
+                    <p id="myPercentShare">0%</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="actions">
+            <h2>Acciones</h2>
+            <div class="action-grid">
+                <div class="action-card">
+                    <h3>Depositar BNB</h3>
+                    <input type="number" id="depositAmount" placeholder="0.01">
+                    <button id="depositBtn" class="btn btn-primary">Depositar</button>
+                </div>
+                <div class="action-card">
+                    <h3>Retirar BNB</h3>
+                    <input type="number" id="withdrawAmount" placeholder="0.01">
+                    <button id="withdrawBtn" class="btn btn-danger">Retirar</button>
+                </div>
+                <div class="action-card">
+                    <h3>Claim Dividends</h3>
+                    <button id="claimBtn" class="btn btn-success">Reclamar</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="auction-section">
             <h2>Subasta</h2>
-            <div class="form-group">
-                <label>Mi Puja (BNB)</label>
-                <input type="number" id="auctionBid" placeholder="Cantidad en BNB">
+            <div class="auction-grid">
+                <div class="auction-card">
+                    <h3>Top Bidders</h3>
+                    <p id="auctionTopBidders">-</p>
+                </div>
+                <div class="auction-card">
+                    <h3>Current Bid</h3>
+                    <p id="auctionCurrentBid">0</p>
+                </div>
+                <div class="auction-card">
+                    <h3>Ends At</h3>
+                    <p id="auctionEndTime">-</p>
+                </div>
+                <div class="auction-card">
+                    <h3>Active</h3>
+                    <p id="auctionActive">No</p>
+                </div>
+                <div class="auction-card">
+                    <h3>Bid Amount</h3>
+                    <input type="number" id="auctionBidAmount" placeholder="0.001">
+                    <button id="auctionBidBtn" class="btn btn-primary">Pujar</button>
+                    <button id="auctionCloseBtn" class="btn btn-warning">Cerrar Subasta</button>
+                </div>
             </div>
-            <button class="btn" id="auctionBidBtn">Pujar</button>
-            <p>Fin de Subasta: <span id="auctionEnd">-</span></p>
-            <p>Puja Actual: <span id="auctionCurrentBid">0</span> BNB</p>
-        </div>
+        </section>
 
-        <div class="card">
+        <section class="raffle-section">
             <h2>Rifa</h2>
-            <div class="form-group">
-                <label>Número de Tickets</label>
-                <input type="number" id="raffleTickets" placeholder="Cantidad de tickets">
+            <div class="raffle-grid">
+                <div class="raffle-card">
+                    <h3>Tickets Sold</h3>
+                    <p id="raffleTicketsSold">0</p>
+                </div>
+                <div class="raffle-card">
+                    <h3>Prize Pot</h3>
+                    <p id="rafflePrizePot">0</p>
+                </div>
+                <div class="raffle-card">
+                    <h3>Ends At</h3>
+                    <p id="raffleEndTime">-</p>
+                </div>
+                <div class="raffle-card">
+                    <h3>Active</h3>
+                    <p id="raffleActive">No</p>
+                </div>
+                <div class="raffle-card">
+                    <h3>Tickets</h3>
+                    <input type="number" id="raffleTickets" placeholder="1">
+                    <button id="raffleEnterBtn" class="btn btn-primary">Entrar Rifa</button>
+                    <button id="raffleCloseBtn" class="btn btn-warning">Cerrar Rifa</button>
+                </div>
             </div>
-            <button class="btn" id="raffleEnterBtn">Entrar en Rifa</button>
-            <p>Fin de Rifa: <span id="raffleEnd">-</span></p>
-            <p>Prize Pot: <span id="rafflePot">0</span> BNB</p>
-        </div>
-    </section>
+        </section>
 
-    <!-- ==================== CHART ==================== -->
-    <section class="chart-container">
-        <canvas id="chart" height="150"></canvas>
-    </section>
+        <section class="chart-section">
+            <h2>Gráficos</h2>
+            <canvas id="chart"></canvas>
+        </section>
+    </main>
 
-    <footer>
-        Hybrid DeFi Dashboard &copy; 2025
-    </footer>
-</div>
-
-<!-- ==================== JS ==================== -->
-<script src="https://cdn.jsdelivr.net/npm/web3@1.10.1/dist/web3.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="app.js"></script>
-
+    <script src="app.js"></script>
 </body>
 </html>
