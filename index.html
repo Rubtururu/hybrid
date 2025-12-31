@@ -4,12 +4,17 @@
   <meta charset="UTF-8">
   <title>BNB Universal Bank</title>
 
-  <!-- ethers.js -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <!-- Web3.js CDN -->
+  <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
 
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background:#0b0b0f; color:#fff; font-family:Arial; padding:20px; }
+    h1 { margin-bottom:20px; }
+    button { padding:10px 15px; margin:5px 0; cursor:pointer; background:#1e1eff; border:none; color:white; border-radius:6px; }
+    input { padding:8px; width:200px; }
+    .card { background:#15151d; padding:15px; margin-top:15px; border-radius:10px; }
+  </style>
 </head>
-
 <body>
 
 <h1>🏦 BNB Universal Bank</h1>
@@ -39,6 +44,100 @@
   <button id="claimBtn">Claim</button>
 </div>
 
-<script src="app.js"></script>
+<script>
+const CONTRACT_ADDRESS = "0x2A9C22f5b3Ccf204D1d7d11305a8F1D2FF5AbaE2";
+
+const ABI = [
+  {"constant":true,"inputs":[],"name":"treasuryPool","outputs":[{"name":"","type":"uint256"}],"type":"function"},
+  {"constant":true,"inputs":[],"name":"dividendPool","outputs":[{"name":"","type":"uint256"}],"type":"function"},
+  {"constant":true,"inputs":[],"name":"totalUsers","outputs":[{"name":"","type":"uint256"}],"type":"function"},
+  {"constant":true,"inputs":[{"name":"user","type":"address"}],"name":"getUserStats","outputs":[
+    {"name":"deposited","type":"uint256"},
+    {"name":"withdrawn","type":"uint256"},
+    {"name":"shares","type":"uint256"},
+    {"name":"claimed","type":"uint256"},
+    {"name":"pending","type":"uint256"},
+    {"name":"dummy1","type":"uint256"},
+    {"name":"dummy2","type":"uint256"},
+    {"name":"dummy3","type":"uint256"}
+  ],"type":"function"},
+  {"constant":false,"inputs":[],"name":"deposit","outputs":[],"payable":true,"type":"function"},
+  {"constant":false,"inputs":[{"name":"amount","type":"uint256"}],"name":"withdraw","outputs":[],"type":"function"},
+  {"constant":false,"inputs":[],"name":"claim","outputs":[],"type":"function"}
+];
+
+let web3;
+let contract;
+let account;
+
+const connectBtn = document.getElementById("connectBtn");
+const depositBtn = document.getElementById("depositBtn");
+const withdrawBtn = document.getElementById("withdrawBtn");
+const claimBtn = document.getElementById("claimBtn");
+
+connectBtn.onclick = connect;
+depositBtn.onclick = deposit;
+withdrawBtn.onclick = withdraw;
+claimBtn.onclick = claim;
+
+async function connect() {
+  if (window.ethereum) {
+    web3 = new Web3(window.ethereum);
+
+    try {
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      account = accounts[0];
+
+      // comprobar que MetaMask está en BSC Testnet (chainId 97)
+      const chainId = await ethereum.request({ method: 'eth_chainId' });
+      if(chainId !== '0x61') {
+        alert("Cambia MetaMask a BSC Testnet");
+        return;
+      }
+
+      contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+      loadStats();
+      alert("Wallet conectada: " + account);
+    } catch (err) {
+      alert("Error al conectar MetaMask: " + err.message);
+    }
+  } else {
+    alert("Instala MetaMask");
+  }
+}
+
+async function loadStats() {
+  const tvl = await contract.methods.treasuryPool().call();
+  const div = await contract.methods.dividendPool().call();
+  const users = await contract.methods.totalUsers().call();
+
+  document.getElementById("tvl").innerText = web3.utils.fromWei(tvl);
+  document.getElementById("divPool").innerText = web3.utils.fromWei(div);
+  document.getElementById("users").innerText = users;
+
+  const u = await contract.methods.getUserStats(account).call();
+  document.getElementById("dep").innerText = web3.utils.fromWei(u[0]);
+  document.getElementById("shares").innerText = web3.utils.fromWei(u[2]);
+  document.getElementById("pending").innerText = web3.utils.fromWei(u[4]);
+}
+
+async function deposit() {
+  const amount = document.getElementById("amount").value;
+  await contract.methods.deposit().send({ from: account, value: web3.utils.toWei(amount) });
+  loadStats();
+}
+
+async function withdraw() {
+  const amount = document.getElementById("amount").value;
+  await contract.methods.withdraw(web3.utils.toWei(amount)).send({ from: account });
+  loadStats();
+}
+
+async function claim() {
+  await contract.methods.claim().send({ from: account });
+  loadStats();
+}
+</script>
+
 </body>
 </html>
