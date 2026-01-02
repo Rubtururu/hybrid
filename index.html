@@ -11,8 +11,10 @@
 
 <header>
   <h1>MetaWin Finance</h1>
-  <button id="connectBtn">Conectar MetaMask</button>
-  <p id="userAddress">No conectado</p>
+  <div class="header-right">
+    <button id="connectBtn">Conectar MetaMask</button>
+    <span id="userAddress">No conectado</span>
+  </div>
 </header>
 
 <nav>
@@ -24,39 +26,87 @@
 </nav>
 
 <main>
+  <!-- DASHBOARD -->
   <section id="dashboard" class="section active">
     <h2>Dashboard</h2>
-    <p>Total Staked: <span id="totalStaked">0</span> tBNB</p>
-    <p>Dividend Pool: <span id="dividendPool">0</span> tBNB</p>
-    <p>Your Staked: <span id="userStaked">0</span> tBNB</p>
-    <p>Your Dividends: <span id="userDividends">0</span> tBNB</p>
-    <p>Daily Boost: <span id="dailyBoost">0</span>%</p>
+    <div class="stats-grid">
+      <div class="stat">
+        <h3>Total Staked</h3>
+        <p id="totalStaked">0</p>
+      </div>
+      <div class="stat">
+        <h3>Dividend Pool</h3>
+        <p id="dividendPool">0</p>
+      </div>
+      <div class="stat">
+        <h3>Your Staked</h3>
+        <p id="userStaked">0</p>
+      </div>
+      <div class="stat">
+        <h3>Your Dividends</h3>
+        <p id="userDividends">0</p>
+      </div>
+      <div class="stat">
+        <h3>Daily Boost</h3>
+        <p id="dailyBoost">0</p>
+      </div>
+      <div class="stat">
+        <h3>Raffle Prize Pot</h3>
+        <p id="rafflePot">0</p>
+      </div>
+      <div class="stat">
+        <h3>Auction Top Bid</h3>
+        <p id="auctionTopBid">0</p>
+      </div>
+      <div class="stat">
+        <h3>Auction Prize Pot</h3>
+        <p id="auctionPrizePot">0</p>
+      </div>
+    </div>
   </section>
 
+  <!-- STAKING -->
   <section id="staking" class="section">
     <h2>Staking</h2>
-    <input type="number" id="depositAmount" placeholder="Cantidad a depositar">
-    <button id="depositBtn">Depositar</button>
-    <input type="number" id="withdrawAmount" placeholder="Cantidad a retirar">
-    <button id="withdrawBtn">Retirar</button>
-    <button id="claimBtn">Reclamar Dividendos</button>
+    <div class="form-row">
+      <input type="number" id="depositAmount" placeholder="Cantidad a depositar">
+      <button id="depositBtn">Depositar</button>
+    </div>
+    <div class="form-row">
+      <input type="number" id="withdrawAmount" placeholder="Cantidad a retirar">
+      <button id="withdrawBtn">Retirar</button>
+    </div>
+    <div class="form-row">
+      <button id="claimBtn">Reclamar Dividendos</button>
+    </div>
   </section>
 
+  <!-- RAFFLE -->
   <section id="raffle" class="section">
     <h2>Rifa</h2>
-    <p>Premio Actual: <span id="rafflePrize">0</span> tBNB</p>
-    <p>Tiempo Restante: <span id="raffleTime">0</span> seg</p>
-    <input type="number" id="raffleTickets" placeholder="Tickets a comprar">
-    <button id="raffleBtn">Entrar en Rifa</button>
+    <div class="stats-row">
+      <p>Premio Actual: <span id="rafflePrize">0</span></p>
+      <p>Tiempo Restante: <span id="raffleTime">0</span> seg</p>
+    </div>
+    <div class="form-row">
+      <input type="number" id="raffleTickets" placeholder="Tickets a comprar">
+      <button id="raffleBtn">Entrar en Rifa</button>
+    </div>
   </section>
 
+  <!-- AUCTION -->
   <section id="auction" class="section">
     <h2>Subasta</h2>
-    <p>Top Bid: <span id="topBid">0</span> tBNB</p>
-    <p>Tiempo Restante: <span id="auctionTime">0</span> seg</p>
-    <button id="bidBtn">Pujar</button>
+    <div class="stats-row">
+      <p>Top Bid: <span id="topBid">0</span></p>
+      <p>Tiempo Restante: <span id="auctionTime">0</span> seg</p>
+    </div>
+    <div class="form-row">
+      <button id="bidBtn">Pujar</button>
+    </div>
   </section>
 
+  <!-- EVENTS -->
   <section id="events" class="section">
     <h2>Eventos Recientes</h2>
     <div id="eventLog"></div>
