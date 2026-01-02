@@ -1,118 +1,79 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MetaWin DApp</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+    <meta charset="UTF-8">
+    <title>MetaWin V3</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header>
+        <h1>MetaWin V3</h1>
+        <button id="connectBtn">Conectar MetaMask</button>
+        <span id="accountDisplay"></span>
+    </header>
 
-<header>
-  <h1>MetaWin Finance</h1>
-  <div class="header-right">
-    <button id="connectBtn">Conectar MetaMask</button>
-    <span id="userAddress">No conectado</span>
-  </div>
-</header>
+    <nav>
+        <button class="tab active" data-target="dashboard">Dashboard</button>
+        <button class="tab" data-target="staking">Staking</button>
+        <button class="tab" data-target="raffle">Rifa</button>
+        <button class="tab" data-target="auction">Subasta</button>
+        <button class="tab" data-target="events">Eventos</button>
+    </nav>
 
-<nav>
-  <button class="tab active" data-target="dashboard">Dashboard</button>
-  <button class="tab" data-target="staking">Staking</button>
-  <button class="tab" data-target="raffle">Rifa</button>
-  <button class="tab" data-target="auction">Subasta</button>
-  <button class="tab" data-target="events">Eventos</button>
-</nav>
+    <main>
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="section active">
+            <h2>Dashboard</h2>
+            <div id="stats">
+                <p>Treasury Pool: <span id="treasuryPool">0</span> BNB</p>
+                <p>Dividend Pool: <span id="dividendPool">0</span> BNB</p>
+                <p>Your Staked: <span id="userStaked">0</span> BNB</p>
+                <p>Your Share: <span id="userShare">0</span>%</p>
+                <p>Your Dividendos Reclamados: <span id="userDividends">0</span> BNB</p>
+            </div>
+        </section>
 
-<main>
-  <!-- DASHBOARD -->
-  <section id="dashboard" class="section active">
-    <h2>Dashboard</h2>
-    <div class="stats-grid">
-      <div class="stat">
-        <h3>Total Staked</h3>
-        <p id="totalStaked">0</p>
-      </div>
-      <div class="stat">
-        <h3>Dividend Pool</h3>
-        <p id="dividendPool">0</p>
-      </div>
-      <div class="stat">
-        <h3>Your Staked</h3>
-        <p id="userStaked">0</p>
-      </div>
-      <div class="stat">
-        <h3>Your Dividends</h3>
-        <p id="userDividends">0</p>
-      </div>
-      <div class="stat">
-        <h3>Daily Boost</h3>
-        <p id="dailyBoost">0</p>
-      </div>
-      <div class="stat">
-        <h3>Raffle Prize Pot</h3>
-        <p id="rafflePot">0</p>
-      </div>
-      <div class="stat">
-        <h3>Auction Top Bid</h3>
-        <p id="auctionTopBid">0</p>
-      </div>
-      <div class="stat">
-        <h3>Auction Prize Pot</h3>
-        <p id="auctionPrizePot">0</p>
-      </div>
-    </div>
-  </section>
+        <!-- STAKING -->
+        <section id="staking" class="section">
+            <h2>Staking</h2>
+            <input type="number" id="depositAmount" placeholder="BNB a depositar" step="0.001">
+            <button id="depositBtn">Depositar</button>
+            <input type="number" id="withdrawAmount" placeholder="BNB a retirar" step="0.001">
+            <button id="withdrawBtn">Retirar</button>
+            <button id="claimBtn">Reclamar Dividendos</button>
+        </section>
 
-  <!-- STAKING -->
-  <section id="staking" class="section">
-    <h2>Staking</h2>
-    <div class="form-row">
-      <input type="number" id="depositAmount" placeholder="Cantidad a depositar">
-      <button id="depositBtn">Depositar</button>
-    </div>
-    <div class="form-row">
-      <input type="number" id="withdrawAmount" placeholder="Cantidad a retirar">
-      <button id="withdrawBtn">Retirar</button>
-    </div>
-    <div class="form-row">
-      <button id="claimBtn">Reclamar Dividendos</button>
-    </div>
-  </section>
+        <!-- RAFFA -->
+        <section id="raffle" class="section">
+            <h2>Rifa</h2>
+            <input type="number" id="raffleTickets" placeholder="Número de tickets">
+            <button id="raffleBtn">Entrar en la Rifa</button>
+            <p>Prize Pot: <span id="rafflePrizePot">0</span> BNB</p>
+            <p>Tickets Comprados: <span id="raffleTicketsTotal">0</span></p>
+            <p>Tiempo restante: <span id="raffleTimeLeft">0</span> s</p>
+            <p>Últimos ganadores:</p>
+            <ul id="raffleWinners"></ul>
+        </section>
 
-  <!-- RAFFLE -->
-  <section id="raffle" class="section">
-    <h2>Rifa</h2>
-    <div class="stats-row">
-      <p>Premio Actual: <span id="rafflePrize">0</span></p>
-      <p>Tiempo Restante: <span id="raffleTime">0</span> seg</p>
-    </div>
-    <div class="form-row">
-      <input type="number" id="raffleTickets" placeholder="Tickets a comprar">
-      <button id="raffleBtn">Entrar en Rifa</button>
-    </div>
-  </section>
+        <!-- AUCTION -->
+        <section id="auction" class="section">
+            <h2>Subasta</h2>
+            <button id="bidBtn">Pujar</button>
+            <p>Top Bid: <span id="auctionTopBid">0</span> BNB</p>
+            <p>Prize Pot: <span id="auctionPrizePot">0</span> BNB</p>
+            <p>Tiempo restante: <span id="auctionTimeLeft">0</span> s</p>
+            <p>Últimos pujadores:</p>
+            <ul id="auctionLastBidders"></ul>
+        </section>
 
-  <!-- AUCTION -->
-  <section id="auction" class="section">
-    <h2>Subasta</h2>
-    <div class="stats-row">
-      <p>Top Bid: <span id="topBid">0</span></p>
-      <p>Tiempo Restante: <span id="auctionTime">0</span> seg</p>
-    </div>
-    <div class="form-row">
-      <button id="bidBtn">Pujar</button>
-    </div>
-  </section>
+        <!-- EVENTS -->
+        <section id="events" class="section">
+            <h2>Eventos</h2>
+            <ul id="eventLogs"></ul>
+        </section>
+    </main>
 
-  <!-- EVENTS -->
-  <section id="events" class="section">
-    <h2>Eventos Recientes</h2>
-    <div id="eventLog"></div>
-  </section>
-</main>
-
-<script src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
