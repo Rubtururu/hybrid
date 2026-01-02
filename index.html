@@ -1,129 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Hybrid DeFi</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Web3 -->
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MetaWin DApp</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
 </head>
 <body>
 
-<header class="topbar">
-  <div class="logo">HYBRID</div>
-  <button id="connectBtn" class="btn primary">Connect Wallet</button>
+<header>
+  <h1>MetaWin Finance</h1>
+  <button id="connectBtn">Conectar MetaMask</button>
+  <p id="userAddress">No conectado</p>
 </header>
 
-<nav class="tabs">
-  <button class="tab active" data-tab="home">Home</button>
-  <button class="tab" data-tab="raffle">Raffle</button>
-  <button class="tab" data-tab="auction">Auction</button>
-  <button class="tab" data-tab="wallet">Wallet</button>
-  <button class="tab" data-tab="stats">Stats</button>
+<nav>
+  <button class="tab active" data-target="dashboard">Dashboard</button>
+  <button class="tab" data-target="staking">Staking</button>
+  <button class="tab" data-target="raffle">Rifa</button>
+  <button class="tab" data-target="auction">Subasta</button>
+  <button class="tab" data-target="events">Eventos</button>
 </nav>
 
 <main>
+  <section id="dashboard" class="section active">
+    <h2>Dashboard</h2>
+    <p>Total Staked: <span id="totalStaked">0</span> tBNB</p>
+    <p>Dividend Pool: <span id="dividendPool">0</span> tBNB</p>
+    <p>Your Staked: <span id="userStaked">0</span> tBNB</p>
+    <p>Your Dividends: <span id="userDividends">0</span> tBNB</p>
+    <p>Daily Boost: <span id="dailyBoost">0</span>%</p>
+  </section>
 
-<!-- HOME -->
-<section id="home" class="tab-content active">
-  <div class="card big">
-    <h2>Daily Prize</h2>
-    <div class="prize">
-      <span id="dailyPrizeBNB">0</span> BNB
-      <small>$<span id="dailyPrizeUSD">0</span></small>
-    </div>
-    <div class="countdown" id="dividendCountdown">--:--:--</div>
-  </div>
-</section>
+  <section id="staking" class="section">
+    <h2>Staking</h2>
+    <input type="number" id="depositAmount" placeholder="Cantidad a depositar">
+    <button id="depositBtn">Depositar</button>
+    <input type="number" id="withdrawAmount" placeholder="Cantidad a retirar">
+    <button id="withdrawBtn">Retirar</button>
+    <button id="claimBtn">Reclamar Dividendos</button>
+  </section>
 
-<!-- RAFFLE -->
-<section id="raffle" class="tab-content">
-  <div class="grid">
-    <div class="card">
-      <h3>Raffle Prize</h3>
-      <div class="value"><span id="rafflePrize">0</span> BNB</div>
-      <div class="countdown" id="raffleCountdown"></div>
-    </div>
+  <section id="raffle" class="section">
+    <h2>Rifa</h2>
+    <p>Premio Actual: <span id="rafflePrize">0</span> tBNB</p>
+    <p>Tiempo Restante: <span id="raffleTime">0</span> seg</p>
+    <input type="number" id="raffleTickets" placeholder="Tickets a comprar">
+    <button id="raffleBtn">Entrar en Rifa</button>
+  </section>
 
-    <div class="card">
-      <h3>Your Tickets</h3>
-      <div class="value" id="myTickets">0</div>
-      <div class="sub">Win chance: <span id="ticketChance">0%</span></div>
-    </div>
-  </div>
+  <section id="auction" class="section">
+    <h2>Subasta</h2>
+    <p>Top Bid: <span id="topBid">0</span> tBNB</p>
+    <p>Tiempo Restante: <span id="auctionTime">0</span> seg</p>
+    <button id="bidBtn">Pujar</button>
+  </section>
 
-  <div class="card">
-    <input type="number" id="ticketAmount" placeholder="Tickets" />
-    <button id="buyTicketsBtn" class="btn primary">Buy Tickets</button>
-  </div>
-
-  <div class="card">
-    <h3>Top 5 Ranking</h3>
-    <ul id="raffleRanking"></ul>
-  </div>
-</section>
-
-<!-- AUCTION -->
-<section id="auction" class="tab-content">
-  <div class="grid">
-    <div class="card">
-      <h3>Next Bid</h3>
-      <div class="value"><span id="nextBid">0</span> BNB</div>
-      <div class="countdown" id="auctionCountdown"></div>
-    </div>
-
-    <div class="card">
-      <h3>Top Bidders</h3>
-      <ul id="auctionRanking"></ul>
-    </div>
-  </div>
-
-  <button id="bidBtn" class="btn gold">Place Bid</button>
-</section>
-
-<!-- WALLET -->
-<section id="wallet" class="tab-content">
-  <div class="grid">
-    <div class="card">
-      <h3>Staked</h3>
-      <div class="value"><span id="myStake">0</span> BNB</div>
-    </div>
-    <div class="card">
-      <h3>Share</h3>
-      <div class="value"><span id="myShare">0</span>%</div>
-    </div>
-    <div class="card">
-      <h3>Pending Dividends</h3>
-      <div class="value"><span id="pendingDivs">0</span> BNB</div>
-    </div>
-  </div>
-
-  <div class="card actions">
-    <input id="stakeAmount" placeholder="BNB amount" />
-    <button id="depositBtn" class="btn primary">Deposit</button>
-    <button id="withdrawBtn" class="btn">Withdraw</button>
-    <button id="claimBtn" class="btn success">Claim</button>
-  </div>
-</section>
-
-<!-- STATS -->
-<section id="stats" class="tab-content">
-  <div class="grid">
-    <div class="card">TVL<br><span id="tvl">0</span> BNB</div>
-    <div class="card">Dividend Pool<br><span id="divPool">0</span> BNB</div>
-    <div class="card">Total Staked<br><span id="totalStaked">0</span></div>
-  </div>
-
-  <div class="card">
-    <h3>Last Events</h3>
-    <ul id="events"></ul>
-  </div>
-</section>
-
+  <section id="events" class="section">
+    <h2>Eventos Recientes</h2>
+    <div id="eventLog"></div>
+  </section>
 </main>
 
 <script src="app.js"></script>
