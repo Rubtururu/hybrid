@@ -1,58 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Hybrid DeFi</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Web3 -->
   <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-<header>
-  <h1>Hybrid DeFi</h1>
-  <button id="connectBtn">Connect</button>
-  <span id="wallet">Not connected</span>
+<header class="topbar">
+  <div class="logo">HYBRID</div>
+  <button id="connectBtn" class="btn primary">Connect Wallet</button>
 </header>
 
-<section class="card">
-  <h2>Dividend Pool</h2>
-  <div id="dividendPool"></div>
-  <div>Total Staked: <span id="totalStaked"></span></div>
+<nav class="tabs">
+  <button class="tab active" data-tab="home">Home</button>
+  <button class="tab" data-tab="raffle">Raffle</button>
+  <button class="tab" data-tab="auction">Auction</button>
+  <button class="tab" data-tab="wallet">Wallet</button>
+  <button class="tab" data-tab="stats">Stats</button>
+</nav>
+
+<main>
+
+<!-- HOME -->
+<section id="home" class="tab-content active">
+  <div class="card big">
+    <h2>Daily Prize</h2>
+    <div class="prize">
+      <span id="dailyPrizeBNB">0</span> BNB
+      <small>$<span id="dailyPrizeUSD">0</span></small>
+    </div>
+    <div class="countdown" id="dividendCountdown">--:--:--</div>
+  </div>
 </section>
 
-<section class="card">
-  <h2>Your Wallet</h2>
-  <div>Staked: <span id="userStaked"></span></div>
-  <div>Withdrawn: <span id="userWithdrawn"></span></div>
-  <div>Claimed: <span id="userClaimed"></span></div>
-  <div>Boost: <span id="userBoost"></span></div>
-  <div>Share: <span id="userShare"></span></div>
+<!-- RAFFLE -->
+<section id="raffle" class="tab-content">
+  <div class="grid">
+    <div class="card">
+      <h3>Raffle Prize</h3>
+      <div class="value"><span id="rafflePrize">0</span> BNB</div>
+      <div class="countdown" id="raffleCountdown"></div>
+    </div>
+
+    <div class="card">
+      <h3>Your Tickets</h3>
+      <div class="value" id="myTickets">0</div>
+      <div class="sub">Win chance: <span id="ticketChance">0%</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <input type="number" id="ticketAmount" placeholder="Tickets" />
+    <button id="buyTicketsBtn" class="btn primary">Buy Tickets</button>
+  </div>
+
+  <div class="card">
+    <h3>Top 5 Ranking</h3>
+    <ul id="raffleRanking"></ul>
+  </div>
 </section>
 
-<section class="card">
-  <h2>Auction</h2>
-  <div>Ends in <span id="auctionTimer"></span></div>
-  <div>Bid #: <span id="auctionBidCount"></span></div>
-  <div>Next bid: <span id="nextBid"></span></div>
-  <button onclick="bidAuction()">Place Bid</button>
+<!-- AUCTION -->
+<section id="auction" class="tab-content">
+  <div class="grid">
+    <div class="card">
+      <h3>Next Bid</h3>
+      <div class="value"><span id="nextBid">0</span> BNB</div>
+      <div class="countdown" id="auctionCountdown"></div>
+    </div>
+
+    <div class="card">
+      <h3>Top Bidders</h3>
+      <ul id="auctionRanking"></ul>
+    </div>
+  </div>
+
+  <button id="bidBtn" class="btn gold">Place Bid</button>
 </section>
 
-<section class="card">
-  <h2>Hourly Raffle</h2>
-  <div>Ends in <span id="raffleTimer"></span></div>
-  <div>Prize: <span id="rafflePot"></span></div>
-  <div>Total tickets: <span id="totalTickets"></span></div>
-  <div>Your tickets: <span id="myTickets"></span></div>
-  <div>Win chance: <span id="winChance"></span></div>
+<!-- WALLET -->
+<section id="wallet" class="tab-content">
+  <div class="grid">
+    <div class="card">
+      <h3>Staked</h3>
+      <div class="value"><span id="myStake">0</span> BNB</div>
+    </div>
+    <div class="card">
+      <h3>Share</h3>
+      <div class="value"><span id="myShare">0</span>%</div>
+    </div>
+    <div class="card">
+      <h3>Pending Dividends</h3>
+      <div class="value"><span id="pendingDivs">0</span> BNB</div>
+    </div>
+  </div>
 
-  <input id="ticketQty" type="number" value="1" min="1">
-  <button onclick="buyTickets()">Buy</button>
+  <div class="card actions">
+    <input id="stakeAmount" placeholder="BNB amount" />
+    <button id="depositBtn" class="btn primary">Deposit</button>
+    <button id="withdrawBtn" class="btn">Withdraw</button>
+    <button id="claimBtn" class="btn success">Claim</button>
+  </div>
 </section>
 
-<section class="card">
-  <h2>Recent Events</h2>
-  <div id="events"></div>
+<!-- STATS -->
+<section id="stats" class="tab-content">
+  <div class="grid">
+    <div class="card">TVL<br><span id="tvl">0</span> BNB</div>
+    <div class="card">Dividend Pool<br><span id="divPool">0</span> BNB</div>
+    <div class="card">Total Staked<br><span id="totalStaked">0</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Last Events</h3>
+    <ul id="events"></ul>
+  </div>
 </section>
+
+</main>
 
 <script src="app.js"></script>
 </body>
