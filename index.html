@@ -30,21 +30,21 @@
             <h2>Dashboard</h2>
             <div class="stat">
                 <p>Total Staked: <span id="totalStaked">0</span> BNB</p>
-                <div class="progress-bar"><div id="totalStakedBar"></div></div>
             </div>
             <div class="stat">
                 <p>Dividend Pool: <span id="dividendPool">0</span> BNB</p>
             </div>
             <div class="stat">
                 <p>Mi Stake: <span id="myStaked">0</span> BNB</p>
-                <div class="progress-bar"><div id="myStakeBar"></div></div>
             </div>
             <div class="stat">
                 <p>Mi % Share: <span id="userShare">0%</span></p>
             </div>
             <div class="actions">
-                <button id="depositBtn">Depositar 0.01 BNB</button>
-                <button id="withdrawBtn">Retirar 0.01 BNB</button>
+                <input type="number" id="depositAmount" placeholder="BNB a depositar" step="0.001" min="0.001">
+                <button id="depositBtn">Depositar</button>
+                <input type="number" id="withdrawAmount" placeholder="BNB a retirar" step="0.001" min="0.001">
+                <button id="withdrawBtn">Retirar</button>
                 <button id="claimBtn">Reclamar Dividendos</button>
             </div>
         </section>
@@ -54,11 +54,12 @@
             <h2>Rifa</h2>
             <p>Prize Pot: <span id="rafflePrizePot">0</span> BNB</p>
             <p>Total Tickets: <span id="raffleTicketsTotal">0</span></p>
+            <p>Mis Tickets: <span id="myRaffleTickets">0</span></p>
             <p>Mi % Share: <span id="raffleUserShare">0%</span></p>
-            <div class="progress-bar"><div id="raffleShareBar"></div></div>
             <p>Tiempo Restante: <span id="raffleTimeLeft">0</span> seg</p>
             <input type="number" id="raffleTicketsInput" placeholder="Tickets a comprar" min="1">
             <button id="raffleBtn">Comprar Tickets</button>
+            <h3>Top Ganadores</h3>
             <div class="top-winners" id="raffleTopWinners"></div>
         </section>
 
@@ -69,7 +70,9 @@
             <p>Última Puja: <span id="auctionTopBid">0</span> BNB</p>
             <p>Tiempo Restante: <span id="auctionTimeLeft">0</span> seg</p>
             <p>Últimos Bidders: <span id="auctionLastBidders"></span></p>
+            <p>Mi siguiente puja: <span id="nextBid">0</span> BNB</p>
             <button id="bidBtn">Pujar</button>
+            <h3>Top Ganadores</h3>
             <div class="top-winners" id="auctionTopWinners"></div>
         </section>
 
