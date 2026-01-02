@@ -9,10 +9,9 @@ header {
   padding: 15px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
-header h1 {
-  margin: 0;
-}
+header h1 { margin: 0; }
 nav {
   display: flex;
   background: #2b2b4a;
@@ -26,18 +25,10 @@ nav button {
   cursor: pointer;
   font-size: 14px;
 }
-nav button.active {
-  background: #3a8fff;
-}
-main {
-  padding: 20px;
-}
-.section {
-  display: none;
-}
-.section.active {
-  display: block;
-}
+nav button.active { background: #3a8fff; }
+main { padding: 20px; }
+.section { display: none; }
+.section.active { display: block; }
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
