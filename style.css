@@ -14,4 +14,5 @@ button:hover { opacity:0.9; }
 .progress-bar div { height:100%; background:#4caf50; width:0%; border-radius:5px; transition:width 0.5s; }
 .top-winners { margin-top:10px; padding:10px; background:#222; border-radius:5px; }
 .stat { margin-bottom:15px; }
-.actions { margin-top:15px; }
+.actions { margin-top:15px; display:flex; gap:10px; flex-wrap:wrap; }
+.actions input { width:120px; padding:5px; border-radius:5px; border:none; margin-right:5px; }
