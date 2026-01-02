@@ -1,207 +1,136 @@
-/*************************
- * CONFIGURACIÓN
- *************************/
-const CONTRACT_ADDRESS = "0x36420c27638f21Aebae9e4b8B98c7AB27CB6d9d6";
-const ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"bidNumber","type":"uint256"}],"name":"AuctionBid","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address[5]","name":"winners","type":"address[5]"},{"indexed":false,"internalType":"uint256[5]","name":"prizes","type":"uint256[5]"}],"name":"AuctionClosed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"DividendsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address[5]","name":"winners","type":"address[5]"},{"indexed":false,"internalType":"uint256[5]","name":"prizes","type":"uint256[5]"}],"name":"RaffleClosed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"}],"name":"RaffleEntered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdraw","type":"event"},{"inputs":[],"name":"AUCTION_DURATION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"AUCTION_INCREMENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"AUCTION_MAX_DURATION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DAILY_DIVIDEND_PERCENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RAFFLE_DURATION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RAFFLE_TICKET_PRICE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"auction","outputs":[{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"bidCount","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"bidAuction","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"claimDividends","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"deposit","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"dividendPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tickets","type":"uint256"}],"name":"enterRaffle","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"lastDividendDay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"raffle","outputs":[{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"prizePot","type":"uint256"},{"internalType":"bool","name":"active","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalStaked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"users","outputs":[{"internalType":"uint256","name":"staked","type":"uint256"},{"internalType":"uint256","name":"withdrawn","type":"uint256"},{"internalType":"uint256","name":"dividendsClaimed","type":"uint256"},{"internalType":"uint16","name":"dailyBoost","type":"uint16"},{"internalType":"uint32","name":"lastBoostDay","type":"uint32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const CONTRACT_ADDRESS = "0xf9F1fBcE871a369CD629860C5559cb0be7694DD5";
+const ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"AuctionBid","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address[5]","name":"winners","type":"address[5]"},{"indexed":false,"internalType":"uint256[5]","name":"prizes","type":"uint256[5]"}],"name":"AuctionClosed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountTreasury","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalStaked","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"DividendsClaimed","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address[5]","name":"winners","type":"address[5]"},{"indexed":false,"internalType":"uint256[5]","name":"prizes","type":"uint256[5]"}],"name":"RaffleClosed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"tickets","type":"uint256"}],"name":"RaffleEntered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"remainingStaked","type":"uint256"}],"name":"Withdraw","type":"event"},{"inputs":[],"name":"AUCTION_INCREMENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TICKET_PRICE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"auctionBids","outputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"auctionDuration","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"auctionEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"auctionPrizePot","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"bidAuction","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"claimDividends","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"deposit","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"dividendPercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"dividendPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tickets","type":"uint256"}],"name":"enterRaffle","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"getAuctionStats","outputs":[{"internalType":"uint256","name":"prizePot","type":"uint256"},{"internalType":"uint256","name":"topBid","type":"uint256"},{"internalType":"uint256","name":"timeLeft","type":"uint256"},{"internalType":"address[]","name":"lastBidders","type":"address[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getRaffleStats","outputs":[{"internalType":"uint256","name":"prizePot","type":"uint256"},{"internalType":"uint256","name":"tickets","type":"uint256"},{"internalType":"uint256","name":"timeLeft","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserShare","outputs":[{"internalType":"uint256","name":"stakingShareBP","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"lastAuctionPrizes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"lastAuctionWinners","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastDividendDay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"lastRafflePrizes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"lastRaffleWinners","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"maxAuctionDuration","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"raffleDuration","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"raffleEndTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rafflePrizePot","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"raffleTickets","outputs":[{"internalType":"address","name":"user","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"duration","type":"uint256"}],"name":"setAuctionDuration","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"percent","type":"uint256"}],"name":"setDividendPercent","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"duration","type":"uint256"}],"name":"setRaffleDuration","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"stakers","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"treasuryPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"users","outputs":[{"internalType":"uint256","name":"staked","type":"uint256"},{"internalType":"uint256","name":"withdrawn","type":"uint256"},{"internalType":"uint256","name":"dividendsClaimed","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawOwner","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
 let web3;
 let contract;
 let account = null;
 
-/*************************
- * INICIALIZACIÓN
- *************************/
 window.addEventListener("load", async () => {
-  initTabs();
-  initButtons();
-  setInterval(() => {
-    if (contract && account) {
-      updateDashboard();
-      updateRaffle();
-      updateAuction();
-    }
-  }, 5000);
+    initTabs();
+    initButtons();
+    await checkMetaMask();
+    setInterval(updateStats, 5000);
 });
 
-/*************************
- * TABS SPA
- *************************/
-function initTabs() {
-  document.querySelectorAll(".tab").forEach(tab => {
-    tab.onclick = () => {
-      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-      tab.classList.add("active");
-      document.getElementById(tab.dataset.target).classList.add("active");
-    };
-  });
+function initTabs(){
+    document.querySelectorAll(".tab").forEach(tab=>{
+        tab.onclick=()=>{
+            document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+            document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+            tab.classList.add("active");
+            document.getElementById(tab.dataset.target).classList.add("active");
+        }
+    });
 }
 
-/*************************
- * BOTONES
- *************************/
-function initButtons() {
-  document.getElementById("connectBtn").onclick = connectWallet;
-  document.getElementById("depositBtn").onclick = deposit;
-  document.getElementById("withdrawBtn").onclick = withdraw;
-  document.getElementById("claimBtn").onclick = claimDividends;
-  document.getElementById("raffleBtn").onclick = enterRaffle;
-  document.getElementById("bidBtn").onclick = bidAuction;
+function initButtons(){
+    document.getElementById("connectBtn").onclick = connect;
+    document.getElementById("depositBtn").onclick = deposit;
+    document.getElementById("withdrawBtn").onclick = withdraw;
+    document.getElementById("claimBtn").onclick = claimDividends;
+    document.getElementById("raffleBtn").onclick = enterRaffle;
+    document.getElementById("bidBtn").onclick = bidAuction;
 }
 
-/*************************
- * CONEXIÓN METAMASK
- *************************/
-async function connectWallet() {
-  if (!window.ethereum) return alert("MetaMask no encontrado");
-
-  web3 = new Web3(window.ethereum);
-  const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-  account = accounts[0];
-  document.getElementById("userAddress").innerText = account;
-
-  contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
-
-  listenEvents();
-  updateDashboard();
-  updateRaffle();
-  updateAuction();
+// --------------------
+// CONNECT METAMASK
+// --------------------
+async function checkMetaMask(){
+    if(window.ethereum){
+        web3 = new Web3(window.ethereum);
+        contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    } else {
+        alert("MetaMask no encontrada");
+    }
 }
 
-/*************************
- * DASHBOARD
- *************************/
-async function updateDashboard() {
-  try {
-    const totalStaked = await contract.methods.totalStaked().call();
+async function connect(){
+    const accounts = await ethereum.request({method:"eth_requestAccounts"});
+    account = accounts[0];
+    document.getElementById("accountDisplay").innerText = account;
+    await updateStats();
+}
+
+// --------------------
+// STAKING
+// --------------------
+async function deposit(){
+    const amount = parseFloat(document.getElementById("depositAmount").value);
+    if(!amount || amount <= 0) return alert("Ingresa cantidad válida");
+    await contract.methods.deposit().send({from: account, value: web3.utils.toWei(amount.toString(),"ether")});
+    await updateStats();
+}
+
+async function withdraw(){
+    const amount = parseFloat(document.getElementById("withdrawAmount").value);
+    if(!amount || amount <= 0) return alert("Ingresa cantidad válida");
+    await contract.methods.withdraw(web3.utils.toWei(amount.toString(),"ether")).send({from: account});
+    await updateStats();
+}
+
+async function claimDividends(){
+    await contract.methods.claimDividends().send({from: account});
+    await updateStats();
+}
+
+// --------------------
+// RAFFLE
+// --------------------
+async function enterRaffle(){
+    const tickets = parseInt(document.getElementById("raffleTickets").value);
+    if(!tickets || tickets <=0) return alert("Ingresa tickets válidos");
+    const value = tickets * 0.001;
+    await contract.methods.enterRaffle(tickets).send({from: account, value: web3.utils.toWei(value.toString(),"ether")});
+    await updateStats();
+}
+
+// --------------------
+// AUCTION
+// --------------------
+async function bidAuction(){
+    await contract.methods.bidAuction().send({from: account, value: await contract.methods.getCurrentBid().call()});
+    await updateStats();
+}
+
+// --------------------
+// STATS
+// --------------------
+async function updateStats(){
+    if(!account) return;
+    const treasuryPool = await contract.methods.treasuryPool().call();
     const dividendPool = await contract.methods.dividendPool().call();
-    const user = await contract.methods.users(account).call();
-    const raffle = await contract.methods.raffle().call();
-    const auction = await contract.methods.auction().call();
+    const userStaked = await contract.methods.users(account).call().then(u=>u.staked);
+    const userShare = await contract.methods.getUserShare(account).call();
 
-    document.getElementById("totalStaked").innerText = web3.utils.fromWei(totalStaked.toString());
-    document.getElementById("dividendPool").innerText = web3.utils.fromWei(dividendPool.toString());
-    document.getElementById("userStaked").innerText = web3.utils.fromWei(user.staked.toString());
-    document.getElementById("userDividends").innerText = web3.utils.fromWei(user.dividendsClaimed.toString());
-    document.getElementById("dailyBoost").innerText = user.dailyBoost;
-    document.getElementById("rafflePot").innerText = web3.utils.fromWei(raffle.prizePot.toString());
-    document.getElementById("auctionTopBid").innerText = web3.utils.fromWei(auction.bidCount.toString());
-    document.getElementById("auctionPrizePot").innerText = web3.utils.fromWei(auction.bidCount.toString()); // si tu contrato tiene prize pot separado, ajusta aquí
-  } catch (err) {
-    console.error("Dashboard error:", err);
-  }
-}
+    document.getElementById("treasuryPool").innerText = web3.utils.fromWei(treasuryPool);
+    document.getElementById("dividendPool").innerText = web3.utils.fromWei(dividendPool);
+    document.getElementById("userStaked").innerText = web3.utils.fromWei(userStaked);
+    document.getElementById("userShare").innerText = userShare / 100;
+    document.getElementById("userDividends").innerText = web3.utils.fromWei((await contract.methods.users(account).call()).dividendsClaimed);
 
-/*************************
- * STAKING
- *************************/
-async function deposit() {
-  const val = document.getElementById("depositAmount").value;
-  if (!val || val <= 0) return alert("Cantidad inválida");
-  try {
-    await contract.methods.deposit().send({ from: account, value: web3.utils.toWei(val.toString()) });
-    updateDashboard();
-  } catch (err) {
-    console.error("Deposit error:", err);
-    alert("Error al depositar: " + err.message);
-  }
-}
+    const raffleStats = await contract.methods.getRaffleStats().call();
+    document.getElementById("rafflePrizePot").innerText = web3.utils.fromWei(raffleStats.prizePot);
+    document.getElementById("raffleTicketsTotal").innerText = raffleStats.tickets;
+    document.getElementById("raffleTimeLeft").innerText = raffleStats.timeLeft;
 
-async function withdraw() {
-  const val = document.getElementById("withdrawAmount").value;
-  if (!val || val <= 0) return alert("Cantidad inválida");
-  try {
-    await contract.methods.withdraw(web3.utils.toWei(val.toString())).send({ from: account });
-    updateDashboard();
-  } catch (err) {
-    console.error("Withdraw error:", err);
-    alert("Error al retirar: " + err.message);
-  }
-}
+    const auctionStats = await contract.methods.getAuctionStats().call();
+    document.getElementById("auctionPrizePot").innerText = web3.utils.fromWei(auctionStats.prizePot);
+    document.getElementById("auctionTopBid").innerText = web3.utils.fromWei(auctionStats.topBid);
+    document.getElementById("auctionTimeLeft").innerText = auctionStats.timeLeft;
 
-async function claimDividends() {
-  try {
-    await contract.methods.claimDividends().send({ from: account });
-    updateDashboard();
-  } catch (err) {
-    console.error("Claim error:", err);
-    alert("Error al reclamar dividendos: " + err.message);
-  }
-}
+    const raffleWinnersEl = document.getElementById("raffleWinners");
+    raffleWinnersEl.innerHTML = "";
+    try{
+        const winners = await contract.methods.lastRaffleWinners().call();
+        winners.forEach(w=>{
+            if(w!="0x0000000000000000000000000000000000000000") raffleWinnersEl.innerHTML += `<li>${w}</li>`;
+        });
+    } catch{}
 
-/*************************
- * RAFFLE
- *************************/
-async function updateRaffle() {
-  try {
-    const raffle = await contract.methods.raffle().call();
-    const timeLeft = raffle.endTime - Math.floor(Date.now() / 1000);
-    document.getElementById("rafflePrize").innerText = web3.utils.fromWei(raffle.prizePot.toString());
-    document.getElementById("raffleTime").innerText = timeLeft > 0 ? timeLeft : 0;
-  } catch (err) {
-    console.error("Raffle update error:", err);
-  }
-}
-
-async function enterRaffle() {
-  const tickets = document.getElementById("raffleTickets").value;
-  if (!tickets || tickets <= 0) return alert("Tickets inválidos");
-  try {
-    const ticketPrice = await contract.methods.RAFFLE_TICKET_PRICE().call();
-    const total = web3.utils.toBN(ticketPrice).mul(web3.utils.toBN(tickets));
-    await contract.methods.enterRaffle(tickets).send({ from: account, value: total });
-    updateRaffle();
-    updateDashboard();
-  } catch (err) {
-    console.error("Enter raffle error:", err);
-    alert("Error al entrar en la rifa: " + err.message);
-  }
-}
-
-/*************************
- * AUCTION
- *************************/
-async function updateAuction() {
-  try {
-    const auction = await contract.methods.auction().call();
-    const timeLeft = auction.endTime - Math.floor(Date.now() / 1000);
-    document.getElementById("topBid").innerText = web3.utils.fromWei(auction.bidCount.toString());
-    document.getElementById("auctionTime").innerText = timeLeft > 0 ? timeLeft : 0;
-  } catch (err) {
-    console.error("Auction update error:", err);
-  }
-}
-
-async function bidAuction() {
-  try {
-    const increment = await contract.methods.AUCTION_INCREMENT().call();
-    await contract.methods.bidAuction().send({ from: account, value: increment });
-    updateAuction();
-    updateDashboard();
-  } catch (err) {
-    console.error("Bid auction error:", err);
-    alert("Error al pujar en la subasta: " + err.message);
-  }
-}
-
-/*************************
- * EVENTS EN TIEMPO REAL
- *************************/
-function listenEvents() {
-  contract.events.Deposit().on("data", e => logEvent(`Deposit: ${e.returnValues.user} depositó ${web3.utils.fromWei(e.returnValues.amount)} tBNB`));
-  contract.events.Withdraw().on("data", e => logEvent(`Withdraw: ${e.returnValues.user} retiró ${web3.utils.fromWei(e.returnValues.amount)} tBNB`));
-  contract.events.DividendsClaimed().on("data", e => logEvent(`Dividends: ${e.returnValues.user} cobró ${web3.utils.fromWei(e.returnValues.amount)} tBNB`));
-  contract.events.RaffleEntered().on("data", e => logEvent(`Raffle: ${e.returnValues.user} compró ${e.returnValues.tickets} tickets`));
-  contract.events.RaffleClosed().on("data", e => logEvent(`Raffle Cerrada: Ganadores ${e.returnValues.winners}`));
-  contract.events.AuctionBid().on("data", e => logEvent(`Subasta: ${e.returnValues.user} pujó ${web3.utils.fromWei(e.returnValues.bidNumber)} tBNB`));
-  contract.events.AuctionClosed().on("data", e => logEvent(`Subasta Cerrada: Ganadores ${e.returnValues.winners}`));
-}
-
-/*************************
- * LOG DE EVENTOS
- *************************/
-function logEvent(msg) {
-  const div = document.createElement("p");
-  div.innerText = msg;
-  document.getElementById("eventLog").prepend(div);
+    const auctionBiddersEl = document.getElementById("auctionLastBidders");
+    auctionBiddersEl.innerHTML = "";
+    try{
+        const lastBidders = auctionStats.lastBidders;
+        lastBidders.forEach(b=>auctionBiddersEl.innerHTML += `<li>${b}</li>`);
+    } catch{}
 }
