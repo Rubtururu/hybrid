@@ -1,18 +1,89 @@
-body { font-family: Arial, sans-serif; margin:0; background:#121212; color:#eee; }
-.container { max-width: 1000px; margin:auto; padding:20px; }
-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-header button { padding:8px 16px; background:#4caf50; border:none; border-radius:5px; color:white; cursor:pointer; }
-nav { display:flex; justify-content:center; margin-bottom:20px; }
-nav button { flex:1; margin:0 5px; padding:10px; background:#333; border:none; border-radius:5px; color:white; cursor:pointer; }
-nav button.active { background:#4caf50; }
-.section { display:none; }
-.section.active { display:block; }
-button { padding:10px 15px; background:#2196f3; border:none; border-radius:5px; color:white; cursor:pointer; margin:5px; }
-button:hover { opacity:0.9; }
-.logs { background:#222; padding:10px; border-radius:5px; max-height:400px; overflow-y:auto; }
-.progress-bar { width:100%; height:15px; background:#333; border-radius:5px; margin-top:5px; }
-.progress-bar div { height:100%; background:#4caf50; width:0%; border-radius:5px; transition:width 0.5s; }
-.top-winners { margin-top:10px; padding:10px; background:#222; border-radius:5px; }
-.stat { margin-bottom:15px; }
-.actions { margin-top:15px; display:flex; gap:10px; flex-wrap:wrap; }
-.actions input { width:120px; padding:5px; border-radius:5px; border:none; margin-right:5px; }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #0f111a;
+  color: #fff;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+header button {
+  padding: 8px 15px;
+  background-color: #1e40af;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+header button:hover {
+  background-color: #3b82f6;
+}
+
+.section {
+  background-color: #16182b;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.dashboard-stats div, .raffle-stats div, .auction-stats div {
+  margin-bottom: 10px;
+}
+
+input[type="number"] {
+  padding: 5px;
+  width: 150px;
+  margin-right: 5px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #222431;
+  color: #fff;
+}
+
+button {
+  padding: 6px 12px;
+  background-color: #1e40af;
+  border: none;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #3b82f6;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  border-bottom: 1px solid #333;
+  padding: 5px 0;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.raffle-winners ul, .auction-winners ul {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.raffle-actions, .auction-actions, .dashboard-actions {
+  margin-top: 10px;
+}
