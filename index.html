@@ -1,65 +1,58 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hybrid DeFi Dashboard</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+  <title>Hybrid DeFi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
-    <header>
-        <h1>Hybrid DeFi Dashboard</h1>
-        <button id="connectBtn">Conectar MetaMask</button>
-        <p id="walletAddress"></p>
-    </header>
 
-    <section class="stats">
-        <h2>Estadísticas Generales</h2>
-        <div class="grid">
-            <div class="stat"><span id="totalStaked">0</span> BNB<br>Total Staked</div>
-            <div class="stat"><span id="dividendPool">0</span> BNB<br>Dividend Pool</div>
-            <div class="stat"><span id="lastDividend">0</span><br>Último pago de dividendos</div>
-        </div>
-    </section>
+<header>
+  <h1>Hybrid DeFi</h1>
+  <button id="connectBtn">Connect</button>
+  <span id="wallet">Not connected</span>
+</header>
 
-    <section class="user-stats">
-        <h2>Mis Stats</h2>
-        <div class="grid">
-            <div class="stat"><span id="myStaked">0</span> BNB<br>Staked</div>
-            <div class="stat"><span id="myWithdrawn">0</span> BNB<br>Retirado</div>
-            <div class="stat"><span id="myDividends">0</span> BNB<br>Dividends Claimados</div>
-            <div class="stat"><span id="myShare">0</span>%<br>Mi Share</div>
-            <div class="stat"><span id="myTickets">0</span><br>Tickets Comprados</div>
-        </div>
-    </section>
+<section class="card">
+  <h2>Dividend Pool</h2>
+  <div id="dividendPool"></div>
+  <div>Total Staked: <span id="totalStaked"></span></div>
+</section>
 
-    <section class="actions">
-        <h2>Acciones</h2>
-        <input type="number" id="amount" placeholder="Cantidad BNB">
-        <button id="depositBtn">Depositar</button>
-        <button id="withdrawBtn">Retirar</button>
-        <button id="claimBtn">Reclamar Dividendos</button>
-        <input type="number" id="raffleTickets" placeholder="Tickets Rifa">
-        <button id="raffleBtn">Entrar Rifa</button>
-        <button id="auctionBtn">Pujar Subasta</button>
-    </section>
+<section class="card">
+  <h2>Your Wallet</h2>
+  <div>Staked: <span id="userStaked"></span></div>
+  <div>Withdrawn: <span id="userWithdrawn"></span></div>
+  <div>Claimed: <span id="userClaimed"></span></div>
+  <div>Boost: <span id="userBoost"></span></div>
+  <div>Share: <span id="userShare"></span></div>
+</section>
 
-    <section class="raffle">
-        <h2>Rifa</h2>
-        <p>Prize Pot: <span id="rafflePot">0</span> BNB</p>
-        <p>Fin de rifa: <span id="raffleEnd">0</span></p>
-    </section>
+<section class="card">
+  <h2>Auction</h2>
+  <div>Ends in <span id="auctionTimer"></span></div>
+  <div>Bid #: <span id="auctionBidCount"></span></div>
+  <div>Next bid: <span id="nextBid"></span></div>
+  <button onclick="bidAuction()">Place Bid</button>
+</section>
 
-    <section class="auction">
-        <h2>Subasta</h2>
-        <p>Top 5 Pujadores:</p>
-        <ul id="auctionTop"></ul>
-        <p>Current Bid: <span id="auctionCurrent">0</span> BNB</p>
-        <p>Fin de Subasta: <span id="auctionEnd">0</span></p>
-    </section>
-</div>
+<section class="card">
+  <h2>Hourly Raffle</h2>
+  <div>Ends in <span id="raffleTimer"></span></div>
+  <div>Prize: <span id="rafflePot"></span></div>
+  <div>Total tickets: <span id="totalTickets"></span></div>
+  <div>Your tickets: <span id="myTickets"></span></div>
+  <div>Win chance: <span id="winChance"></span></div>
+
+  <input id="ticketQty" type="number" value="1" min="1">
+  <button onclick="buyTickets()">Buy</button>
+</section>
+
+<section class="card">
+  <h2>Recent Events</h2>
+  <div id="events"></div>
+</section>
 
 <script src="app.js"></script>
 </body>
