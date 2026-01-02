@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>MetaWin V3 - DApp</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MetaWin V3 - DApp</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -29,32 +30,26 @@
   <section id="dashboard" class="section active">
     <h2>📊 Dashboard General</h2>
     <div class="card-grid">
-
       <div class="card">
         <h3>Treasury Pool</h3>
         <p id="treasuryPool">0 BNB</p>
       </div>
-
       <div class="card">
         <h3>Dividend Pool</h3>
         <p id="dividendPool">0 BNB</p>
       </div>
-
       <div class="card">
         <h3>Your Staked</h3>
         <p id="userStaked">0 BNB</p>
       </div>
-
       <div class="card">
         <h3>Your Share %</h3>
         <p id="userShare">0%</p>
       </div>
-
       <div class="card">
         <h3>Your Dividendos</h3>
         <p id="userDividends">0 BNB</p>
       </div>
-
     </div>
   </section>
 
@@ -65,12 +60,10 @@
       <input type="number" id="depositAmount" placeholder="BNB a depositar">
       <button id="depositBtn">Depositar</button>
     </div>
-
     <div class="form-row">
       <input type="number" id="withdrawAmount" placeholder="BNB a retirar">
       <button id="withdrawBtn">Retirar</button>
     </div>
-
     <div class="form-row">
       <button id="claimBtn">Reclamar Dividendos</button>
     </div>
@@ -82,14 +75,12 @@
     <div class="card">
       <p>Prize Pot: <span id="rafflePrizePot">0</span> BNB</p>
       <p>Tickets Totales: <span id="raffleTicketsTotal">0</span></p>
-      <p>Tiempo Restante: <span id="raffleTimeLeft">0</span></p>
+      <p>Tiempo Restante: <span id="raffleTimeLeft">00:00:00</span></p>
     </div>
-
     <div class="form-row">
       <input type="number" id="raffleTickets" placeholder="Número de tickets">
       <button id="raffleBtn">Entrar en Rifa</button>
     </div>
-
     <h3>Últimos Ganadores</h3>
     <ul id="raffleWinners"></ul>
   </section>
@@ -100,13 +91,11 @@
     <div class="card">
       <p>Prize Pot: <span id="auctionPrizePot">0</span> BNB</p>
       <p>Top Bid: <span id="auctionTopBid">0</span> BNB</p>
-      <p>Tiempo Restante: <span id="auctionTimeLeft">0</span></p>
+      <p>Tiempo Restante: <span id="auctionTimeLeft">00:00:00</span></p>
     </div>
-
     <div class="form-row">
       <button id="bidBtn">Pujar</button>
     </div>
-
     <h3>Últimos Pujadores</h3>
     <ul id="auctionLastBidders"></ul>
   </section>
