@@ -3,15 +3,15 @@ const ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{
 
 let web3, contract, account;
 
-// Inicialización
+// INIT
 window.addEventListener("load", async () => {
   initTabs();
   initButtons();
   await attemptConnect();
-  setInterval(updateStats, 1000); // actualizar cada segundo
+  setInterval(updateStats, 1000);
 });
 
-// Tabs SPA
+// TABS
 function initTabs() {
   document.querySelectorAll("nav button").forEach(btn => {
     btn.onclick = () => {
@@ -23,7 +23,7 @@ function initTabs() {
   });
 }
 
-// Conexión e inicialización
+// CONNECT
 async function attemptConnect() {
   if (!window.ethereum) return alert("Instala MetaMask");
   web3 = new Web3(window.ethereum);
@@ -36,7 +36,7 @@ async function attemptConnect() {
       updateStats();
       listenToEvents();
     }
-  } catch (e) {}
+  } catch(e) { console.error(e); }
 }
 
 async function connectWallet() {
@@ -47,7 +47,7 @@ async function connectWallet() {
   listenToEvents();
 }
 
-// Botones
+// BUTTONS
 function initButtons() {
   document.getElementById("connectBtn").onclick = connectWallet;
   document.getElementById("depositBtn").onclick = deposit;
@@ -57,88 +57,96 @@ function initButtons() {
   document.getElementById("bidBtn").onclick = bidAuction;
 }
 
-// Actualizar estadísticas
+// UPDATE STATS
 async function updateStats() {
   if (!account) return;
-
-  // Staking
-  const treasuryPool = await contract.methods.treasuryPool().call();
-  const dividendPool = await contract.methods.dividendPool().call();
-  const user = await contract.methods.users(account).call();
-  const userShare = await contract.methods.getUserShare(account).call();
-
-  document.getElementById("treasuryPool").innerText = web3.utils.fromWei(treasuryPool);
-  document.getElementById("dividendPool").innerText = web3.utils.fromWei(dividendPool);
-  document.getElementById("userStaked").innerText = web3.utils.fromWei(user.staked);
-  document.getElementById("userDividends").innerText = web3.utils.fromWei(user.dividendsClaimed);
-  document.getElementById("userShare").innerText = (userShare / 100).toFixed(2);
-
-  // Raffle
-  const raffle = await contract.methods.getRaffleStats().call();
-  document.getElementById("rafflePrizePot").innerText = web3.utils.fromWei(raffle.prizePot);
-  document.getElementById("raffleTicketsTotal").innerText = raffle.tickets;
-  document.getElementById("raffleTimeLeft").innerText = raffle.timeLeft;
-
   try {
-    const winners = await contract.methods.lastRaffleWinners().call();
-    const list = document.getElementById("raffleWinners");
-    list.innerHTML = "";
-    winners.forEach(w => {
-      if (w && w !== "0x0000000000000000000000000000000000000000") {
-        list.innerHTML += `<li>${w}</li>`;
-      }
-    });
-  } catch {}
+    // Staking
+    const treasuryPool = await contract.methods.treasuryPool().call();
+    const dividendPool = await contract.methods.dividendPool().call();
+    const user = await contract.methods.users(account).call();
+    const userShare = await contract.methods.getUserShare(account).call();
+    document.getElementById("treasuryPool").innerText = web3.utils.fromWei(treasuryPool);
+    document.getElementById("dividendPool").innerText = web3.utils.fromWei(dividendPool);
+    document.getElementById("userStaked").innerText = web3.utils.fromWei(user.staked);
+    document.getElementById("userDividends").innerText = web3.utils.fromWei(user.dividendsClaimed);
+    document.getElementById("userShare").innerText = (userShare/100).toFixed(2);
 
-  // Auction
-  const auction = await contract.methods.getAuctionStats().call();
-  document.getElementById("auctionPrizePot").innerText = web3.utils.fromWei(auction.prizePot);
-  document.getElementById("auctionTopBid").innerText = web3.utils.fromWei(auction.topBid);
-  document.getElementById("auctionTimeLeft").innerText = auction.timeLeft;
+    // Raffle
+    const raffle = await contract.methods.getRaffleStats().call();
+    document.getElementById("rafflePrizePot").innerText = web3.utils.fromWei(raffle[0]);
+    document.getElementById("raffleTicketsTotal").innerText = raffle[1];
+    document.getElementById("raffleTimeLeft").innerText = formatTime(raffle[2]);
+    const raffleWinnersEl = document.getElementById("raffleWinners");
+    raffleWinnersEl.innerHTML = "";
+    for (let i=0; i<5; i++){
+      const w = await contract.methods.lastRaffleWinners(i).call();
+      if(w!=="0x0000000000000000000000000000000000000000") raffleWinnersEl.innerHTML += `<li>${w}</li>`;
+    }
 
-  const bidders = document.getElementById("auctionLastBidders");
-  bidders.innerHTML = "";
-  auction.lastBidders.forEach(b => {
-    bidders.innerHTML += `<li>${b}</li>`;
-  });
+    // Auction
+    const auction = await contract.methods.getAuctionStats().call();
+    document.getElementById("auctionPrizePot").innerText = web3.utils.fromWei(auction[0]);
+    document.getElementById("auctionTopBid").innerText = web3.utils.fromWei(auction[1]);
+    document.getElementById("auctionTimeLeft").innerText = formatTime(auction[2]);
+    const lastBiddersEl = document.getElementById("auctionLastBidders");
+    lastBiddersEl.innerHTML = "";
+    for(let i=0;i<auction[3].length;i++){
+      lastBiddersEl.innerHTML += `<li>${auction[3][i]}</li>`;
+    }
+
+  } catch(e){console.error(e);}
 }
 
-// Funciones Staking
-async function deposit() {
+function formatTime(seconds){
+  seconds = Number(seconds);
+  const h = Math.floor(seconds/3600).toString().padStart(2,"0");
+  const m = Math.floor((seconds%3600)/60).toString().padStart(2,"0");
+  const s = Math.floor(seconds%60).toString().padStart(2,"0");
+  return `${h}:${m}:${s}`;
+}
+
+// STAKING
+async function deposit(){
   const val = document.getElementById("depositAmount").value;
-  if (!val || val <= 0) return alert("Cantidad inválida");
-  await contract.methods.deposit().send({ from: account, value: web3.utils.toWei(val.toString(), "ether") });
+  if(!val||val<=0) return alert("Cantidad inválida");
+  try{await contract.methods.deposit().send({from:account,value:web3.utils.toWei(val,"ether")}); alert("Depósito exitoso");}
+  catch(e){console.error(e); alert("Error en depósito");}
 }
-
-async function withdraw() {
+async function withdraw(){
   const val = document.getElementById("withdrawAmount").value;
-  if (!val || val <= 0) return alert("Cantidad inválida");
-  await contract.methods.withdraw(web3.utils.toWei(val.toString(), "ether")).send({ from: account });
+  if(!val||val<=0) return alert("Cantidad inválida");
+  try{await contract.methods.withdraw(web3.utils.toWei(val,"ether")).send({from:account}); alert("Retiro exitoso");}
+  catch(e){console.error(e); alert("Error en retiro");}
+}
+async function claimDividends(){try{await contract.methods.claimDividends().send({from:account}); alert("Dividendos reclamados");}catch(e){console.error(e); alert("Error reclamando dividendos");}}
+
+// RAFFLE
+async function enterRaffle(){
+  const tickets = parseInt(document.getElementById("raffleTickets").value);
+  if(!tickets||tickets<=0) return alert("Tickets inválidos");
+  try{await contract.methods.enterRaffle(tickets).send({from:account,value:web3.utils.toWei((0.001*tickets).toString(),"ether")}); alert("Entraste en la rifa!");}
+  catch(e){console.error(e); alert("Error en la rifa");}
 }
 
-async function claimDividends() {
-  await contract.methods.claimDividends().send({ from: account });
+// AUCTION
+async function bidAuction(){
+  try{
+    const auctionStats = await contract.methods.getAuctionStats().call();
+    let value;
+    if(auctionStats[1]==0) value = web3.utils.toWei("0.001","ether");
+    else value = BigInt(auctionStats[1])+BigInt(web3.utils.toWei("0.001","ether"));
+    await contract.methods.bidAuction().send({from:account,value:value.toString()});
+    alert("Puja enviada!");
+  }catch(e){console.error(e); alert("Error en la puja");}
 }
 
-// Raffle
-async function enterRaffle() {
-  const t = parseInt(document.getElementById("raffleTickets").value);
-  if (!t || t <= 0) return alert("Tickets inválidos");
-  const val = web3.utils.toWei((0.001 * t).toString(), "ether");
-  await contract.methods.enterRaffle(t).send({ from: account, value: val });
-}
-
-// Auction
-async function bidAuction() {
-  await contract.methods.bidAuction().send({ from: account, value: await contract.methods.auctionBids().call().then(b=>b.length==0? web3.utils.toWei("0.001","ether"): web3.utils.toWei((b.length+1).toString(),"ether")) });
-}
-
-// Eventos
-function listenToEvents() {
-  contract.events.allEvents({}, (err, event) => {
-    if (!err) {
+// EVENTS
+function listenToEvents(){
+  contract.events.allEvents({},(err,event)=>{
+    if(!err){
       const log = document.createElement("p");
-      log.innerText = JSON.stringify(event.event) + " — " + JSON.stringify(event.returnValues);
+      log.innerText = `${event.event} — ${JSON.stringify(event.returnValues)}`;
       document.getElementById("eventLogs").prepend(log);
     }
   });
