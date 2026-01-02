@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MetaWinV3 Dashboard</title>
+<title>MetaWin V3</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.9.0/dist/web3.min.js"></script>
 </head>
@@ -11,8 +11,10 @@
 <div class="container">
     <header>
         <h1>MetaWin V3</h1>
-        <button id="connectBtn">Conectar MetaMask</button>
-        <span id="accountDisplay"></span>
+        <div>
+            <button id="connectBtn">Conectar MetaMask</button>
+            <span id="accountDisplay"></span>
+        </div>
     </header>
 
     <nav>
@@ -26,13 +28,25 @@
         <!-- DASHBOARD -->
         <section id="dashboard" class="section active">
             <h2>Dashboard</h2>
-            <p>Total Staked: <span id="totalStaked">0</span> BNB</p>
-            <p>Dividend Pool: <span id="dividendPool">0</span> BNB</p>
-            <p>Mi Stake: <span id="myStaked">0</span> BNB</p>
-            <p>Mi % Share: <span id="userShare">0%</span></p>
-            <button id="depositBtn">Depositar 0.01 BNB</button>
-            <button id="withdrawBtn">Retirar 0.01 BNB</button>
-            <button id="claimBtn">Reclamar Dividendos</button>
+            <div class="stat">
+                <p>Total Staked: <span id="totalStaked">0</span> BNB</p>
+                <div class="progress-bar"><div id="totalStakedBar"></div></div>
+            </div>
+            <div class="stat">
+                <p>Dividend Pool: <span id="dividendPool">0</span> BNB</p>
+            </div>
+            <div class="stat">
+                <p>Mi Stake: <span id="myStaked">0</span> BNB</p>
+                <div class="progress-bar"><div id="myStakeBar"></div></div>
+            </div>
+            <div class="stat">
+                <p>Mi % Share: <span id="userShare">0%</span></p>
+            </div>
+            <div class="actions">
+                <button id="depositBtn">Depositar 0.01 BNB</button>
+                <button id="withdrawBtn">Retirar 0.01 BNB</button>
+                <button id="claimBtn">Reclamar Dividendos</button>
+            </div>
         </section>
 
         <!-- RAFFLE -->
@@ -41,8 +55,11 @@
             <p>Prize Pot: <span id="rafflePrizePot">0</span> BNB</p>
             <p>Total Tickets: <span id="raffleTicketsTotal">0</span></p>
             <p>Mi % Share: <span id="raffleUserShare">0%</span></p>
+            <div class="progress-bar"><div id="raffleShareBar"></div></div>
+            <p>Tiempo Restante: <span id="raffleTimeLeft">0</span> seg</p>
             <input type="number" id="raffleTicketsInput" placeholder="Tickets a comprar" min="1">
             <button id="raffleBtn">Comprar Tickets</button>
+            <div class="top-winners" id="raffleTopWinners"></div>
         </section>
 
         <!-- AUCTION -->
@@ -53,6 +70,7 @@
             <p>Tiempo Restante: <span id="auctionTimeLeft">0</span> seg</p>
             <p>Últimos Bidders: <span id="auctionLastBidders"></span></p>
             <button id="bidBtn">Pujar</button>
+            <div class="top-winners" id="auctionTopWinners"></div>
         </section>
 
         <!-- LOGS -->
